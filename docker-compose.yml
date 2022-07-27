@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  client:
+    image: node
+    working_dir: /app
+    ports:
+      - 3000:3000
+    volumes:
+      - ./client/:/app
+    command: npm run dev
+
+  mongo:
+    image: mongo
+    ports:
+      - 27017:27017
+#    volumes:
+#      - mongodb:/data/db
+#      - mongodb_config:/data/configdb
+
+#volumes:
+#  mongodb:
+#  mongodb_config:
