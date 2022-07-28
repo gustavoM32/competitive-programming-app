@@ -1,8 +1,8 @@
 import { AppBar, Button, Link, Toolbar, Typography } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
-import AddProblemDialog from "components/AddProblemDialog";
-import DeleteProblemDialog from "components/DeleteProblemDialog";
-import EditProblemDialog from "components/EditProblemDialog";
+import AddProblemDialog from "components/problems/AddProblemDialog";
+import DeleteProblemDialog from "components/problems/DeleteProblemDialog";
+import EditProblemDialog from "components/problems/EditProblemDialog";
 import useRead from "hooks/resources/useRead";
 import Head from "next/head";
 
