@@ -2,13 +2,13 @@ import axios from "axios";
 
 const FETCH_DELAY = 1000;
 
-function sleep(ms) {
+function sleep(ms: number) {
   return new Promise((resolve) => {
     setTimeout(resolve, ms);
   });
 }
 
-export default async function generalFetcher(uri) {
+export default async function generalFetcher(uri: string) {
   console.log(`starting: ${uri}`);
   await sleep(FETCH_DELAY);
   console.log(`fetching: ${uri}`);
@@ -18,4 +18,4 @@ export default async function generalFetcher(uri) {
       console.log(`fetched: ${uri}`);
       return res.data;
     })
-};
+}

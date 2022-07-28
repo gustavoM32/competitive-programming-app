@@ -3,10 +3,18 @@ import {
   FormControlLabel, Radio, DialogActions
 } from "@mui/material";
 import { useState } from "react";
+import { ProblemType } from "types"
 
 import { useCreate, useUpdate, useDelete } from "hooks/crud";
 
-export function ProblemDialog(props) {
+type ProblemDialogProps = {
+  title: string,
+  problem?: ProblemType,
+  actionName: string,
+  actionFunc: (problem: ProblemType) => void,
+}
+
+export function ProblemDialog(props: ProblemDialogProps) {
   const [problem, setProblem] = useState(props.problem ?? {});
   const [open, setOpen] = useState(false);
 
@@ -18,7 +26,7 @@ export function ProblemDialog(props) {
     setOpen(false);
   }
 
-  const handleChange = (e) => {
+  const handleChange = (e: { target: { name: any; value: any; }; }) => {
     setProblem({ ...problem, [e.target.name]: e.target.value });
   }
 
@@ -84,7 +92,7 @@ export function CreateProblemDialog() {
   );
 }
 
-export function UpdateProblemDialog(props) {
+export function UpdateProblemDialog(props: { problem: ProblemType; }) {
   const editProblem = useUpdate("problems")
 
   return (
@@ -96,7 +104,7 @@ export function UpdateProblemDialog(props) {
   );
 }
 
-export function DeleteProblemButton(props) {
+export function DeleteProblemButton(props: { id: string }) {
   const deleteProblem = useDelete("problems");
 
   const onDelClick = () => {

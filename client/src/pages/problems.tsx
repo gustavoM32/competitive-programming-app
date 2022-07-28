@@ -4,12 +4,17 @@ import { CreateProblemDialog, UpdateProblemDialog, DeleteProblemButton } from "c
 import Head from "next/head";
 import { useRead } from "hooks/crud";
 
+type RowParams = {
+  id: any,
+  row: any
+}
+
 export default function Problems() {
   const problems = useRead("problems");
 
   const columns = [
     { field: 'dateAdded', headerName: 'Date added', type: 'dateTime', width: 250},
-    { field: 'link', headerName: 'Link', width: 50, renderCell: (params) => (
+    { field: 'link', headerName: 'Link', width: 50, renderCell: (params: RowParams) => (
       <Link href={params.row.link} target="_blank" rel="noopener">Link</Link>
     )},
     { field: 'name', headerName: 'Name', width: 200},
@@ -19,9 +24,9 @@ export default function Problems() {
     { field: 'editorialStatus', headerName: 'Editorial', width: 200},
     { field: 'comments', headerName: 'Comments', width: 400},
     // { field: 'studies', headerName: 'Studies'},
-    { field: 'action', headerName: 'Action', width: 200, renderCell: (params) => (
+    { field: 'action', headerName: 'Action', width: 200, renderCell: (params: RowParams) => (
       <>
-        <UpdateProblemDialog id={params.id} problem={params.row}/>{' '}
+        <UpdateProblemDialog problem={params.row}/>{' '}
         <DeleteProblemButton id={params.id}/>
       </>
     )},
@@ -45,7 +50,7 @@ export default function Problems() {
         <h1>Problems</h1>
         {problems.isLoading ? <p>Loading...</p> : null}
         {problems.error ? <p>Error: {problems.error.message}</p> : null}
-        <Button onClick={() => problems.mutate()}>Update data</Button>
+        <Button onClick={() => { if (problems.mutate) problems.mutate() } }>Update data</Button>
         <DataGrid
           autoHeight
           rows={problems.resources}
