@@ -8,7 +8,7 @@ export default function useCreate(name) {
   return (newResource) => {
     const createResource = (resources) => {
       // TODO: stop using server_url
-      axios.post(`${SERVER_URL}api/${name}`, newResource)
+      axios.post(`${SERVER_URL}/api/${name}`, newResource)
         .then(() => console.log(`created ${name}`))
         .catch(err => console.error(err))
       

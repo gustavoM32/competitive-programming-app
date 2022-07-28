@@ -8,7 +8,7 @@ function sleep(ms) {
 }
 
 export default async function fetcher(name) {
-  let url = `${SERVER_URL}api/${name}`
+  let url = `${SERVER_URL}/api/${name}`
   console.log(`starting: ${url}`);
   await sleep(1000);
   console.log(`fetching: ${url}`);
