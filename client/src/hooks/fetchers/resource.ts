@@ -1,7 +1,7 @@
 import generalFetcher from "./general";
 import { API_URL } from "constants/constants";
 
-export default async function resourceFetcher(name) {
+export default async function resourceFetcher(name: string) {
   return generalFetcher(`${API_URL}/${name}`)
     .then(data => {
       return {
