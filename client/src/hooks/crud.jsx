@@ -8,6 +8,11 @@ export function useRead(name) {
 
   if (data && mutate) {
     resourcesMutate = (mutateResources) => {
+      if (!mutateResources) {
+        mutate();
+        return;
+      }
+
       let updatedResources = mutateResources(data.resources)
 
       mutate((oldData) => {

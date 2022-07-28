@@ -45,7 +45,7 @@ export default function Problems() {
         <h1>Problems</h1>
         {problems.isLoading ? <p>Loading...</p> : null}
         {problems.error ? <p>Error: {problems.error.message}</p> : null}
-        <Button onClick={problems.mutate}>Update data</Button>
+        <Button onClick={() => problems.mutate()}>Update data</Button>
         <DataGrid
           autoHeight
           rows={problems.resources}
