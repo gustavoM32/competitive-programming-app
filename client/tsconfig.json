@@ -4,10 +4,13 @@
 		"target": "es2016",
 		"jsx": "preserve",
 		"baseUrl": "./src",
+    "outDir": "build",
 		"checkJs": true
 	},
+  "include": ["src/**/*"],
 	"exclude": [
 		"node_modules",
-		"**/node_modules/*"
+		"**/node_modules/*",
+    "build/**/*"
 	]
 }
