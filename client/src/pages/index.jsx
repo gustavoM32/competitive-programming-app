@@ -1,4 +1,4 @@
-import { Link } from '@mui/material'
+import { Button } from '@mui/material'
 import Head from 'next/head'
 
 export default function Home() {
@@ -13,7 +13,7 @@ export default function Home() {
         <h1>Competitive Programming Web App</h1>
 
         <div>
-          <Link href="/problems" target="_blank" rel="noopener">Problems</Link>
+          <Button href="/problems" variant="contained" target="_blank" rel="noopener">Problems</Button>
         </div>
       </main>
     </div>
