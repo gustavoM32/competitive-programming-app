@@ -5,6 +5,7 @@ import DeleteProblemDialog from "components/problems/DeleteProblemDialog";
 import EditProblemDialog from "components/problems/EditProblemDialog";
 import useRead from "hooks/resources/useRead";
 import Head from "next/head";
+import { useRead } from "hooks/crud";
 
 export default function Problems() {
   const problems = useRead("problems");
