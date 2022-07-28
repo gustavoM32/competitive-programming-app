@@ -1,13 +1,28 @@
 import useSWR from "swr";
-import fetcher from "../fetcher"
+import resourceFetcher from "../fetchers/resource";
 
 export default function useRead(name) {
-  const { data, error, mutate } = useSWR(name, fetcher);
+  let { data, error, mutate } = useSWR(name, resourceFetcher);
+  let resourcesMutate
+
+  if (data && mutate) {
+    resourcesMutate = (mutateResources) => {
+      let updatedResources = mutateResources(data.resources)
+
+      mutate((oldData) => {
+        return {
+          resources: updatedResources,
+          uri: oldData.uri
+        }
+      })
+    }
+  }
 
   return {
-    data: error ? [] : (data ?? []),
-    isLoading: !error && !data,
-    isError: error,
-    mutate: mutate
+    resources: data?.resources ?? [],
+    uri: data?.uri,
+    isLoading: !data && !error,
+    error: error,
+    mutate: resourcesMutate
   }
 }

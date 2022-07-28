@@ -2,7 +2,7 @@ import axios from "axios";
 import useRead from "./useRead"
 
 export default function useDelete(name) {
-  const resources = useRead(name);
+  const { mutate } = useRead(name);
 
   return (deletedId) => {
     const deleteResource = (resources) => {
@@ -13,6 +13,6 @@ export default function useDelete(name) {
       return resources.filter(r => r._links.self.href != deletedId)
     }
 
-    resources.mutate(deleteResource)
+    mutate(deleteResource)
   }
 }

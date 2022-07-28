@@ -1,15 +1,13 @@
 import axios from "axios";
-import { SERVER_URL } from "constants/constants";
-import useRead from "./useRead"
+import useRead from "./useRead";
 
 export default function useCreate(name) {
-  const resources = useRead(name);
+  const { uri, mutate } = useRead(name);
 
   return (newResource) => {
     const createResource = (resources) => {
-      // TODO: stop using server_url
-      axios.post(`${SERVER_URL}/api/${name}`, newResource)
-        .then(() => console.log(`created ${name}`))
+      axios.post(uri, newResource)
+        .then(() => console.log(`post ${uri}`))
         .catch(err => console.error(err))
       
       newResource._links = { self: { href: "new" } }
@@ -17,6 +15,6 @@ export default function useCreate(name) {
       return [...resources, newResource]
     }
 
-    resources.mutate(createResource)
+    mutate(createResource)
   }
 }

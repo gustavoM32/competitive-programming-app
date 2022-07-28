@@ -46,11 +46,11 @@ export default function Problems() {
       <div>
         <h1>Problems</h1>
         {problems.isLoading ? <p>Loading...</p> : null}
-        {problems.isError ? <p>Error: {problems.isError.message}</p> : null}
+        {problems.error ? <p>Error: {problems.error.message}</p> : null}
         <Button onClick={problems.mutate}>Update data</Button>
         <DataGrid
           autoHeight
-          rows={problems.data}
+          rows={problems.resources}
           columns={columns}
           getRowId={(row) => row._links.self.href}
         />
