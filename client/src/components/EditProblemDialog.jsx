@@ -1,21 +1,14 @@
-import axios from "axios";
+import useUpdate from "hooks/resources/useUpdate";
 import ProblemDialog from "./ProblemDialog";
 
 export default function EditProblemDialog(props) {
-  const editItem = async (problem) => {
-    try {
-      await axios.patch(props.id, problem)
-      props.problems.mutate()
-    } catch (err) {
-      console.log(err);
-    }
-  }
+  const editProblem = useUpdate("problems")
 
   return (
     <ProblemDialog
       title="Edit problem"
       problem={props.problem}
-      actionFunc={editItem}
+      actionFunc={editProblem}
       actionName="Save" />
   );
 }

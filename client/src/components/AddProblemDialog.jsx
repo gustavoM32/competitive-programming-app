@@ -1,21 +1,13 @@
-import axios from "axios";
-import { SERVER_URL } from "constants/constants";
+import useCreate from "hooks/resources/useCreate";
 import ProblemDialog from "./ProblemDialog";
 
-export default function AddProblemDialog(props) {
-  const addItem = async (problem) => {
-    try {
-      await axios.post(`${SERVER_URL}api/problems`, problem)
-      props.problems.mutate();
-    } catch (err) {
-      console.log(err);
-    }
-  }
+export default function AddProblemDialog() {
+  const addProblem = useCreate("problems")
 
   return (
     <ProblemDialog
       title="Add problem"
       actionName="Add"
-      actionFunc={addItem} />
+      actionFunc={addProblem} />
   );
 }

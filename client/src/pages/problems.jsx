@@ -3,11 +3,11 @@ import { DataGrid } from "@mui/x-data-grid";
 import AddProblemDialog from "components/AddProblemDialog";
 import DeleteProblemDialog from "components/DeleteProblemDialog";
 import EditProblemDialog from "components/EditProblemDialog";
-import useProblems from "hooks/useProblems";
+import useRead from "hooks/resources/useRead";
 import Head from "next/head";
 
 export default function Problems() {
-  const problems = useProblems();
+  const problems = useRead("problems");
 
   const columns = [
     { field: 'dateAdded', headerName: 'Date added', type: 'dateTime', width: 250},
@@ -23,15 +23,11 @@ export default function Problems() {
     // { field: 'studies', headerName: 'Studies'},
     { field: 'action', headerName: 'Action', width: 200, renderCell: (params) => (
       <>
-        <EditProblemDialog id={params.id} problem={params.row} problems={problems}/>{' '}
-        <DeleteProblemDialog id={params.id} problems={problems}/>
+        <EditProblemDialog id={params.id} problem={params.row}/>{' '}
+        <DeleteProblemDialog id={params.id}/>
       </>
     )},
   ];
-
-  const updateData = () => {
-    problems.mutate();
-  }
 
   return (
     <>
@@ -50,14 +46,15 @@ export default function Problems() {
       <div>
         <h1>Problems</h1>
         {problems.isLoading ? <p>Loading...</p> : null}
-        <Button onClick={updateData}>Update data</Button>
+        {problems.isError ? <p>Error: {problems.isError.message}</p> : null}
+        <Button onClick={problems.mutate}>Update data</Button>
         <DataGrid
           autoHeight
           rows={problems.data}
           columns={columns}
           getRowId={(row) => row._links.self.href}
         />
-        <AddProblemDialog problems={problems}/>
+        <AddProblemDialog/>
       </div>
     </>
   );
