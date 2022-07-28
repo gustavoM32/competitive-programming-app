@@ -1,9 +1,6 @@
 import { AppBar, Button, Link, Toolbar, Typography } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
-import AddProblemDialog from "components/problems/AddProblemDialog";
-import DeleteProblemDialog from "components/problems/DeleteProblemDialog";
-import EditProblemDialog from "components/problems/EditProblemDialog";
-import useRead from "hooks/resources/useRead";
+import { CreateProblemDialog, UpdateProblemDialog, DeleteProblemButton } from "components/problemCRUD";
 import Head from "next/head";
 import { useRead } from "hooks/crud";
 
@@ -24,8 +21,8 @@ export default function Problems() {
     // { field: 'studies', headerName: 'Studies'},
     { field: 'action', headerName: 'Action', width: 200, renderCell: (params) => (
       <>
-        <EditProblemDialog id={params.id} problem={params.row}/>{' '}
-        <DeleteProblemDialog id={params.id}/>
+        <UpdateProblemDialog id={params.id} problem={params.row}/>{' '}
+        <DeleteProblemButton id={params.id}/>
       </>
     )},
   ];
@@ -55,7 +52,7 @@ export default function Problems() {
           columns={columns}
           getRowId={(row) => row._links.self.href}
         />
-        <AddProblemDialog/>
+        <CreateProblemDialog/>
       </div>
     </>
   );

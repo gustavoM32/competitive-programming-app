@@ -4,7 +4,9 @@ import {
 } from "@mui/material";
 import { useState } from "react";
 
-export default function ProblemDialog(props) {
+import { useCreate, useUpdate, useDelete } from "hooks/crud";
+
+export function ProblemDialog(props) {
   const [problem, setProblem] = useState(props.problem ?? {});
   const [open, setOpen] = useState(false);
 
@@ -68,5 +70,42 @@ export default function ProblemDialog(props) {
         </DialogActions>
       </Dialog>
     </>
+  );
+}
+
+export function CreateProblemDialog() {
+  const addProblem = useCreate("problems")
+
+  return (
+    <ProblemDialog
+      title="Add problem"
+      actionName="Add"
+      actionFunc={addProblem} />
+  );
+}
+
+export function UpdateProblemDialog(props) {
+  const editProblem = useUpdate("problems")
+
+  return (
+    <ProblemDialog
+      title="Edit problem"
+      problem={props.problem}
+      actionFunc={editProblem}
+      actionName="Save" />
+  );
+}
+
+export function DeleteProblemButton(props) {
+  const deleteProblem = useDelete("problems");
+
+  const onDelClick = () => {
+    if (!window.confirm('Are you sure to delete?')) return;
+
+    deleteProblem(props.id)
+  }
+
+  return (
+    <Button variant="outlined" color="warning" onClick={onDelClick}>Delete</Button>
   );
 }
