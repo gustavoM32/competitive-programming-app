@@ -31,3 +31,12 @@ export async function resourceListFetcher(name: string) {
     })
 }
 
+export async function resourceFetcher(uri: string) {
+  return generalFetcher(uri)
+    .then(data => {
+      return {
+        resource: data,
+        uri: data._links.self.href
+      }
+    })
+}
