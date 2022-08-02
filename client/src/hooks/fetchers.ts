@@ -1,4 +1,5 @@
 import axios from "axios";
+import { API_URL } from "constants/constants";
 
 const FETCH_DELAY = 1000;
 
@@ -8,7 +9,7 @@ function sleep(ms: number) {
   });
 }
 
-export default async function generalFetcher(uri: string) {
+export async function generalFetcher(uri: string) {
   console.log(`starting: ${uri}`);
   await sleep(FETCH_DELAY);
   console.log(`fetching: ${uri}`);
@@ -19,3 +20,14 @@ export default async function generalFetcher(uri: string) {
       return res.data;
     })
 }
+
+export async function resourceListFetcher(name: string) {
+  return generalFetcher(`${API_URL}/${name}`)
+    .then(data => {
+      return {
+        resources: data._embedded[name],
+        uri: data._links.self.href
+      }
+    })
+}
+

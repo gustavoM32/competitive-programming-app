@@ -1,6 +1,6 @@
 import axios from "axios";
 import useSWR from "swr";
-import resourceFetcher from "./fetchers/resource";
+import { resourceListFetcher } from "./fetchers";
 
 type UpdateFunction = (oldData: any[]) => any[];
 type MutateFunctionWithUpdate = (updateFn?: UpdateFunction) => void;
@@ -16,7 +16,7 @@ type ResourceObject = {
 }
 
 export function useRead(name: string): ResourceObject {
-  const { data, error, mutate } = useSWR(name, resourceFetcher);
+  const { data, error, mutate } = useSWR(name, resourceListFetcher);
   let resourcesMutate: MutateFunctionWithUpdate | undefined
 
   if (data && mutate) {
