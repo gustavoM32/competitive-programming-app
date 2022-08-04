@@ -2,7 +2,7 @@ import { AppBar, Button, Link, Toolbar, Typography } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { CreateProblemDialog, UpdateProblemDialog, DeleteProblemButton } from "components/problemCRUD";
 import Head from "next/head";
-import { useRead } from "hooks/crud";
+import { useReadList } from "hooks/crudHooks";
 
 type RowParams = {
   id: any,
@@ -10,7 +10,7 @@ type RowParams = {
 }
 
 export default function Problems() {
-  const problems = useRead("problems");
+  const problems = useReadList("problems");
 
   const columns = [
     { field: 'dateAdded', headerName: 'Date added', type: 'dateTime', width: 250},

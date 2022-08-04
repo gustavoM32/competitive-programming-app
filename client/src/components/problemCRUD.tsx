@@ -5,7 +5,7 @@ import {
 import { useState } from "react";
 import { ProblemType } from "types"
 
-import { useCreate, useUpdate, useDelete } from "hooks/crud";
+import { useCreate, useUpdate, useDelete } from "hooks/crudHooks";
 
 type ProblemDialogProps = {
   title: string,
