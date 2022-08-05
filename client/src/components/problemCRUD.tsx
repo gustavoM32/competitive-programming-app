@@ -88,7 +88,7 @@ export function CreateProblemDialog() {
     <ProblemDialog
       title="Add problem"
       actionName="Add"
-      actionFunc={addProblem} />
+      actionFunc={addProblem.mutate} />
   );
 }
 
@@ -99,7 +99,7 @@ export function UpdateProblemDialog(props: { problem: ProblemType; }) {
     <ProblemDialog
       title="Edit problem"
       problem={props.problem}
-      actionFunc={editProblem}
+      actionFunc={editProblem.mutate}
       actionName="Save" />
   );
 }

@@ -1,7 +1,9 @@
 import { API_URL } from "constants/constants";
 import { readResource } from "./crud";
 
-export async function resourceListFetcher(name: string) {
+export async function resourceListFetcher({ queryKey } : { queryKey: [string] }) {
+  const [name] = queryKey;
+
   return readResource(`${API_URL}/${name}`)
     .then(data => {
       return {
@@ -11,7 +13,9 @@ export async function resourceListFetcher(name: string) {
     })
 }
 
-export async function resourceFetcher(uri: string) {
+export async function resourceFetcher({ queryKey } : { queryKey: [string] }) {
+  const [uri] = queryKey;
+
   return readResource(uri)
     .then(data => {
       return {
