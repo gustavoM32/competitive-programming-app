@@ -3,6 +3,7 @@ import axios from "axios";
 const DEV_MODE = !process.env.NODE_ENV || process.env.NODE_ENV === 'development'
 const ADD_REQUEST_DELAY = true && DEV_MODE
 const REQUEST_DELAY = 500;
+const MAKE_REQUESTS_FAIL = false && DEV_MODE
 
 function sleep(ms: number) {
   return new Promise((resolve) => {
@@ -20,6 +21,7 @@ export async function readResource(uri: string) {
   console.log(`GET ${uri}`)
 
   if (ADD_REQUEST_DELAY) await sleep(REQUEST_DELAY)
+  if (MAKE_REQUESTS_FAIL) return new Promise(() => {throw Error("ERROR")})
 
   return axios.get(uri)
     .then(success)
@@ -33,6 +35,7 @@ export async function createResource(uri: string, newResource: any) {
   console.log(`POST ${uri}`)
 
   if (ADD_REQUEST_DELAY) await sleep(REQUEST_DELAY)
+  if (MAKE_REQUESTS_FAIL) return new Promise(() => {throw Error("ERROR")})
 
   return axios.post(uri, newResource)
     .then(success)
@@ -46,6 +49,7 @@ export async function updateResource(uri: string, updatedResource: any) {
   console.log(`PATCH ${uri}`)
 
   if (ADD_REQUEST_DELAY) await sleep(REQUEST_DELAY)
+  if (MAKE_REQUESTS_FAIL) return new Promise(() => {throw Error("ERROR")})
 
   return axios.patch(uri, updatedResource)
     .then(success)
@@ -59,6 +63,7 @@ export async function deleteResource(uri: string) {
   console.log(`DELETE ${uri}`)
 
   if (ADD_REQUEST_DELAY) await sleep(REQUEST_DELAY)
+  if (MAKE_REQUESTS_FAIL) return new Promise(() => {throw Error("ERROR")})
 
   return axios.delete(uri)
     .then(success)
