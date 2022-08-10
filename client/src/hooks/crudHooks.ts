@@ -30,12 +30,34 @@ export function useRead(uri: string) {
   }
 }
 
-export function useCreate(name: string) {
+function useCommonOptions(resourceName: string) {
   const queryClient = useQueryClient()
 
-  const updateFn = (newResource: Resource) => {
+  // If the mutation fails, use the context returned from onMutate to roll back
+  const onError = (err: any, variables: any, context: crudContext | undefined ) => {
+    if (context?.previousResources) {
+      queryClient.setQueryData<ResourceList>([resourceName], context.previousResources)
+    }
+  }
+
+  // Always refetch after error or success
+  const onSettled = () => {
+    queryClient.invalidateQueries([resourceName])
+  }
+
+  return {
+    mutationKey: [resourceName],
+    onError: onError,
+    onSettled: onSettled,
+  }
+}
+
+export function useCreate(resourceName: string) {
+  const queryClient = useQueryClient()
+
+  const mutationFn = (newResource: Resource) => {
     // FIXME: this solution may not generalize well; will /api/parents/{pid}/childs ever be needed?; API_URL shouldn't be used in this file
-    const uri = `${API_URL}/${name}`
+    const uri = `${API_URL}/${resourceName}`
     return createResource(uri, newResource)
   }
 
@@ -47,124 +69,90 @@ export function useCreate(name: string) {
     }
   }
 
-  // When mutate is called:
-  const onMutate = async (newResource: Resource): Promise<crudContext> => {
+  const onMutate = async (newResource: Resource) => {
     // Cancel any outgoing refetches (so they don't overwrite our optimistic update)
-    await queryClient.cancelQueries([name])
+    await queryClient.cancelQueries([resourceName])
 
     // Snapshot the previous value
-    const previousResources = queryClient.getQueryData<ResourceList>([name])
+    const previousResources = queryClient.getQueryData<ResourceList>([resourceName])
 
     // Optimistically update to the new value
     if (previousResources) {
-      queryClient.setQueryData<ResourceList>([name], getOptimisticUpdate(previousResources, newResource))
+      queryClient.setQueryData<ResourceList>([resourceName], getOptimisticUpdate(previousResources, newResource))
     }
 
     // Return a context object with the snapshotted value
     return { previousResources }
   }
-  
-  // If the mutation fails, use the context returned from onMutate to roll back
-  const onError = (err: any, variables: any, context: crudContext | undefined ) => {
-    if (context?.previousResources) {
-      queryClient.setQueryData<ResourceList>([name], context.previousResources)
-    }
-  }
 
-  // Always refetch after error or success
-  const onSettled = () => {
-    queryClient.invalidateQueries([name])
-  }
+  const commonOptions = useCommonOptions(resourceName)
 
-  return useMutation(updateFn, {
-    mutationKey: [name],
-    onMutate: onMutate,
-    onError: onError,
-    onSettled: onSettled,
+  return useMutation(mutationFn, {
+    ...commonOptions,
+    onMutate: onMutate  
   })
 }
 
-export function useUpdate(name: string) {
+export function useUpdate(resourceName: string) {
   const queryClient = useQueryClient()
 
-  const updateFn = (updatedResource: Resource) => {
+  const mutationFn = (updatedResource: Resource) => {
     const updatedId: string = updatedResource._links.self.href
     return updateResource(updatedId, updatedResource)
   }
 
   const getOptimisticUpdate = (previousResources: ResourceList, updatedResource: Resource): ResourceList => {
     const updatedId: string = updatedResource._links.self.href
-    
     return {
       ...previousResources,
       resources: previousResources.resources.map((r: any) => r._links.self.href == updatedId ? updatedResource : r)
     }
   }
 
-  const onMutate = async (updatedResource: Resource): Promise<crudContext> => {
-    await queryClient.cancelQueries([name])
-    const previousResources = queryClient.getQueryData<ResourceList>([name])
+  const onMutate = async (updatedResource: Resource) => {
+    await queryClient.cancelQueries([resourceName])
+    const previousResources = queryClient.getQueryData<ResourceList>([resourceName])
     if (previousResources) {
-      queryClient.setQueryData<ResourceList>([name], getOptimisticUpdate(previousResources, updatedResource))
+      queryClient.setQueryData<ResourceList>([resourceName], getOptimisticUpdate(previousResources, updatedResource))
     }
     return { previousResources }
   }
-  
-  const onError = (err: any, variables: any, context: crudContext | undefined ) => {
-    if (context?.previousResources) {
-      queryClient.setQueryData<ResourceList>([name], context.previousResources)
-    }
-  }
 
-  const onSettled = () => {
-    queryClient.invalidateQueries([name])
-  }
+  const commonOptions = useCommonOptions(resourceName)
 
-  return useMutation(updateFn, {
-    mutationKey: [name],
-    onMutate: onMutate,
-    onError: onError,
-    onSettled: onSettled,
+  return useMutation(mutationFn, {
+    ...commonOptions,
+    onMutate: onMutate  
   })
 }
 
-export function useDelete(name: string) {
+export function useDelete(resourceName: string) {
   const queryClient = useQueryClient()
 
-  const updateFn = (deletedId: Resource) => {
+  const mutationFn = (deletedId: Resource) => {
     return deleteResource(deletedId)
   }
 
   const getOptimisticUpdate = (previousResources: ResourceList, deletedId: string): ResourceList => {
     return {
       ...previousResources,
-      resources: previousResources.resources.filter((r: any) => r._links.self.href != deletedId)
+      resources: previousResources.resources.filter((r: any) => r._links.self.href != params.deletedId)
     }
   }
 
-  const onMutate = async (deletedId: string): Promise<crudContext> => {
-    await queryClient.cancelQueries([name])
-    const previousResources = queryClient.getQueryData<ResourceList>([name])
+  const onMutate = async (deletedId: string) => {
+    await queryClient.cancelQueries([resourceName])
+    const previousResources = queryClient.getQueryData<ResourceList>([resourceName])
     if (previousResources) {
-      queryClient.setQueryData<ResourceList>([name], getOptimisticUpdate(previousResources, deletedId))
+      queryClient.setQueryData<ResourceList>([resourceName], getOptimisticUpdate(previousResources, deletedId))
     }
     return { previousResources }
   }
-  
-  const onError = (err: any, variables: any, context: crudContext | undefined ) => {
-    if (context?.previousResources) {
-      queryClient.setQueryData<ResourceList>([name], context.previousResources)
-    }
-  }
 
-  const onSettled = () => {
-    queryClient.invalidateQueries([name])
-  }
+  const commonOptions = useCommonOptions(resourceName)
 
-  return useMutation(updateFn, {
-    mutationKey: [name],
-    onMutate: onMutate,
-    onError: onError,
-    onSettled: onSettled,
+  return useMutation(mutationFn, {
+    ...commonOptions,
+    onMutate: onMutate  
   })
 }
