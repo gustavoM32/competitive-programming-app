@@ -1,15 +1,11 @@
 import { useIsMutating, useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { resourceFetcher, resourceListFetcher } from "./fetchers";
 import { createResource, updateResource, deleteResource } from "./crud"
+import { API_URL } from "constants/constants";
+import { Resource, ResourceList } from "./types";
 
-type UpdateFunction = (oldData: any[]) => any[];
-type MutateFunctionWithUpdate = (updateFn?: UpdateFunction) => void;
-
-type Resource = any
-
-type ResourceList = {
-  resources: Resource[],
-  uri: string
+type crudContext = {
+  previousResources?: ResourceList
 }
 
 export function useReadList(name: string) {
@@ -37,9 +33,10 @@ export function useRead(uri: string) {
 export function useCreate(name: string) {
   const queryClient = useQueryClient()
 
-  const updateFn = async (newResource: Resource) => {
-    const { uri } = queryClient.getQueryData<ResourceList>([name]) // FIXME: find another way to get the uri
-    await createResource(uri, newResource)
+  const updateFn = (newResource: Resource) => {
+    // FIXME: this solution may not generalize well; will /api/parents/{pid}/childs ever be needed?; API_URL shouldn't be used in this file
+    const uri = `${API_URL}/${name}`
+    return createResource(uri, newResource)
   }
 
   const getOptimisticUpdate = (previousResources: ResourceList, newResource: Resource): ResourceList => {
@@ -51,7 +48,7 @@ export function useCreate(name: string) {
   }
 
   // When mutate is called:
-  const onMutate = async (newResource: Resource): Promise<{ previousResources: ResourceList | undefined }> => {
+  const onMutate = async (newResource: Resource): Promise<crudContext> => {
     // Cancel any outgoing refetches (so they don't overwrite our optimistic update)
     await queryClient.cancelQueries([name])
 
@@ -68,7 +65,7 @@ export function useCreate(name: string) {
   }
   
   // If the mutation fails, use the context returned from onMutate to roll back
-  const onError = (err: any, variables: any, context: { previousResources: ResourceList }) => {
+  const onError = (err: any, variables: any, context: crudContext | undefined ) => {
     if (context?.previousResources) {
       queryClient.setQueryData<ResourceList>([name], context.previousResources)
     }
@@ -90,9 +87,9 @@ export function useCreate(name: string) {
 export function useUpdate(name: string) {
   const queryClient = useQueryClient()
 
-  const updateFn = async (updatedResource: Resource) => {
+  const updateFn = (updatedResource: Resource) => {
     const updatedId: string = updatedResource._links.self.href
-    await updateResource(updatedId, updatedResource)
+    return updateResource(updatedId, updatedResource)
   }
 
   const getOptimisticUpdate = (previousResources: ResourceList, updatedResource: Resource): ResourceList => {
@@ -104,7 +101,7 @@ export function useUpdate(name: string) {
     }
   }
 
-  const onMutate = async (updatedResource: Resource): Promise<{ previousResources: ResourceList | undefined }> => {
+  const onMutate = async (updatedResource: Resource): Promise<crudContext> => {
     await queryClient.cancelQueries([name])
     const previousResources = queryClient.getQueryData<ResourceList>([name])
     if (previousResources) {
@@ -113,7 +110,7 @@ export function useUpdate(name: string) {
     return { previousResources }
   }
   
-  const onError = (err: any, variables: any, context: { previousResources: ResourceList }) => {
+  const onError = (err: any, variables: any, context: crudContext | undefined ) => {
     if (context?.previousResources) {
       queryClient.setQueryData<ResourceList>([name], context.previousResources)
     }
@@ -134,8 +131,8 @@ export function useUpdate(name: string) {
 export function useDelete(name: string) {
   const queryClient = useQueryClient()
 
-  const updateFn = async (deletedId: Resource) => {
-    await deleteResource(deletedId)
+  const updateFn = (deletedId: Resource) => {
+    return deleteResource(deletedId)
   }
 
   const getOptimisticUpdate = (previousResources: ResourceList, deletedId: string): ResourceList => {
@@ -145,7 +142,7 @@ export function useDelete(name: string) {
     }
   }
 
-  const onMutate = async (deletedId: string): Promise<{ previousResources: ResourceList | undefined }> => {
+  const onMutate = async (deletedId: string): Promise<crudContext> => {
     await queryClient.cancelQueries([name])
     const previousResources = queryClient.getQueryData<ResourceList>([name])
     if (previousResources) {
@@ -154,7 +151,7 @@ export function useDelete(name: string) {
     return { previousResources }
   }
   
-  const onError = (err: any, variables: any, context: { previousResources: ResourceList }) => {
+  const onError = (err: any, variables: any, context: crudContext | undefined ) => {
     if (context?.previousResources) {
       queryClient.setQueryData<ResourceList>([name], context.previousResources)
     }
