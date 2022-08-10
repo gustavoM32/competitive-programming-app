@@ -1,107 +1,71 @@
 import axios from "axios";
-import useSWR from "swr";
-import resourceFetcher from "./fetchers/resource";
 
-type UpdateFunction = (oldData: any[]) => any[];
-type MutateFunctionWithUpdate = (updateFn?: UpdateFunction) => void;
+const DEV_MODE = !process.env.NODE_ENV || process.env.NODE_ENV === 'development'
+const ADD_REQUEST_DELAY = true && DEV_MODE
+const REQUEST_DELAY = 500;
+const MAKE_REQUESTS_FAIL = false && DEV_MODE
 
-type Resource = any
-
-type ResourceObject = {
-  resources: Resource[],
-  uri: string,
-  isLoading: boolean,
-  error: Error,
-  mutate?: MutateFunctionWithUpdate,
+function sleep(ms: number) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
 }
 
-export function useRead(name: string): ResourceObject {
-  const { data, error, mutate } = useSWR(name, resourceFetcher);
-  let resourcesMutate: MutateFunctionWithUpdate | undefined
-
-  if (data && mutate) {
-    resourcesMutate = (mutateResources?: UpdateFunction) => {
-      if (!mutateResources) {
-        mutate();
-        return;
-      }
-
-      let updatedResources = mutateResources(data.resources)
-
-      mutate((oldData) => {
-        if (!oldData) return undefined
-
-        return {
-          resources: updatedResources,
-          uri: oldData.uri
-        }
-      })
-    }
+export async function readResource(uri: string) {
+  const success = (res: any) => { 
+    console.log(`GET ${uri} success`)
+    return res.data
   }
+  const fail = (e: any) => { console.error(e) }
 
-  return {
-    resources: data?.resources ?? [],
-    uri: data?.uri,
-    isLoading: !data && !error,
-    error: error,
-    mutate: resourcesMutate
-  }
+  console.log(`GET ${uri}`)
+
+  if (ADD_REQUEST_DELAY) await sleep(REQUEST_DELAY)
+  if (MAKE_REQUESTS_FAIL) return new Promise(() => {throw Error("ERROR")})
+
+  return axios.get(uri)
+    .then(success)
+    .catch(fail)
 }
 
-export function useCreate(name: string) {
-  const { uri, mutate } = useRead(name);
+export async function createResource(uri: string, newResource: any) {
+  const success = () => { console.log(`POST ${uri} success`) }
+  const fail = (e: any) => { console.error(e) }
 
-  if (!mutate) return () => { console.error("mutate undefined") }
+  console.log(`POST ${uri}`)
 
-  return (newResource: Resource) => {
-    const createResource = (resources: Resource[]) => {
-      axios.post(uri, newResource)
-        .then(() => console.log(`post ${uri}`))
-        .catch(err => console.error(err))
+  if (ADD_REQUEST_DELAY) await sleep(REQUEST_DELAY)
+  if (MAKE_REQUESTS_FAIL) return new Promise(() => {throw Error("ERROR")})
 
-      newResource._links = { self: { href: "new" } }
-
-      return [...resources, newResource]
-    }
-
-    mutate(createResource)
-  }
+  return axios.post(uri, newResource)
+    .then(success)
+    .catch(fail)
 }
 
-export function useUpdate(name: string) {
-  const { mutate } = useRead(name);
+export async function updateResource(uri: string, updatedResource: any) {
+  const success = () => { console.log(`PATCH ${uri} success`) }
+  const fail = (e: any) => { console.error(e) }
 
-  if (!mutate) return () => { console.error("mutate undefined") }
+  console.log(`PATCH ${uri}`)
 
-  return (updatedResource: Resource) => {
-    const updateResource = (resources: Resource[]) => {
-      const updatedId: string = updatedResource._links.self.href
+  if (ADD_REQUEST_DELAY) await sleep(REQUEST_DELAY)
+  if (MAKE_REQUESTS_FAIL) return new Promise(() => {throw Error("ERROR")})
 
-      axios.patch(`${updatedId}`, updatedResource)
-        .then(() => console.log(`updated ${updatedId}`))
-        .catch(err => console.error(err))
-
-      return resources.map(r => r._links.self.href == updatedId ? updatedResource : r)
-    }
-
-    mutate(updateResource)
-  }
+  return axios.patch(uri, updatedResource)
+    .then(success)
+    .catch(fail)
 }
 
-export function useDelete(name: string) {
-  const { mutate } = useRead(name);
+export async function deleteResource(uri: string) {
+  const success = () => { console.log(`DELETE ${uri} success`) }
+  const fail = (e: any) => { console.error(e) }
 
-  if (!mutate) return () => { console.error("mutate undefined") }
+  console.log(`DELETE ${uri}`)
 
-  return (deletedId: string) => {
-    const deleteResource = (resources: Resource[]) => {
-      axios.delete(deletedId)
-        .then(() => console.log(`deleted ${deletedId}`))
-        .catch(err => console.error(err))
+  if (ADD_REQUEST_DELAY) await sleep(REQUEST_DELAY)
+  if (MAKE_REQUESTS_FAIL) return new Promise(() => {throw Error("ERROR")})
 
-      return resources.filter(r => r._links.self.href != deletedId)
-    }
-
-    mutate(deleteResource)
-  }
+  return axios.delete(uri)
+    .then(success)
+    .catch(fail)
 }

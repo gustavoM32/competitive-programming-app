@@ -2,7 +2,8 @@ import { AppBar, Button, Link, Toolbar, Typography } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { CreateProblemDialog, UpdateProblemDialog, DeleteProblemButton } from "components/problemCRUD";
 import Head from "next/head";
-import { useRead } from "hooks/crud";
+import { useReadList } from "hooks/crudHooks";
+import { useQueryClient } from "@tanstack/react-query";
 
 type RowParams = {
   id: any,
@@ -10,7 +11,8 @@ type RowParams = {
 }
 
 export default function Problems() {
-  const problems = useRead("problems");
+  const queryClient = useQueryClient()
+  const problems = useReadList("problems");
 
   const columns = [
     { field: 'dateAdded', headerName: 'Date added', type: 'dateTime', width: 250},
@@ -32,6 +34,8 @@ export default function Problems() {
     )},
   ];
 
+  if (problems.error) console.error(problems.error)
+
   return (
     <>
       <Head>
@@ -49,8 +53,8 @@ export default function Problems() {
       <div>
         <h1>Problems</h1>
         {problems.isLoading ? <p>Loading...</p> : null}
-        {problems.error ? <p>Error: {problems.error.message}</p> : null}
-        <Button onClick={() => { if (problems.mutate) problems.mutate() } }>Update data</Button>
+        {problems.error ? <p>Error: check console</p> : null}
+        <Button onClick={() => queryClient.invalidateQueries(['problems']) }>Update data</Button>
         <DataGrid
           autoHeight
           rows={problems.resources}

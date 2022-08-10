@@ -5,7 +5,8 @@ import {
 import { useState } from "react";
 import { ProblemType } from "types"
 
-import { useCreate, useUpdate, useDelete } from "hooks/crud";
+import { useCreate, useUpdate, useDelete } from "hooks/crudHooks";
+import { focusManager } from "@tanstack/react-query";
 
 type ProblemDialogProps = {
   title: string,
@@ -88,7 +89,7 @@ export function CreateProblemDialog() {
     <ProblemDialog
       title="Add problem"
       actionName="Add"
-      actionFunc={addProblem} />
+      actionFunc={addProblem.mutate} />
   );
 }
 
@@ -99,7 +100,7 @@ export function UpdateProblemDialog(props: { problem: ProblemType; }) {
     <ProblemDialog
       title="Edit problem"
       problem={props.problem}
-      actionFunc={editProblem}
+      actionFunc={editProblem.mutate}
       actionName="Save" />
   );
 }
@@ -108,9 +109,14 @@ export function DeleteProblemButton(props: { id: string }) {
   const deleteProblem = useDelete("problems");
 
   const onDelClick = () => {
-    if (!window.confirm('Are you sure to delete?')) return;
-
-    deleteProblem(props.id)
+    // the focus is disabled to prevent a refetch after the user confirms the deletion
+    focusManager.setFocused(false)
+    const shouldDelete = window.confirm('Are you sure to delete?')
+    
+    if (shouldDelete) deleteProblem.mutate(props.id)
+    
+    // it is re-enabled after the mutation is called
+    setTimeout(() => focusManager.setFocused(undefined), 0)
   }
 
   return (
