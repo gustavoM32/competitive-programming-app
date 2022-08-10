@@ -136,7 +136,7 @@ export function useDelete(resourceName: string) {
   const getOptimisticUpdate = (previousResources: ResourceList, deletedId: string): ResourceList => {
     return {
       ...previousResources,
-      resources: previousResources.resources.filter((r: any) => r._links.self.href != params.deletedId)
+      resources: previousResources.resources.filter((r: any) => r._links.self.href != deletedId)
     }
   }
 
