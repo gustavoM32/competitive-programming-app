@@ -4,8 +4,8 @@ import { createResource, updateResource, deleteResource } from "./crud"
 import { API_URL } from "constants/constants";
 import { Resource, ResourceData, ResourceList } from "./types";
 
-type crudContext = {
-  previousResources?: ResourceList
+type crudContext<PreviousResourcesType> = {
+  previousResources?: PreviousResourcesType
 }
 
 export function useReadList(name: string) {
@@ -30,13 +30,13 @@ export function useRead(uri: string) {
   }
 }
 
-function useCommonOptions(resourceName: string) {
+function useCommonOptions<PreviousResourcesType>(resourceName: string) {
   const queryClient = useQueryClient()
 
   // If the mutation fails, use the context returned from onMutate to roll back
-  const onError = (err: any, variables: any, context: crudContext | undefined ) => {
+  const onError = (err: any, variables: any, context: crudContext<PreviousResourcesType> | undefined ) => {
     if (context?.previousResources) {
-      queryClient.setQueryData<ResourceList>([resourceName], context.previousResources)
+      queryClient.setQueryData<PreviousResourcesType>([resourceName], context.previousResources)
     }
   }
 
@@ -85,7 +85,7 @@ export function useCreate(resourceName: string) {
     return { previousResources }
   }
 
-  const commonOptions = useCommonOptions(resourceName)
+  const commonOptions = useCommonOptions<ResourceList>(resourceName)
 
   return useMutation(mutationFn, {
     ...commonOptions,
@@ -118,7 +118,7 @@ export function useUpdate(resourceName: string) {
     return { previousResources }
   }
 
-  const commonOptions = useCommonOptions(resourceName)
+  const commonOptions = useCommonOptions<ResourceList>(resourceName)
 
   return useMutation(mutationFn, {
     ...commonOptions,
@@ -149,7 +149,7 @@ export function useDelete(resourceName: string) {
     return { previousResources }
   }
 
-  const commonOptions = useCommonOptions(resourceName)
+  const commonOptions = useCommonOptions<ResourceList>(resourceName)
 
   return useMutation(mutationFn, {
     ...commonOptions,
