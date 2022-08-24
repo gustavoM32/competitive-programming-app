@@ -21,7 +21,7 @@ export function useReadList(name: string) {
 
 export function useRead(uri: string) {
   const isMutating = useIsMutating([uri])
-  const query = useQuery([uri], resourceFetcher, { enabled: isMutating === 0 } )
+  const query = useQuery([uri], resourceFetcher, { enabled: uri != "" && isMutating === 0 } )
  
   return {
     ...query,
