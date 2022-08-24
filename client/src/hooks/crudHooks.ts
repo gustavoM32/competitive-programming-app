@@ -2,7 +2,7 @@ import { useIsMutating, useMutation, useQuery, useQueryClient } from "@tanstack/
 import { resourceFetcher, resourceListFetcher } from "./fetchers";
 import { createResource, updateResource, deleteResource } from "./crud"
 import { API_URL } from "constants/constants";
-import { Resource, ResourceList } from "./types";
+import { Resource, ResourceData, ResourceList } from "./types";
 
 type crudContext = {
   previousResources?: ResourceList
@@ -61,7 +61,7 @@ export function useCreate(resourceName: string) {
     return createResource(uri, newResource)
   }
 
-  const getOptimisticUpdate = (previousResources: ResourceList, newResource: Resource): ResourceList => {
+  const getOptimisticUpdate = (previousResources: ResourceList, newResource: ResourceData): ResourceList => {
     newResource._links = { self: { href: "new" } }
     return {
       ...previousResources,
@@ -96,12 +96,12 @@ export function useCreate(resourceName: string) {
 export function useUpdate(resourceName: string) {
   const queryClient = useQueryClient()
 
-  const mutationFn = (updatedResource: Resource) => {
+  const mutationFn = (updatedResource: ResourceData) => {
     const updatedId: string = updatedResource._links.self.href
     return updateResource(updatedId, updatedResource)
   }
 
-  const getOptimisticUpdate = (previousResources: ResourceList, updatedResource: Resource): ResourceList => {
+  const getOptimisticUpdate = (previousResources: ResourceList, updatedResource: ResourceData): ResourceList => {
     const updatedId: string = updatedResource._links.self.href
     return {
       ...previousResources,
@@ -109,7 +109,7 @@ export function useUpdate(resourceName: string) {
     }
   }
 
-  const onMutate = async (updatedResource: Resource) => {
+  const onMutate = async (updatedResource: ResourceData) => {
     await queryClient.cancelQueries([resourceName])
     const previousResources = queryClient.getQueryData<ResourceList>([resourceName])
     if (previousResources) {
@@ -129,7 +129,7 @@ export function useUpdate(resourceName: string) {
 export function useDelete(resourceName: string) {
   const queryClient = useQueryClient()
 
-  const mutationFn = (deletedId: Resource) => {
+  const mutationFn = (deletedId: ResourceData) => {
     return deleteResource(deletedId)
   }
 
