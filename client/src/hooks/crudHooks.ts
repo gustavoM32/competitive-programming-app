@@ -156,3 +156,34 @@ export function useDelete(resourceName: string) {
     onMutate: onMutate  
   })
 }
+
+export function useUpdateOne(uri: string) {
+  const queryClient = useQueryClient()
+
+  const mutationFn = (updatedResource: ResourceData) => {
+    return updateResource(uri, updatedResource)
+  }
+
+  const getOptimisticUpdate = (previousResources: Resource, updatedResource: ResourceData): Resource => {
+    return {
+      ...previousResources,
+      resource: updatedResource
+    }
+  }
+
+  const onMutate = async (updatedResource: ResourceData) => {
+    await queryClient.cancelQueries([uri])
+    const previousResources = queryClient.getQueryData<Resource>([uri])
+    if (previousResources) {
+      queryClient.setQueryData<Resource>([uri], getOptimisticUpdate(previousResources, updatedResource))
+    }
+    return { previousResources }
+  }
+
+  const commonOptions = useCommonOptions<Resource>(uri)
+
+  return useMutation(mutationFn, {
+    ...commonOptions,
+    onMutate: onMutate  
+  })
+}
