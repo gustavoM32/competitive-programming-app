@@ -1,6 +1,5 @@
-package com.gustavo.competitiveprogrammingapp.problem
+package com.gustavo.competitiveprogrammingapp.domain.problemList
 
-import com.gustavo.competitiveprogrammingapp.domain.problemList.ProblemList
 import org.springframework.data.mongodb.repository.MongoRepository
 import org.springframework.stereotype.Repository
 
