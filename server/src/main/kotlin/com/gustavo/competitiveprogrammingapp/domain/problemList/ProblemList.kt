@@ -1,7 +1,9 @@
 package com.gustavo.competitiveprogrammingapp.domain.problemList
 
+import com.gustavo.competitiveprogrammingapp.domain.problem.Problem
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document
+import org.springframework.data.mongodb.core.mapping.DocumentReference
 import org.springframework.data.mongodb.core.mapping.Field
 import java.time.LocalDateTime
 
@@ -23,4 +25,7 @@ data class ProblemList(
     val solvedCount: Int?,
     @Field(name = "totalCount")
     val totalCount: Int?,
+
+    @DocumentReference(lazy=true)
+    @Field val problems: MutableList<Problem> = mutableListOf(), // problem list has many problems
 )
