@@ -61,12 +61,12 @@ export default function ProblemList() {
       <h1>Problem list</h1>
       <h2>{problemList.name}</h2>
       <UpdateDataButton/>
-      <Link href={problemList.link} target="_blank" rel="noopener">Link</Link>
+      <p><Link href={problemList.link} target="_blank" rel="noopener">Link</Link></p>
       <p>{problemList.description}</p>
       <p>{problemList.notes}</p>
       <h3>Problems</h3>
       <>
-        <AddProblemToListDialog problemList={problemList}/>
+        <AddProblemToListDialog problemList={problemList}/>{' '}
         <UpdateProblemListDialog problemList={problemList}/>{' '}
         <DeleteProblemListButtonOne id={uri}/>
       </>
