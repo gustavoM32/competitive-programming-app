@@ -37,3 +37,6 @@ yarn-error.log*
 
 # typescript
 tsconfig.tsbuildinfo
+
+# personal to-dos
+TODO.md
