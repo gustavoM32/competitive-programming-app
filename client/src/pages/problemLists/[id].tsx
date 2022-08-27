@@ -5,6 +5,7 @@ import { useRead, useReadList } from 'hooks/crudHooks'
 import { useRouter } from 'next/router'
 import { UpdateDataButton } from 'components/general'
 import { DataGrid } from '@mui/x-data-grid'
+import { DeleteProblemButton } from 'components/problemCRUD'
 
 type RowParams = {
   id: any,
@@ -34,7 +35,7 @@ export default function ProblemList() {
   const { resources: problems } = problemsData.data
 
   // DRY: problems.tsx uses the same columns variable
-  // TODO: Delete problem forever/Remove problem from list
+  // FIXME: DeleteProblemButton does not invalidate queries because of optimistic mutation
   const columns = [
     { field: 'dateAdded', headerName: 'Date added', type: 'dateTime', width: 250},
     { field: 'link', headerName: 'Link', width: 50, renderCell: (params: RowParams) => (
@@ -47,9 +48,10 @@ export default function ProblemList() {
     { field: 'editorialStatus', headerName: 'Editorial', width: 200},
     { field: 'comments', headerName: 'Comments', width: 400},
     // { field: 'studies', headerName: 'Studies'},
-    { field: 'action', headerName: 'Action', width: 200, renderCell: (params: RowParams) => (
+    { field: 'action', headerName: 'Action', width: 300, renderCell: (params: RowParams) => (
       <>
         <RemoveProblemFromListButton problemList={problemList} problemId={params.row.id}/>
+        <DeleteProblemButton id={params.row._links.self.href}/>
       </>
     )},
   ];
