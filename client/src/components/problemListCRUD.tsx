@@ -5,7 +5,7 @@ import { useState } from "react";
 import { ProblemListType, ProblemType } from "types"
 import { useCreate, useDelete, useReadList, useUpdateOne } from "hooks/crudHooks";
 import { focusManager, useQueryClient } from "@tanstack/react-query";
-import { createResource } from "hooks/crud";
+import { createResource, deleteResource } from "hooks/crud";
 
 type ProblemListDialogProps = {
   title: string,
@@ -190,3 +190,22 @@ export function AddProblemToListDialog(props: { problemList: ProblemListType; })
   );
 }
 
+export function RemoveProblemFromListButton(props: { problemList: ProblemListType, problemId: string }) {
+  const { problemList, problemId } = props
+  const queryClient = useQueryClient()
+
+  const deleteProblemFromList = () => {
+    const shouldDelete = window.confirm('Are you sure to delete?')
+    
+    if (shouldDelete) {
+      deleteResource(`${problemList._links.problems.href}/${problemId}`)
+        .then(() => {
+          queryClient.invalidateQueries(["problemLists", `${problemList.id}`, "problems"])
+        })
+    }    
+  }
+
+  return (
+    <Button variant="outlined" color="warning" onClick={deleteProblemFromList}>Remove from list</Button>
+  );
+}
