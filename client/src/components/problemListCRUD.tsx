@@ -109,7 +109,7 @@ export function DeleteProblemListButton(props: { id: string }) {
   }
 
   return (
-    <Button variant="outlined" color="warning" onClick={onDelClick}>Delete</Button>
+    <Button variant="outlined" color="error" onClick={onDelClick}>Delete</Button>
   );
 }
 
@@ -128,7 +128,7 @@ export function DeleteProblemListButtonOne(props: { id: string }) {
   }
 
   return (
-    <Button variant="outlined" color="warning" onClick={onDelClick}>Delete Problem List</Button>
+    <Button variant="outlined" color="error" onClick={onDelClick}>Delete Problem List</Button>
   );
 }
 

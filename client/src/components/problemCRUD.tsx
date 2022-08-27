@@ -120,6 +120,6 @@ export function DeleteProblemButton(props: { id: string }) {
   }
 
   return (
-    <Button variant="outlined" color="warning" onClick={onDelClick}>Delete</Button>
+    <Button variant="outlined" color="error" onClick={onDelClick}>Delete</Button>
   );
 }
