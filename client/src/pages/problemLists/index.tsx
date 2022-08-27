@@ -53,7 +53,7 @@ export default function ProblemLists() {
         <h1>Problem Lists</h1>
         {problemLists.isLoading ? <p>Loading...</p> : null}
         {problemLists.error ? <p>Error: check console</p> : null}
-        <Button onClick={() => {() => queryClient.invalidateQueries(['problems'])} }>Update data</Button>
+        <Button onClick={() => {() => queryClient.invalidateQueries()} }>Update data</Button>
         <DataGrid
           autoHeight
           rows={problemLists.resources}

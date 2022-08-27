@@ -23,7 +23,7 @@ export default function ProblemList() {
     <>
       <h1>Problem list</h1>
       <h2>{problemList.name}</h2>
-      <Button onClick={() => queryClient.invalidateQueries([resourceURI]) }>Update data</Button>
+      <Button onClick={() => queryClient.invalidateQueries() }>Update data</Button>
       <Link href={problemList.link} target="_blank" rel="noopener">Link</Link>
       <p>{problemList.description}</p>
       <p>{problemList.notes}</p>
