@@ -137,9 +137,21 @@ export function DeleteProblemListButtonOne(props: { id: string }) {
 export function AddProblemToListDialog(props: { problemList: ProblemListType; }) {
   const [open, setOpen] = useState(false);
   const [problemURI, setProblemURI] = useState('');
-  const { resources: problems } = useReadList(["problems"]);
+  const { resources: allProblems } = useReadList(["problems"]);
   const { problemList } = props
   const queryClient = useQueryClient()
+  
+  const problemsKey = problemList?.id != undefined ? ["problemLists", `${problemList.id}`, "problems"] : []
+  const problemsData = useReadList(problemsKey)
+
+  // FIXME: this doesn't look so good...
+  if (problemsData.isLoading) return <p>Loading...</p>
+  if (problemsData.error || !problemsData.data) {
+    console.error(problemsData.error)
+    return <p>Error: check console</p>
+  }
+
+  const { resources: listProblems } = problemsData.data
 
   const handleOpen = () => {
     setOpen(true);
@@ -162,7 +174,8 @@ export function AddProblemToListDialog(props: { problemList: ProblemListType; })
       })
   }
 
-  // TODO: filter problems that are already on list  
+  const problemsIdsInList = listProblems.map((p: ProblemType) => p.id)
+  const filteredProblems = allProblems.filter((p: ProblemType) => !problemsIdsInList.includes(p.id))
 
   return (
     <>
@@ -178,7 +191,7 @@ export function AddProblemToListDialog(props: { problemList: ProblemListType; })
             label="Problem"
             onChange={handleChange}
           >
-            {problems.map((p: ProblemType) => {
+            {filteredProblems.map((p: ProblemType) => {
               return <MenuItem key={p.id} value={p.id}>{p.name}</MenuItem>
             })}
           </Select>
