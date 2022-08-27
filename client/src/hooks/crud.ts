@@ -29,7 +29,10 @@ export async function readResource(uri: string) {
 }
 
 export async function createResource(uri: string, newResource: any, config?: AxiosRequestConfig<any>) {
-  const success = () => { console.log(`POST ${uri} success`) }
+  const success = (response: any) => {
+    console.log(`POST ${uri} success`)
+    return response.data
+  }
   const fail = (e: any) => { console.error(e) }
 
   console.log(`POST ${uri}`)
