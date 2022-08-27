@@ -1,5 +1,5 @@
 import { Link } from '@mui/material'
-import { UpdateProblemListDialog, DeleteProblemListButtonOne } from 'components/problemListCRUD'
+import { UpdateProblemListDialog, DeleteProblemListButtonOne, AddProblemToListDialog, RemoveProblemFromListButton } from 'components/problemListCRUD'
 import { API_URL } from 'constants/constants'
 import { useRead, useReadList } from 'hooks/crudHooks'
 import { useRouter } from 'next/router'
@@ -34,7 +34,7 @@ export default function ProblemList() {
   const { resources: problems } = problemsData.data
 
   // DRY: problems.tsx uses the same columns variable
-  // TODO: Delete problem forever/Delete problem from list
+  // TODO: Delete problem forever/Remove problem from list
   const columns = [
     { field: 'dateAdded', headerName: 'Date added', type: 'dateTime', width: 250},
     { field: 'link', headerName: 'Link', width: 50, renderCell: (params: RowParams) => (
@@ -49,6 +49,7 @@ export default function ProblemList() {
     // { field: 'studies', headerName: 'Studies'},
     { field: 'action', headerName: 'Action', width: 200, renderCell: (params: RowParams) => (
       <>
+        <RemoveProblemFromListButton problemList={problemList} problemId={params.row.id}/>
       </>
     )},
   ];
@@ -63,6 +64,7 @@ export default function ProblemList() {
       <p>{problemList.notes}</p>
       <h3>Problems</h3>
       <>
+        <AddProblemToListDialog problemList={problemList}/>
         <UpdateProblemListDialog problemList={problemList}/>{' '}
         <DeleteProblemListButtonOne id={uri}/>
       </>
