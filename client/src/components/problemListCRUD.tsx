@@ -1,12 +1,11 @@
 import {
-  Button, Dialog, DialogTitle, DialogContent, TextField, DialogActions
+  Button, Dialog, DialogTitle, DialogContent, TextField, DialogActions, InputLabel, Select, MenuItem, SelectChangeEvent
 } from "@mui/material";
 import { useState } from "react";
-import { ProblemListType } from "types"
-
-import { useCreate, useDelete, useUpdateOne } from "hooks/crudHooks";
-import { focusManager } from "@tanstack/react-query";
-import { deleteResource } from "hooks/crud";
+import { ProblemListType, ProblemType } from "types"
+import { useCreate, useDelete, useReadList, useUpdateOne } from "hooks/crudHooks";
+import { focusManager, useQueryClient } from "@tanstack/react-query";
+import { createResource } from "hooks/crud";
 
 type ProblemListDialogProps = {
   title: string,
@@ -116,7 +115,6 @@ export function DeleteProblemListButton(props: { id: string }) {
 
 export function DeleteProblemListButtonOne(props: { id: string }) {
   const onDelClick = () => {
-    // the focus is disabled to prevent a refetch after the user confirms the deletion
     const shouldDelete = window.confirm('Are you sure to delete?')
     
     if (shouldDelete) {
@@ -133,3 +131,62 @@ export function DeleteProblemListButtonOne(props: { id: string }) {
     <Button variant="outlined" color="warning" onClick={onDelClick}>Delete Problem List</Button>
   );
 }
+
+export function AddProblemToListDialog(props: { problemList: ProblemListType; }) {
+  const [open, setOpen] = useState(false);
+  const [problemURI, setProblemURI] = useState('');
+  const { resources: problems } = useReadList(["problems"]);
+  const { problemList } = props
+  const queryClient = useQueryClient()
+
+  const handleOpen = () => {
+    setOpen(true);
+  }
+
+  const handleClose = () => {
+    setOpen(false);
+  }
+
+  const handleChange = (e: SelectChangeEvent) => {
+    setProblemURI(e.target.value as string);
+  }
+
+  const addProblemToList = async () => {
+    const problemListProblems = problemList._links.problems.href
+    createResource(problemListProblems, problemURI, { headers: { 'Content-Type': 'text/uri-list' } })
+      .then(() => {
+        queryClient.invalidateQueries(["problemLists", `${problemList.id}`, "problems"])
+        handleClose()
+      })
+  }
+
+  // TODO: filter problems that are already on list  
+
+  return (
+    <>
+      <Button variant="outlined" color="primary" onClick={handleOpen}>Add problem</Button>
+      <Dialog open={open} onClose={handleClose}>
+        <DialogTitle id="form-dialog-title">Add problem</DialogTitle>
+        <DialogContent>
+          <InputLabel id="demo-simple-select-label">Problem</InputLabel>
+          <Select
+            labelId="demo-simple-select-label"
+            id="demo-simple-select"
+            value={problemURI}
+            label="Problem"
+            onChange={handleChange}
+          >
+            {problems.map((p: ProblemType) => {
+              return <MenuItem key={p.id} value={p.id}>{p.name}</MenuItem>
+            })}
+          </Select>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose} color="warning">Cancel</Button>
+          <Button onClick={addProblemToList} color="primary">Add selected</Button>
+        </DialogActions>
+      </Dialog>
+    </>
+  );
+}
+
