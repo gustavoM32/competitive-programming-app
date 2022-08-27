@@ -3,7 +3,7 @@ import { DataGrid } from "@mui/x-data-grid";
 import { CreateProblemListDialog, DeleteProblemListButton } from "components/problemListCRUD";
 import Head from "next/head";
 import { useReadList } from "hooks/crudHooks";
-import { useQueryClient } from "@tanstack/react-query";
+import { UpdateDataButton } from "components/general";
 
 type RowParams = {
   id: any,
@@ -11,7 +11,6 @@ type RowParams = {
 }
 
 export default function ProblemLists() {
-  const queryClient = useQueryClient()
   const problemLists = useReadList("problemLists");
 
   const columns = [
@@ -53,7 +52,7 @@ export default function ProblemLists() {
         <h1>Problem Lists</h1>
         {problemLists.isLoading ? <p>Loading...</p> : null}
         {problemLists.error ? <p>Error: check console</p> : null}
-        <Button onClick={() => {() => queryClient.invalidateQueries()} }>Update data</Button>
+        <UpdateDataButton/>
         <DataGrid
           autoHeight
           rows={problemLists.resources}

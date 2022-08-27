@@ -1,12 +1,11 @@
-import { Button, Link } from '@mui/material'
+import { Link } from '@mui/material'
 import { UpdateProblemListDialog, DeleteProblemListButtonOne } from 'components/problemListCRUD'
 import { API_URL } from 'constants/constants'
 import { useRead } from 'hooks/crudHooks'
 import { useRouter } from 'next/router'
-import { useQueryClient } from "@tanstack/react-query"
+import { UpdateDataButton } from 'components/general'
 
 export default function ProblemList() {
-  const queryClient = useQueryClient()
   const { query } = useRouter()
   const resourceURI = query?.id != undefined ? `${API_URL}/problemLists/${query.id}` : ""
   const problemListData = useRead(resourceURI)
@@ -23,7 +22,7 @@ export default function ProblemList() {
     <>
       <h1>Problem list</h1>
       <h2>{problemList.name}</h2>
-      <Button onClick={() => queryClient.invalidateQueries() }>Update data</Button>
+      <UpdateDataButton/>
       <Link href={problemList.link} target="_blank" rel="noopener">Link</Link>
       <p>{problemList.description}</p>
       <p>{problemList.notes}</p>
