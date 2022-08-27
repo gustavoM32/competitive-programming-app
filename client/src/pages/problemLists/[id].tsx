@@ -1,5 +1,5 @@
 import { Link } from '@mui/material'
-import { UpdateProblemListDialog, DeleteProblemListButtonOne, AddProblemToListDialog, RemoveProblemFromListButton } from 'components/problemListCRUD'
+import { UpdateProblemListDialog, DeleteProblemListButtonOne, AddProblemToListDialog, RemoveProblemFromListButton, AddNewProblemToListDialog } from 'components/problemListCRUD'
 import { API_URL } from 'constants/constants'
 import { useRead, useReadList } from 'hooks/crudHooks'
 import { useRouter } from 'next/router'
@@ -67,6 +67,7 @@ export default function ProblemList() {
       <h3>Problems</h3>
       <>
         <AddProblemToListDialog problemList={problemList}/>{' '}
+        <AddNewProblemToListDialog problemList={problemList}/>{' '}
         <UpdateProblemListDialog problemList={problemList}/>{' '}
         <DeleteProblemListButtonOne id={uri}/>
       </>

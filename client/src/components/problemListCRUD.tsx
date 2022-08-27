@@ -6,6 +6,8 @@ import { ProblemListType, ProblemType } from "types"
 import { useCreate, useDelete, useReadList, useUpdateOne } from "hooks/crudHooks";
 import { focusManager, useQueryClient } from "@tanstack/react-query";
 import { createResource, deleteResource } from "hooks/crud";
+import { ProblemDialog } from "./problemCRUD";
+import { API_URL } from "constants/constants";
 
 type ProblemListDialogProps = {
   title: string,
@@ -188,6 +190,29 @@ export function AddProblemToListDialog(props: { problemList: ProblemListType; })
       </Dialog>
     </>
   );
+}
+
+export function AddNewProblemToListDialog(props: { problemList: ProblemListType; }) {
+  const queryClient = useQueryClient()
+  const { problemList } = props
+
+  const addNewProblemToList = async (newProblem: ProblemType) => {
+    const uri = `${API_URL}/problems` // FIXME: API_URL should not be used here
+    const createdProblem = await createResource(uri, newProblem)
+
+    const problemListProblems = problemList._links.problems.href
+    const newProblemURI = createdProblem._links.self.href
+    
+    await createResource(problemListProblems, newProblemURI, { headers: { 'Content-Type': 'text/uri-list' } })
+    queryClient.invalidateQueries(["problemLists", `${problemList.id}`, "problems"])
+  }
+
+  return (
+    <ProblemDialog
+      title="Add new problem to list"
+      actionName="Add new problem to list"
+      actionFunc={addNewProblemToList} />
+  )
 }
 
 export function RemoveProblemFromListButton(props: { problemList: ProblemListType, problemId: string }) {
