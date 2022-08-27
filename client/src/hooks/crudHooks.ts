@@ -8,9 +8,10 @@ type crudContext<PreviousResourcesType> = {
   previousResources?: PreviousResourcesType
 }
 
-export function useReadList(name: string) {
-  const isMutating = useIsMutating([name])
-  const query = useQuery([name], resourceListFetcher, { enabled: isMutating === 0 } )
+/* read */
+export function useReadList(key: string[]) {
+  const isMutating = useIsMutating(key)
+  const query = useQuery(key, resourceListFetcher, { enabled: key.length != 0 && isMutating === 0 } )
 
   return {
     ...query,
@@ -30,6 +31,7 @@ export function useRead(uri: string) {
   }
 }
 
+/* create, update, delete (with mutations) */
 function useCommonOptions<PreviousResourcesType>(resourceName: string) {
   const queryClient = useQueryClient()
 

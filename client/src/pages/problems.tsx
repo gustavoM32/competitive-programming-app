@@ -11,7 +11,7 @@ type RowParams = {
 }
 
 export default function Problems() {
-  const problems = useReadList("problems");
+  const problems = useReadList(["problems"]);
 
   const columns = [
     { field: 'dateAdded', headerName: 'Date added', type: 'dateTime', width: 250},
