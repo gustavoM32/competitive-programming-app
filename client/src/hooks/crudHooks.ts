@@ -2,15 +2,16 @@ import { useIsMutating, useMutation, useQuery, useQueryClient } from "@tanstack/
 import { resourceFetcher, resourceListFetcher } from "./fetchers";
 import { createResource, updateResource, deleteResource } from "./crud"
 import { API_URL } from "constants/constants";
-import { Resource, ResourceList } from "./types";
+import { Resource, ResourceData, ResourceList } from "./types";
 
-type crudContext = {
-  previousResources?: ResourceList
+type crudContext<PreviousResourcesType> = {
+  previousResources?: PreviousResourcesType
 }
 
-export function useReadList(name: string) {
-  const isMutating = useIsMutating([name])
-  const query = useQuery([name], resourceListFetcher, { enabled: isMutating === 0 } )
+/* read */
+export function useReadList(key: string[]) {
+  const isMutating = useIsMutating(key)
+  const query = useQuery(key, resourceListFetcher, { enabled: key.length != 0 && isMutating === 0 } )
 
   return {
     ...query,
@@ -21,7 +22,7 @@ export function useReadList(name: string) {
 
 export function useRead(uri: string) {
   const isMutating = useIsMutating([uri])
-  const query = useQuery([uri], resourceFetcher, { enabled: isMutating === 0 } )
+  const query = useQuery([uri], resourceFetcher, { enabled: uri != "" && isMutating === 0 } )
  
   return {
     ...query,
@@ -30,13 +31,14 @@ export function useRead(uri: string) {
   }
 }
 
-function useCommonOptions(resourceName: string) {
+/* create, update, delete (with mutations) */
+function useCommonOptions<PreviousResourcesType>(resourceName: string) {
   const queryClient = useQueryClient()
 
   // If the mutation fails, use the context returned from onMutate to roll back
-  const onError = (err: any, variables: any, context: crudContext | undefined ) => {
+  const onError = (err: any, variables: any, context: crudContext<PreviousResourcesType> | undefined ) => {
     if (context?.previousResources) {
-      queryClient.setQueryData<ResourceList>([resourceName], context.previousResources)
+      queryClient.setQueryData<PreviousResourcesType>([resourceName], context.previousResources)
     }
   }
 
@@ -61,7 +63,7 @@ export function useCreate(resourceName: string) {
     return createResource(uri, newResource)
   }
 
-  const getOptimisticUpdate = (previousResources: ResourceList, newResource: Resource): ResourceList => {
+  const getOptimisticUpdate = (previousResources: ResourceList, newResource: ResourceData): ResourceList => {
     newResource._links = { self: { href: "new" } }
     return {
       ...previousResources,
@@ -85,7 +87,7 @@ export function useCreate(resourceName: string) {
     return { previousResources }
   }
 
-  const commonOptions = useCommonOptions(resourceName)
+  const commonOptions = useCommonOptions<ResourceList>(resourceName)
 
   return useMutation(mutationFn, {
     ...commonOptions,
@@ -96,12 +98,12 @@ export function useCreate(resourceName: string) {
 export function useUpdate(resourceName: string) {
   const queryClient = useQueryClient()
 
-  const mutationFn = (updatedResource: Resource) => {
+  const mutationFn = (updatedResource: ResourceData) => {
     const updatedId: string = updatedResource._links.self.href
     return updateResource(updatedId, updatedResource)
   }
 
-  const getOptimisticUpdate = (previousResources: ResourceList, updatedResource: Resource): ResourceList => {
+  const getOptimisticUpdate = (previousResources: ResourceList, updatedResource: ResourceData): ResourceList => {
     const updatedId: string = updatedResource._links.self.href
     return {
       ...previousResources,
@@ -109,7 +111,7 @@ export function useUpdate(resourceName: string) {
     }
   }
 
-  const onMutate = async (updatedResource: Resource) => {
+  const onMutate = async (updatedResource: ResourceData) => {
     await queryClient.cancelQueries([resourceName])
     const previousResources = queryClient.getQueryData<ResourceList>([resourceName])
     if (previousResources) {
@@ -118,7 +120,7 @@ export function useUpdate(resourceName: string) {
     return { previousResources }
   }
 
-  const commonOptions = useCommonOptions(resourceName)
+  const commonOptions = useCommonOptions<ResourceList>(resourceName)
 
   return useMutation(mutationFn, {
     ...commonOptions,
@@ -129,7 +131,7 @@ export function useUpdate(resourceName: string) {
 export function useDelete(resourceName: string) {
   const queryClient = useQueryClient()
 
-  const mutationFn = (deletedId: Resource) => {
+  const mutationFn = (deletedId: ResourceData) => {
     return deleteResource(deletedId)
   }
 
@@ -149,7 +151,38 @@ export function useDelete(resourceName: string) {
     return { previousResources }
   }
 
-  const commonOptions = useCommonOptions(resourceName)
+  const commonOptions = useCommonOptions<ResourceList>(resourceName)
+
+  return useMutation(mutationFn, {
+    ...commonOptions,
+    onMutate: onMutate  
+  })
+}
+
+export function useUpdateOne(uri: string) {
+  const queryClient = useQueryClient()
+
+  const mutationFn = (updatedResource: ResourceData) => {
+    return updateResource(uri, updatedResource)
+  }
+
+  const getOptimisticUpdate = (previousResources: Resource, updatedResource: ResourceData): Resource => {
+    return {
+      ...previousResources,
+      resource: updatedResource
+    }
+  }
+
+  const onMutate = async (updatedResource: ResourceData) => {
+    await queryClient.cancelQueries([uri])
+    const previousResources = queryClient.getQueryData<Resource>([uri])
+    if (previousResources) {
+      queryClient.setQueryData<Resource>([uri], getOptimisticUpdate(previousResources, updatedResource))
+    }
+    return { previousResources }
+  }
+
+  const commonOptions = useCommonOptions<Resource>(uri)
 
   return useMutation(mutationFn, {
     ...commonOptions,

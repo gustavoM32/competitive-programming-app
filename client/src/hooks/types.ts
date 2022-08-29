@@ -1,6 +1,11 @@
-export type Resource = any
+export type ResourceData = any
+
+export type Resource = {
+  resource: ResourceData,
+  uri: string
+}
 
 export type ResourceList = {
-  resources: Resource[],
+  resources: ResourceData[],
   uri: string
 }

@@ -14,6 +14,7 @@ export default function Home() {
 
         <div>
           <Button href="/problems" variant="contained" target="_blank" rel="noopener">Problems</Button>
+          <Button href="/problemLists" variant="contained" target="_blank" rel="noopener">Problem Lists</Button>
         </div>
       </main>
     </div>

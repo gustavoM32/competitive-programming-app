@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { AxiosRequestConfig } from "axios";
 
 const DEV_MODE = !process.env.NODE_ENV || process.env.NODE_ENV === 'development'
 const ADD_REQUEST_DELAY = true && DEV_MODE
@@ -28,8 +28,11 @@ export async function readResource(uri: string) {
     .catch(fail)
 }
 
-export async function createResource(uri: string, newResource: any) {
-  const success = () => { console.log(`POST ${uri} success`) }
+export async function createResource(uri: string, newResource: any, config?: AxiosRequestConfig<any>) {
+  const success = (response: any) => {
+    console.log(`POST ${uri} success`)
+    return response.data
+  }
   const fail = (e: any) => { console.error(e) }
 
   console.log(`POST ${uri}`)
@@ -37,7 +40,7 @@ export async function createResource(uri: string, newResource: any) {
   if (ADD_REQUEST_DELAY) await sleep(REQUEST_DELAY)
   if (MAKE_REQUESTS_FAIL) return new Promise(() => {throw Error("ERROR")})
 
-  return axios.post(uri, newResource)
+  return axios.post(uri, newResource, config)
     .then(success)
     .catch(fail)
 }
