@@ -1,8 +1,8 @@
 import { useIsMutating, useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { resourceFetcher, resourceListFetcher } from "./fetchers";
-import { createResource, updateResource, deleteResource } from "./crud"
+import { resourceFetcher, resourceListFetcher } from "../api/fetchers";
+import { createResource, updateResource, deleteResource } from "../api/crud"
 import { API_URL } from "constants/constants";
-import { Resource, ResourceData, ResourceList } from "./types";
+import { Resource, ResourceData, ResourceList } from "../api/types";
 
 type crudContext<PreviousResourcesType> = {
   previousResources?: PreviousResourcesType

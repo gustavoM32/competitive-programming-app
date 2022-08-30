@@ -5,7 +5,7 @@ import { useState } from "react";
 import { ProblemListType, ProblemType } from "types"
 import { useCreate, useDelete, useReadList, useUpdateOne } from "hooks/crudHooks";
 import { focusManager, useQueryClient } from "@tanstack/react-query";
-import { createResource, deleteResource } from "hooks/crud";
+import { createResource, deleteResource } from "api/crud";
 import { ProblemDialog } from "./problemCRUD";
 import { API_URL } from "constants/constants";
 
