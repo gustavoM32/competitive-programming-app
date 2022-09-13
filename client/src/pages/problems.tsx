@@ -1,7 +1,6 @@
 import { AppBar, Link, Toolbar, Typography } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { CreateProblemDialog, UpdateProblemDialog, DeleteProblemButton } from "components/problemCRUD";
-import Head from "next/head";
 import { useReadList } from "hooks/crudHooks";
 import { UpdateDataButton } from "components/general";
 
@@ -37,10 +36,10 @@ export default function Problems() {
 
   return (
     <>
-      <Head>
+      <head>
         <title>Problems</title>
         <link rel="icon" href="/favicon.ico" />
-      </Head>
+      </head>
       <AppBar position="static" color="default">
         <Toolbar>
           <Typography variant="h6" color="inherit">

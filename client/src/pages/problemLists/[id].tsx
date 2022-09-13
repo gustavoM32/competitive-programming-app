@@ -2,7 +2,6 @@ import { Link } from '@mui/material'
 import { UpdateProblemListDialog, DeleteProblemListButtonOne, AddProblemToListDialog, RemoveProblemFromListButton, AddNewProblemToListDialog } from 'components/problemListCRUD'
 import { API_URL } from 'constants/constants'
 import { useRead, useReadList } from 'hooks/crudHooks'
-import { useRouter } from 'next/router'
 import { UpdateDataButton } from 'components/general'
 import { DataGrid } from '@mui/x-data-grid'
 import { DeleteProblemButton } from 'components/problemCRUD'
@@ -13,7 +12,8 @@ type RowParams = {
 }
 
 export default function ProblemList() {
-  const { query } = useRouter()
+  // const { query } = useRouter()
+  const query = { id: undefined }
   const resourceURI = query?.id != undefined ? `${API_URL}/problemLists/${query.id}` : ""
   const problemsKey = query?.id != undefined ? ["problemLists", `${query.id}`, "problems"] : []
   const problemListData = useRead(resourceURI)
