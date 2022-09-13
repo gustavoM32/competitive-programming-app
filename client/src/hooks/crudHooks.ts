@@ -11,7 +11,7 @@ type crudContext<PreviousResourcesType> = {
 /* read */
 export function useReadList(key: string[]) {
   const isMutating = useIsMutating(key)
-  const query = useQuery(key, resourceListFetcher, { enabled: key.length != 0 && isMutating === 0 } )
+  const query = useQuery(key, resourceListFetcher, { enabled: key.length !== 0 && isMutating === 0 } )
 
   return {
     ...query,
@@ -22,7 +22,7 @@ export function useReadList(key: string[]) {
 
 export function useRead(uri: string) {
   const isMutating = useIsMutating([uri])
-  const query = useQuery([uri], resourceFetcher, { enabled: uri != "" && isMutating === 0 } )
+  const query = useQuery([uri], resourceFetcher, { enabled: uri !== "" && isMutating === 0 } )
  
   return {
     ...query,
@@ -107,7 +107,7 @@ export function useUpdate(resourceName: string) {
     const updatedId: string = updatedResource._links.self.href
     return {
       ...previousResources,
-      resources: previousResources.resources.map((r: any) => r._links.self.href == updatedId ? updatedResource : r)
+      resources: previousResources.resources.map((r: any) => r._links.self.href === updatedId ? updatedResource : r)
     }
   }
 
@@ -138,7 +138,7 @@ export function useDelete(resourceName: string) {
   const getOptimisticUpdate = (previousResources: ResourceList, deletedId: string): ResourceList => {
     return {
       ...previousResources,
-      resources: previousResources.resources.filter((r: any) => r._links.self.href != deletedId)
+      resources: previousResources.resources.filter((r: any) => r._links.self.href !== deletedId)
     }
   }
 

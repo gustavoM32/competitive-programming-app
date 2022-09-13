@@ -141,7 +141,7 @@ export function AddProblemToListDialog(props: { problemList: ProblemListType; })
   const { problemList } = props
   const queryClient = useQueryClient()
   
-  const problemsKey = problemList?.id != undefined ? ["problemLists", `${problemList.id}`, "problems"] : []
+  const problemsKey = problemList?.id !== undefined ? ["problemLists", `${problemList.id}`, "problems"] : []
   const problemsData = useReadList(problemsKey)
 
   // FIXME: this doesn't look so good...
