@@ -5,6 +5,7 @@ import { useRead, useReadList } from 'hooks/crudHooks'
 import { UpdateDataButton } from 'components/general'
 import { DataGrid } from '@mui/x-data-grid'
 import { DeleteProblemButton } from 'components/problemCRUD'
+import { useParams } from 'react-router-dom'
 
 type RowParams = {
   id: any,
@@ -12,10 +13,9 @@ type RowParams = {
 }
 
 export default function ProblemList() {
-  // const { query } = useRouter()
-  const query = { id: undefined }
-  const resourceURI = query?.id != undefined ? `${API_URL}/problemLists/${query.id}` : ""
-  const problemsKey = query?.id != undefined ? ["problemLists", `${query.id}`, "problems"] : []
+  const { problemListId } = useParams();
+  const resourceURI = problemListId != undefined ? `${API_URL}/problemLists/${problemListId}` : ""
+  const problemsKey = problemListId != undefined ? ["problemLists", `${problemListId}`, "problems"] : []
   const problemListData = useRead(resourceURI)
   const problemsData = useReadList(problemsKey)
 
