@@ -53,5 +53,8 @@
     "hooks": {
       "pre-commit": "npm run lint"
     }
+  },
+  "devDependencies": {
+    "cypress": "^10.8.0"
   }
 }
