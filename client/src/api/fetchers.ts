@@ -4,7 +4,7 @@ import { readResource } from "./crud";
 export async function resourceListFetcher({ queryKey } : { queryKey: string[] }) {
   const uri = `${API_URL}/${queryKey.join('/')}`
 
-  if (queryKey.length == 0) {
+  if (queryKey.length === 0) {
     throw Error("Empty queryKey")
   }
 

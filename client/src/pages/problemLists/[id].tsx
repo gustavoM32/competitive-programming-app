@@ -14,19 +14,19 @@ type RowParams = {
 
 export default function ProblemList() {
   const { problemListId } = useParams();
-  const resourceURI = problemListId != undefined ? `${API_URL}/problemLists/${problemListId}` : ""
-  const problemsKey = problemListId != undefined ? ["problemLists", `${problemListId}`, "problems"] : []
+  const resourceURI = problemListId !== undefined ? `${API_URL}/problemLists/${problemListId}` : ""
+  const problemsKey = problemListId !== undefined ? ["problemLists", `${problemListId}`, "problems"] : []
   const problemListData = useRead(resourceURI)
   const problemsData = useReadList(problemsKey)
 
   if (problemListData.isLoading) return <p>Loading...</p>
-  if (problemListData.error || !problemListData.data) {
+  if (problemListData.isError || !problemListData.data) {
     console.error(problemListData.error)
     return <p>Error: check console</p>
   }
 
   if (problemsData.isLoading) return <p>Loading...</p>
-  if (problemsData.error || !problemsData.data) {
+  if (problemsData.isError || !problemsData.data) {
     console.error(problemsData.error)
     return <p>Error: check console</p>
   }
@@ -50,6 +50,7 @@ export default function ProblemList() {
     // { field: 'studies', headerName: 'Studies'},
     { field: 'action', headerName: 'Action', width: 300, renderCell: (params: RowParams) => (
       <>
+        {/* <UpdateProblemDialog problem={params.row}/>{' '} */}
         <RemoveProblemFromListButton problemList={problemList} problemId={params.row.id}/>
         <DeleteProblemButton id={params.row._links.self.href}/>
       </>

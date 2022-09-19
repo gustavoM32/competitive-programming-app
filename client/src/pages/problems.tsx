@@ -32,7 +32,7 @@ export default function Problems() {
     )},
   ];
 
-  if (problems.error) console.error(problems.error)
+  if (problems.isError) console.error(problems.error)
 
   return (
     <>

@@ -31,7 +31,7 @@ export default function ProblemLists() {
     }},
   ];
 
-  if (problemLists.error) console.error(problemLists.error)
+  if (problemLists.isError) console.error(problemLists.error)
 
   return (
     <>
