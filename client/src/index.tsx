@@ -2,11 +2,11 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import reportWebVitals from './reportWebVitals';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import Home from './pages/home';
+import Home from './pages/Home';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-import Problems from 'pages/problems';
-import ProblemLists from 'pages/problemLists';
-import ProblemList from 'pages/problemLists/[id]';
+import Problems from 'pages/Problems';
+import ProblemLists from 'pages/ProblemLists';
+import ProblemList from 'pages/ProblemList';
 import Page from 'components/Page';
 
 const queryClient = new QueryClient();
