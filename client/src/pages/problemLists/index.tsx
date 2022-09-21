@@ -1,4 +1,4 @@
-import { AppBar, Button, Link, Toolbar, Typography } from "@mui/material";
+import { Button, Link } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { CreateProblemListDialog, DeleteProblemListButton } from "components/problemListCRUD";
 import { useReadList } from "hooks/crudHooks";
@@ -35,18 +35,6 @@ export default function ProblemLists() {
 
   return (
     <>
-      <head>
-        <title>Problem Lists</title>
-        <link rel="icon" href="/favicon.ico" />
-      </head>
-      <AppBar position="static" color="default">
-        <Toolbar>
-          <Typography variant="h6" color="inherit">
-            Problem Lists
-          </Typography>
-        </Toolbar>
-      </AppBar>
-
       <div>
         <h1>Problem Lists</h1>
         {problemLists.isLoading ? <p>Loading...</p> : null}

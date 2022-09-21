@@ -7,6 +7,7 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import Problems from 'pages/problems';
 import ProblemLists from 'pages/problemLists';
 import ProblemList from 'pages/problemLists/[id]';
+import Page from 'components/Page';
 
 const queryClient = new QueryClient();
 
@@ -17,19 +18,19 @@ const root = ReactDOM.createRoot(
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <Home/>,
+    element: <Page sidebarActiveItem="Home" title="Home"><Home/></Page>,
   },
   {
     path: "/problems",
-    element: <Problems/>,
+    element: <Page sidebarActiveItem="Problems" title="Problems"><Problems/></Page>,
   },
   {
     path: "/problemLists",
-    element: <ProblemLists/>,
+    element: <Page sidebarActiveItem="Problem lists" title="Problem Lists"><ProblemLists/></Page>,
   },
   {
     path: "/problemLists/:problemListId",
-    element: <ProblemList/>,
+    element: <Page sidebarActiveItem="Problem lists" title="Problem List"><ProblemList/></Page>,
   },
 ]);
 
