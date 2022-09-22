@@ -17,27 +17,6 @@ import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import { NavLink } from 'react-router-dom';
-import HomeIcon from '@mui/icons-material/Home';
-import TextSnippetIcon from '@mui/icons-material/TextSnippet';
-import ListIcon from '@mui/icons-material/List';
-
-const sidebarData = [
-  {
-    icon: <HomeIcon />,
-    text: "Home",
-    link: "/"
-  },
-  {
-    icon: <TextSnippetIcon />,
-    text: "Problems",
-    link: "/problems"
-  },
-  {
-    icon: <ListIcon />,
-    text: "Problem lists",
-    link: "/problemLists"
-  }
-];
 
 const drawerWidth = 240;
 
@@ -122,8 +101,8 @@ export default function Sidebar(props: any) {
     setOpen(false);
   };
 
-  const getItemStyle = (text: string) => {
-    if (props.activeItem === text) return {background: '#D9D9D9'};
+  const getItemStyle = (active: boolean) => {
+    if (active) return {background: '#D9D9D9'};
     return {};
   }
 
@@ -157,9 +136,9 @@ export default function Sidebar(props: any) {
         </DrawerHeader>
         <Divider />
         <List>
-          {sidebarData.map((item) => (
-            <ListItem key={item.text} disablePadding sx={{ display: 'block' }} style={getItemStyle(item.text)}>
-              <NavLink style={{ color: 'black', textDecoration: 'none' }} to={item.link}>
+          {props.sidebarData.map((item: any) => (
+            <ListItem key={item.title} disablePadding sx={{ display: 'block' }} style={getItemStyle(item.active)}>
+              <NavLink style={{ color: 'black', textDecoration: 'none' }} to={item.path}>
                 <ListItemButton
                   sx={{
                     minHeight: 48,
@@ -176,7 +155,7 @@ export default function Sidebar(props: any) {
                   >
                     {item.icon}
                   </ListItemIcon>
-                  <ListItemText primary={item.text} sx={{ opacity: open ? 1 : 0 }} />
+                  <ListItemText primary={item.title} sx={{ opacity: open ? 1 : 0 }} />
                 </ListItemButton>
               </NavLink>
             </ListItem>
