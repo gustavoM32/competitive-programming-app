@@ -1,5 +1,5 @@
 import { screen } from '@testing-library/react'
-import Problems from './problems'
+import Problems from './Problems'
 import * as crudHooks from 'hooks/crudHooks';
 import { renderWithClient } from 'testUtils';
 

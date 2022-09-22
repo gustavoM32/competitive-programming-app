@@ -1,11 +1,7 @@
 import { screen } from '@testing-library/react'
-import ProblemList from './[id]'
 import * as crudHooks from 'hooks/crudHooks';
-import { useParams } from 'react-router-dom'
 import { renderWithClient } from 'testUtils';
-
-const reactRouterDom = { useParams };
-jest.spyOn(reactRouterDom, 'useParams').mockReturnValue({ problemListId: "id"})
+import ProblemLists from './ProblemLists';
 
 describe('when it is loading', () => {
   it('shows loading text', async () => {
@@ -14,18 +10,11 @@ describe('when it is loading', () => {
       resources: []
     });
 
-    const useRead = () => ({
-      isLoading: true,
-      resource: {}
-    });
-    
     // @ts-ignore
     jest.spyOn(crudHooks, 'useReadList').mockImplementation(useReadList);
-    // @ts-ignore
-    jest.spyOn(crudHooks, 'useRead').mockImplementation(useRead);
   
     renderWithClient(
-      <ProblemList/>
+      <ProblemLists/>
     )
   
     expect(screen.getByText(/Loading/i)).toBeInstanceOf(Node);
@@ -38,23 +27,39 @@ describe('when error on fetching', () => {
       isError: true,
       resources: []
     });
-
-    const useRead = () => ({
-      isError: true,
-      resource: {}
-    });
     
     // @ts-ignore
     jest.spyOn(crudHooks, 'useReadList').mockImplementation(useReadList);
-    // @ts-ignore
-    jest.spyOn(crudHooks, 'useRead').mockImplementation(useRead);
     
     console.error = jest.fn();
 
     renderWithClient(
-      <ProblemList/>
+      <ProblemLists/>
     )
   
     expect(console.error).toHaveBeenCalled();
   })
 })
+
+describe('when fetching is successful', () => {
+  it('shows problem name in table', async () => {
+    const problemName = "problem ABCD";
+    const useReadList = () => ({
+      isLoading: false,
+      resources: [{ 
+        name: problemName,
+        _links: { self: { href: "id"} }
+      }]
+    });
+    
+    // @ts-ignore
+    jest.spyOn(crudHooks, 'useReadList').mockImplementation(useReadList);
+    
+    renderWithClient(
+      <ProblemLists/>
+    )
+
+    expect(screen.getByText(problemName)).toBeInstanceOf(Node);
+  })
+})
+
