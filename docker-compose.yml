@@ -10,6 +10,22 @@ services:
       - ./client/:/app
     command: npm start
 
+  server:
+    build:
+      context: server
+      dockerfile: Dockerfile
+    working_dir: /app
+    ports:
+      - 8080:8080
+    volumes:
+      - ./server/:/app
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+    user: appuser
+    command: ./gradlew --project-cache-dir /tmp/gradle-cache bootRun
+    profiles:
+      - server
+
   mongo:
     image: mongo
     ports:
