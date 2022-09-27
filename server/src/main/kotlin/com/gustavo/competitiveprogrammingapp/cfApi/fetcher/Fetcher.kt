@@ -1,4 +1,4 @@
-package com.gustavo.competitiveprogrammingapp.cfApi
+package com.gustavo.competitiveprogrammingapp.cfApi.fetcher
 
 import com.google.gson.Gson
 import org.slf4j.Logger
@@ -11,13 +11,8 @@ import java.net.URL
 import java.time.Duration
 import java.time.LocalDateTime
 
-class ApiResult<T> {
-    val status: String? = null
-    val result: T? = null
-}
-
 @Component
-class CfApi(private val urlCacheRepository: UrlCacheRepository) {
+class Fetcher(private val urlCacheRepository: UrlCacheRepository) {
     private val logger: Logger = LoggerFactory.getLogger(javaClass)
 
     companion object {
@@ -101,4 +96,3 @@ class CfApi(private val urlCacheRepository: UrlCacheRepository) {
         return responseContent.toString()
     }
 }
-

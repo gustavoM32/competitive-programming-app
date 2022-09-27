@@ -1,11 +1,11 @@
-package com.gustavo.competitiveprogrammingapp.cfApi
+package com.gustavo.competitiveprogrammingapp.cfApi.fetcher
 
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document
 import org.springframework.data.mongodb.core.mapping.Field
 import java.time.LocalDateTime
 
-@Document("cfApiCache")
+@Document("urlCache")
 data class UrlCache(
     @Id
     @Field(name = "apiResource")
