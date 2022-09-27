@@ -11,6 +11,10 @@ import java.net.URL
 import java.time.Duration
 import java.time.LocalDateTime
 
+class ApiResult<T> {
+    val status: String? = null
+    val result: T? = null
+}
 
 @Component
 class CfApi(private val urlCacheRepository: UrlCacheRepository) {
@@ -22,7 +26,7 @@ class CfApi(private val urlCacheRepository: UrlCacheRepository) {
         private var lastRequest: LocalDateTime? = null
     }
 
-    fun <T> getResource(apiResource: String, classOfT: Class<T>, cacheTimeTolerance: Duration?): T {
+    fun <T> getResource(apiResource: String, resourceType: Class<T>, cacheTimeTolerance: Duration?): T {
         val cacheOptional = urlCacheRepository.findById(apiResource)
         logger.info("Get resource $apiResource")
 
@@ -32,21 +36,32 @@ class CfApi(private val urlCacheRepository: UrlCacheRepository) {
             logger.info(Duration.between(lastResponseTime, LocalDateTime.now()).toString())
             if (cacheTimeTolerance == null || Duration.between(lastResponseTime, LocalDateTime.now()) <= cacheTimeTolerance) {
                 logger.info("Got from cache")
-                return Gson().fromJson(cache.json, classOfT)
+                return Gson().fromJson(cache.json, resourceType)
             }
         }
 
         val response = makeCfApiRequest(apiResource, cacheTimeTolerance)
         logger.info("Got response string")
-        val gsonResponse = Gson().fromJson(response, classOfT)
+        val gsonResponse = Gson().fromJson(response, ApiResult<T>().javaClass)
         logger.info("Got response gson")
-        val cache = Gson().toJson(gsonResponse)
+
+        if (gsonResponse.status == null || gsonResponse.status != "OK") {
+            throw Exception("Response status is not 'OK'")
+        }
+
+        if (gsonResponse.result == null) {
+            throw Exception("Result is null")
+        }
+
+        val resource = gsonResponse.result
+        val cache = Gson().toJson(resource)
+
         logger.info("Got cache string")
 
         urlCacheRepository.save(UrlCache(apiResource, cache, LocalDateTime.now()))
         logger.info("Saved to cache")
 
-        return gsonResponse
+        return resource
     }
 
     private fun makeCfApiRequest(apiResource: String, cacheTimeTolerance: Duration?): String {
