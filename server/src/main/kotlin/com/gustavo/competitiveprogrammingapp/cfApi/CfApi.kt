@@ -1,5 +1,6 @@
 package com.gustavo.competitiveprogrammingapp.cfApi
 
+import com.google.gson.Gson
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
@@ -21,34 +22,35 @@ class CfApi(private val urlCacheRepository: UrlCacheRepository) {
         private var lastRequest: LocalDateTime? = null
     }
 
-    private fun getConnectionResponse(connection: HttpURLConnection): String {
-        val responseContent = StringBuilder()
-        val reader = BufferedReader(InputStreamReader(connection.inputStream))
-
-        reader.forEachLine {
-            responseContent.append(it)
-        }
-        reader.close()
-
-        return responseContent.toString()
-    }
-
-    fun makeCfApiRequest(apiResource: String, cacheTimeTolerance: Duration?): String {
-        logger.info("Fetching $apiResource")
-
+    fun <T> getResource(apiResource: String, classOfT: Class<T>, cacheTimeTolerance: Duration?): T {
         val cacheOptional = urlCacheRepository.findById(apiResource)
+        logger.info("Get resource $apiResource")
 
         if (cacheOptional.isPresent) {
             val cache = cacheOptional.get()
             val lastResponseTime = cache.responseTime
             logger.info(Duration.between(lastResponseTime, LocalDateTime.now()).toString())
-            logger.info(cacheTimeTolerance.toString())
-            logger.info((Duration.between(lastResponseTime, LocalDateTime.now()) > cacheTimeTolerance).toString())
             if (cacheTimeTolerance == null || Duration.between(lastResponseTime, LocalDateTime.now()) <= cacheTimeTolerance) {
                 logger.info("Got from cache")
-                return cache.json
+                return Gson().fromJson(cache.json, classOfT)
             }
         }
+
+        val response = makeCfApiRequest(apiResource, cacheTimeTolerance)
+        logger.info("Got response string")
+        val gsonResponse = Gson().fromJson(response, classOfT)
+        logger.info("Got response gson")
+        val cache = Gson().toJson(gsonResponse)
+        logger.info("Got cache string")
+
+        urlCacheRepository.save(UrlCache(apiResource, cache, LocalDateTime.now()))
+        logger.info("Saved to cache")
+
+        return gsonResponse
+    }
+
+    private fun makeCfApiRequest(apiResource: String, cacheTimeTolerance: Duration?): String {
+        logger.info("Fetching $apiResource")
 
         while (lastRequest != null && Duration.between(lastRequest, LocalDateTime.now()) < TIME_BETWEEN_REQUESTS) {
             Thread.sleep(1000)
@@ -69,13 +71,19 @@ class CfApi(private val urlCacheRepository: UrlCacheRepository) {
             throw Exception("Response code was not 200")
         }
 
-        val responseTime = LocalDateTime.now()
+        return getConnectionResponse(connection)
+    }
 
-        val response = getConnectionResponse(connection)
-        logger.info("Got response string")
+    private fun getConnectionResponse(connection: HttpURLConnection): String {
+        val responseContent = StringBuilder()
+        val reader = BufferedReader(InputStreamReader(connection.inputStream))
 
-        urlCacheRepository.save(UrlCache(apiResource, response, responseTime))
-        return response
+        reader.forEachLine {
+            responseContent.append(it)
+        }
+        reader.close()
+
+        return responseContent.toString()
     }
 }
 
