@@ -1,8 +1,8 @@
 package com.gustavo.competitiveprogrammingapp.cfApi.fetcher
 
-import com.google.gson.JsonObject
+import com.google.gson.JsonElement
 
 data class ApiResult (
     val status: String? = null,
-    val result: JsonObject? = null
+    val result: JsonElement? = null
 )
