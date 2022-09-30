@@ -5,6 +5,8 @@ import Problems from "pages/Problems";
 import HomeIcon from "@mui/icons-material/Home";
 import TextSnippetIcon from "@mui/icons-material/TextSnippet";
 import ListIcon from "@mui/icons-material/List";
+import CfProblems from "pages/CfProblems";
+import BallotIcon from '@mui/icons-material/Ballot';
 
 const pages = [
   {
@@ -20,6 +22,13 @@ const pages = [
     title: "Problems",
     icon: <TextSnippetIcon />,
     element: <Problems />,
+  },
+  {
+    path: "/cfProblems",
+    sidebar: "/cfProblems",
+    title: "CF Problems",
+    icon: <BallotIcon />,
+    element: <CfProblems />,
   },
   {
     path: "/problemLists",
