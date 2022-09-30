@@ -8,7 +8,6 @@ import java.time.LocalDateTime
 @Document("urlCache")
 data class UrlCache(
     @Id
-    @Field(name = "apiResource")
     val apiResource: String,
     @Field(name = "json")
     val json: String,

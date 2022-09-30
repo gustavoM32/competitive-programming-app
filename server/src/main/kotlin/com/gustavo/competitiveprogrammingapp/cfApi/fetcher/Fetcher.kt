@@ -21,7 +21,7 @@ class Fetcher(private val urlCacheRepository: UrlCacheRepository) {
         private var lastRequest: LocalDateTime? = null
     }
 
-    fun <T> getResource(apiResource: String, resourceType: Class<T>, cacheTimeTolerance: Duration?): T {
+    fun <T> getResource(apiResource: String, resourceClass: Class<T>, cacheTimeTolerance: Duration?): T {
         val cacheOptional = urlCacheRepository.findById(apiResource)
         logger.info("Get resource $apiResource")
 
@@ -31,13 +31,14 @@ class Fetcher(private val urlCacheRepository: UrlCacheRepository) {
             logger.info(Duration.between(lastResponseTime, LocalDateTime.now()).toString())
             if (cacheTimeTolerance == null || Duration.between(lastResponseTime, LocalDateTime.now()) <= cacheTimeTolerance) {
                 logger.info("Got from cache")
-                return Gson().fromJson(cache.json, resourceType)
+                return Gson().fromJson(cache.json, resourceClass)
             }
         }
 
-        val response = makeCfApiRequest(apiResource, cacheTimeTolerance)
+        val response = makeCfApiRequest(apiResource)
         logger.info("Got response string")
-        val gsonResponse = Gson().fromJson(response, ApiResult<T>().javaClass)
+
+        val gsonResponse = Gson().fromJson(response, ApiResult::class.java)
         logger.info("Got response gson")
 
         if (gsonResponse.status == null || gsonResponse.status != "OK") {
@@ -48,18 +49,17 @@ class Fetcher(private val urlCacheRepository: UrlCacheRepository) {
             throw Exception("Result is null")
         }
 
-        val resource = gsonResponse.result
+        val resource = Gson().fromJson(gsonResponse.result, resourceClass)
         val cache = Gson().toJson(resource)
 
         logger.info("Got cache string")
-
         urlCacheRepository.save(UrlCache(apiResource, cache, LocalDateTime.now()))
         logger.info("Saved to cache")
 
         return resource
     }
 
-    private fun makeCfApiRequest(apiResource: String, cacheTimeTolerance: Duration?): String {
+    fun makeCfApiRequest(apiResource: String): String {
         logger.info("Fetching $apiResource")
 
         while (lastRequest != null && Duration.between(lastRequest, LocalDateTime.now()) < TIME_BETWEEN_REQUESTS) {
