@@ -1,3 +1,4 @@
+import CfContests from "pages/CfContests";
 import Home from "pages/Home";
 import ProblemList from "pages/ProblemList";
 import ProblemLists from "pages/ProblemLists";
@@ -5,6 +6,7 @@ import Problems from "pages/Problems";
 import HomeIcon from "@mui/icons-material/Home";
 import TextSnippetIcon from "@mui/icons-material/TextSnippet";
 import ListIcon from "@mui/icons-material/List";
+import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
 import CfProblems from "pages/CfProblems";
 import BallotIcon from '@mui/icons-material/Ballot';
 
@@ -42,6 +44,13 @@ const pages = [
     sidebar: "/problemLists",
     title: "Problem list",
     element: <ProblemList />,
+  },
+  {
+    path: "/cfContests",
+    sidebar: "/cfContests",
+    title: "CF Contests",
+    icon: <EmojiEventsIcon />,
+    element: <CfContests />,
   },
 ];
 
