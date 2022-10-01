@@ -1,7 +1,5 @@
-package com.gustavo.competitiveprogrammingapp.controllers
+package com.gustavo.competitiveprogrammingapp.cfApi.information
 
-import com.gustavo.competitiveprogrammingapp.cfApi.processors.ContestsProcessor
-import com.gustavo.competitiveprogrammingapp.cfApi.processors.ProblemsetProblemsProcessor
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.web.bind.annotation.GetMapping

@@ -1,4 +1,4 @@
-package com.gustavo.competitiveprogrammingapp.cfApi.resources
+package com.gustavo.competitiveprogrammingapp.cfApi.fetcher.resources
 
 data class ProblemsetProblemsGson(
     val problems: List<Problem>? = null

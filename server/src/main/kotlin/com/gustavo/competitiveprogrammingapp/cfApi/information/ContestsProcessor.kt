@@ -1,6 +1,6 @@
-package com.gustavo.competitiveprogrammingapp.cfApi.processors
+package com.gustavo.competitiveprogrammingapp.cfApi.information
 
-import com.gustavo.competitiveprogrammingapp.cfApi.resources.ResourceFetcher
+import com.gustavo.competitiveprogrammingapp.cfApi.fetcher.resources.ResourceFetcher
 import com.gustavo.competitiveprogrammingapp.domain.cfContest.CfContest
 import com.gustavo.competitiveprogrammingapp.domain.cfContest.CfContestRepository
 import org.slf4j.Logger

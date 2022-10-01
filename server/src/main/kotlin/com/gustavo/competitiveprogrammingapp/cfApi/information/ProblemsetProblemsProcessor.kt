@@ -1,6 +1,6 @@
-package com.gustavo.competitiveprogrammingapp.cfApi.processors
+package com.gustavo.competitiveprogrammingapp.cfApi.information
 
-import com.gustavo.competitiveprogrammingapp.cfApi.resources.ResourceFetcher
+import com.gustavo.competitiveprogrammingapp.cfApi.fetcher.resources.ResourceFetcher
 import com.gustavo.competitiveprogrammingapp.domain.cfProblem.CfProblem
 import com.gustavo.competitiveprogrammingapp.domain.cfProblem.CfProblemRepository
 import org.slf4j.Logger
@@ -11,6 +11,9 @@ import org.springframework.stereotype.Component
 class ProblemsetProblemsProcessor(val resourceFetcher: ResourceFetcher, val repository: CfProblemRepository):
     Processor {
     private val logger: Logger = LoggerFactory.getLogger(javaClass)
+
+    // heavy: calculates the full information, drops the old database
+    // light: only updates existing information
 
     override fun update() {
         val problemsetProblems = resourceFetcher.getProblemSetProblems()

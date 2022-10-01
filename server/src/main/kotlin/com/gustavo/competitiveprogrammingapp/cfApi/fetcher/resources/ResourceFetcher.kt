@@ -1,8 +1,5 @@
-package com.gustavo.competitiveprogrammingapp.cfApi.resources
+package com.gustavo.competitiveprogrammingapp.cfApi.fetcher.resources
 
-import com.google.gson.reflect.TypeToken
-import com.gustavo.competitiveprogrammingapp.cfApi.fetcher.ApiArrayResult
-import com.gustavo.competitiveprogrammingapp.cfApi.fetcher.ApiResult
 import com.gustavo.competitiveprogrammingapp.cfApi.fetcher.Fetcher
 import org.springframework.stereotype.Component
 import java.time.Duration
