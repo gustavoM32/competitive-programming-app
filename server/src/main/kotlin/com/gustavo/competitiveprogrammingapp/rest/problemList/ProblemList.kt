@@ -1,6 +1,6 @@
-package com.gustavo.competitiveprogrammingapp.domain.problemList
+package com.gustavo.competitiveprogrammingapp.rest.problemList
 
-import com.gustavo.competitiveprogrammingapp.domain.problem.Problem
+import com.gustavo.competitiveprogrammingapp.rest.problem.Problem
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document
 import org.springframework.data.mongodb.core.mapping.DocumentReference

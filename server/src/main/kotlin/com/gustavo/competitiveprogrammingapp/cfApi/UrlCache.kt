@@ -1,4 +1,4 @@
-package com.gustavo.competitiveprogrammingapp.cfApi.fetcher
+package com.gustavo.competitiveprogrammingapp.cfApi
 
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document

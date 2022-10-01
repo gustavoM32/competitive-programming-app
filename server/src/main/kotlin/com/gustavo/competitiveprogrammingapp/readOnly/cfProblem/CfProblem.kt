@@ -1,4 +1,4 @@
-package com.gustavo.competitiveprogrammingapp.domain.cfProblem
+package com.gustavo.competitiveprogrammingapp.readOnly.cfProblem
 
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document

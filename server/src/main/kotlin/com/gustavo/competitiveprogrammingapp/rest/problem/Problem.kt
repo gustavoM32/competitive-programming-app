@@ -1,4 +1,4 @@
-package com.gustavo.competitiveprogrammingapp.domain.problem
+package com.gustavo.competitiveprogrammingapp.rest.problem
 
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document

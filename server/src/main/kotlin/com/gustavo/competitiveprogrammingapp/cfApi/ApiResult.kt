@@ -1,4 +1,4 @@
-package com.gustavo.competitiveprogrammingapp.cfApi.fetcher
+package com.gustavo.competitiveprogrammingapp.cfApi
 
 import com.google.gson.JsonElement
 

@@ -1,8 +1,8 @@
-package com.gustavo.competitiveprogrammingapp.cfApi.information
+package com.gustavo.competitiveprogrammingapp.information
 
-import com.gustavo.competitiveprogrammingapp.cfApi.fetcher.resources.ResourceFetcher
-import com.gustavo.competitiveprogrammingapp.domain.cfContest.CfContest
-import com.gustavo.competitiveprogrammingapp.domain.cfContest.CfContestRepository
+import com.gustavo.competitiveprogrammingapp.cfApi.resources.ResourceFetcher
+import com.gustavo.competitiveprogrammingapp.readOnly.cfContest.CfContest
+import com.gustavo.competitiveprogrammingapp.readOnly.cfContest.CfContestRepository
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component

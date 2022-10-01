@@ -1,6 +1,6 @@
-package com.gustavo.competitiveprogrammingapp.cfApi.fetcher.resources
+package com.gustavo.competitiveprogrammingapp.cfApi.resources
 
-import com.gustavo.competitiveprogrammingapp.cfApi.fetcher.Fetcher
+import com.gustavo.competitiveprogrammingapp.cfApi.Fetcher
 import org.springframework.stereotype.Component
 import java.time.Duration
 
