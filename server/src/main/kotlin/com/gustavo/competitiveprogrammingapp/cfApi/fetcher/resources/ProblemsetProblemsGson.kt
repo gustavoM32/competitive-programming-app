@@ -6,6 +6,7 @@ data class ProblemsetProblemsGson(
     data class Problem(
         val contestId: Int? = null,
         val index: String? = null,
-        val name: String? = null
+        val name: String? = null,
+        val rating: Int? = null
     )
 }
