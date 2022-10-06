@@ -106,6 +106,33 @@ export default function Sidebar(props: any) {
     return {};
   }
 
+  const getListItem = (item: any) => {
+    return (
+      <ListItem key={item.title} disablePadding sx={{ display: 'block' }} style={getItemStyle(item.active)}>
+        <NavLink style={{ color: 'black', textDecoration: 'none' }} to={item.path}>
+          <ListItemButton
+            sx={{
+              minHeight: 48,
+              justifyContent: open ? 'initial' : 'center',
+              px: 2.5,
+            }}
+          >
+            <ListItemIcon
+              sx={{
+                minWidth: 0,
+                mr: open ? 3 : 'auto',
+                justifyContent: 'center',
+              }}
+            >
+              {item.icon}
+            </ListItemIcon>
+            <ListItemText primary={item.title} sx={{ opacity: open ? 1 : 0 }} />
+          </ListItemButton>
+        </NavLink>
+      </ListItem>
+    )
+  }
+
   return (
     <Box sx={{ display: 'flex' }}>
       <CssBaseline />
@@ -136,30 +163,9 @@ export default function Sidebar(props: any) {
         </DrawerHeader>
         <Divider />
         <List>
-          {props.sidebarData.map((item: any) => (
-            <ListItem key={item.title} disablePadding sx={{ display: 'block' }} style={getItemStyle(item.active)}>
-              <NavLink style={{ color: 'black', textDecoration: 'none' }} to={item.path}>
-                <ListItemButton
-                  sx={{
-                    minHeight: 48,
-                    justifyContent: open ? 'initial' : 'center',
-                    px: 2.5,
-                  }}
-                >
-                  <ListItemIcon
-                    sx={{
-                      minWidth: 0,
-                      mr: open ? 3 : 'auto',
-                      justifyContent: 'center',
-                    }}
-                  >
-                    {item.icon}
-                  </ListItemIcon>
-                  <ListItemText primary={item.title} sx={{ opacity: open ? 1 : 0 }} />
-                </ListItemButton>
-              </NavLink>
-            </ListItem>
-          ))}
+          {props.sidebarData.filter((item: any) => item.type === "cf").map(getListItem)}
+          <Divider/>
+          {props.sidebarData.filter((item: any) => item.type === undefined).map(getListItem)}
         </List>
       </Drawer>
       <Box component="main" sx={{ flexGrow: 1, p: 3 }} style={{marginTop: '64px', paddingTop: '0px'}}>
