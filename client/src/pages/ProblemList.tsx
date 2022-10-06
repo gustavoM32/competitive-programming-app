@@ -59,7 +59,6 @@ export default function ProblemList() {
 
   return (
     <>
-      <h1>Problem list</h1>
       <h2>{problemList.name}</h2>
       <UpdateDataButton/>
       <p><Link href={problemList.link} target="_blank" rel="noopener">Link</Link></p>

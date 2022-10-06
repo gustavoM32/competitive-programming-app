@@ -20,7 +20,6 @@ export default function CfProblems() {
   return (
     <>
       <div>
-        <h1>Problems</h1>
         {problems.isLoading ? <p>Loading...</p> : null}
         {problems.error ? <p>Error: check console</p> : null}
         <UpdateDataButton/>

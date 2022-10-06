@@ -20,7 +20,6 @@ export default function CfContests() {
   return (
     <>
       <div>
-        <h1>Contests</h1>
         {contests.isLoading ? <p>Loading...</p> : null}
         {contests.error ? <p>Error: check console</p> : null}
         <UpdateDataButton/>

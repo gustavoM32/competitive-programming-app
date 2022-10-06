@@ -34,20 +34,17 @@ export default function ProblemLists() {
   if (problemLists.isError) console.error(problemLists.error)
 
   return (
-    <>
-      <div>
-        <h1>Problem Lists</h1>
-        {problemLists.isLoading ? <p>Loading...</p> : null}
-        {problemLists.error ? <p>Error: check console</p> : null}
-        <UpdateDataButton/>
-        <DataGrid
-          autoHeight
-          rows={problemLists.resources}
-          columns={columns}
-          getRowId={(row) => row._links.self.href}
-        />
-        <CreateProblemListDialog/>
-      </div>
-    </>
+    <div>
+      {problemLists.isLoading ? <p>Loading...</p> : null}
+      {problemLists.error ? <p>Error: check console</p> : null}
+      <UpdateDataButton/>
+      <DataGrid
+        autoHeight
+        rows={problemLists.resources}
+        columns={columns}
+        getRowId={(row) => row._links.self.href}
+      />
+      <CreateProblemListDialog/>
+    </div>
   );
 }

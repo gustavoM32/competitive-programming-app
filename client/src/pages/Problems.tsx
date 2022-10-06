@@ -65,20 +65,17 @@ export default function Problems() {
   if (problems.isError) console.error(problems.error)
 
   return (
-    <>
-      <div>
-        <h1>Problems</h1>
-        {problems.isLoading ? <p>Loading...</p> : null}
-        {problems.error ? <p>Error: check console</p> : null}
-        <UpdateDataButton/>
-        <DataGrid
-          autoHeight
-          rows={problems.resources}
-          columns={columns}
-          getRowId={(row) => row._links.self.href}
-        />
-        <CreateProblemDialog/>
-      </div>
-    </>
+    <div>
+      {problems.isLoading ? <p>Loading...</p> : null}
+      {problems.error ? <p>Error: check console</p> : null}
+      <UpdateDataButton/>
+      <DataGrid
+        autoHeight
+        rows={problems.resources}
+        columns={columns}
+        getRowId={(row) => row._links.self.href}
+      />
+      <CreateProblemDialog/>
+    </div>
   );
 }

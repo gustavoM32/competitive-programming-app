@@ -151,7 +151,7 @@ export default function Sidebar(props: any) {
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" noWrap component="div">
-            {"CPA > " + props.title}
+            {props.title}
           </Typography>
         </Toolbar>
       </AppBar>
