@@ -8,11 +8,12 @@ import java.time.Duration
 class ResourceFetcher(val fetcher: Fetcher) {
     fun getProblemSetProblems(): ProblemsetProblemsGson {
         val apiResource = "/problemset.problems"
-        return fetcher.getResource(apiResource, ProblemsetProblemsGson::class.java, Duration.ofSeconds(10))
+        return fetcher.getResource(apiResource, ProblemsetProblemsGson::class.java, Duration.ofSeconds(600))
     }
 
     fun getContestList(): Array<ContestListGson> {
         val apiResource = "/contest.list"
-        return fetcher.getResource(apiResource, Array<ContestListGson>::class.java, Duration.ofSeconds(10))
+        return fetcher.getResource(apiResource, Array<ContestListGson>::class.java, Duration.ofSeconds(600))
+    }
     }
 }
