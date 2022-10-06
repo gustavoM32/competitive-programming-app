@@ -15,5 +15,9 @@ class ResourceFetcher(val fetcher: Fetcher) {
         val apiResource = "/contest.list"
         return fetcher.getResource(apiResource, Array<ContestListGson>::class.java, Duration.ofSeconds(600))
     }
+
+    fun getUserStatus(user: String): Array<UserStatusGson> {
+        val apiResource = "/user.status?handle=$user"
+        return fetcher.getResource(apiResource, Array<UserStatusGson>::class.java, Duration.ofSeconds(600))
     }
 }
