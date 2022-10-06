@@ -23,7 +23,8 @@ class ProblemsetProblemsProcessor(val resourceFetcher: ResourceFetcher, val repo
         logger.info("Drop database")
         problems?.let { ps ->
             val cfp = ps.map { p ->
-                CfProblem(null, p.contestId.toString() + p.index, p.name, p.rating)
+                val code = "${p.contestId.toString()}${p.index}"
+                CfProblem(code, p.contestId, p.index, p.name, p.rating)
             }
             repository.saveAll(cfp)
         }
