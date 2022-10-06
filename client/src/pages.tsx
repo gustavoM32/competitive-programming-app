@@ -39,6 +39,14 @@ const pages = [
     element: <ProblemList />,
   },
   {
+    path: "/cfProblems",
+    sidebar: "/cfProblems",
+    title: "CF Problems",
+    type: "cf",
+    icon: <BallotIcon />,
+    element: <CfProblems />,
+  },
+  {
     path: "/cfContests",
     sidebar: "/cfContests",
     title: "CF Contests",
