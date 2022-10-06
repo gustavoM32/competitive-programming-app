@@ -10,7 +10,8 @@ import org.springframework.web.bind.annotation.RestController
 @RequestMapping("info")
 class InformationController(
     val problemsetProblemsProcessor: ProblemsetProblemsProcessor,
-    val contestsProcessor: ContestsProcessor
+    val contestsProcessor: ContestsProcessor,
+    val submissionsProcessor: SubmissionsProcessor
     ) {
     private val logger: Logger = LoggerFactory.getLogger(javaClass)
 
@@ -23,6 +24,13 @@ class InformationController(
     @GetMapping("contests")
     fun getContests(): String {
         contestsProcessor.update()
+        return "OK"
+    }
+
+    @GetMapping("submissions")
+    fun getSubmissions(): String {
+        val user = "gustavo_m32" // TODO: get user from request
+        submissionsProcessor.update(user)
         return "OK"
     }
 }
