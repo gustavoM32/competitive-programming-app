@@ -12,7 +12,7 @@ type RowParams = {
 
 const problemStatusMap : { [key: string]: string } = {
   "NOTHING": "Not read",
-  "READ": "Read before",
+  "READ": "Read",
   "WA": "WA",
   "AC": "Accepted"
 };
