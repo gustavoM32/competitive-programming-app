@@ -1,5 +1,4 @@
 import { DataGrid } from "@mui/x-data-grid";
-import { CreateProblemDialog, UpdateProblemDialog, DeleteProblemButton } from "components/problemCRUD";
 import { useReadList } from "hooks/crudHooks";
 import { UpdateDataButton, UpdateCfDataButton } from "components/general";
 
@@ -12,14 +11,8 @@ export default function CfProblems() {
   const problems = useReadList(["cfProblems"]);
 
   const columns = [
-    { field: 'code', headerName: 'Code', width: 200},
-    { field: 'name', headerName: 'Name', width: 200},
-    { field: 'action', headerName: 'Action', width: 300, renderCell: (params: RowParams) => (
-      <>
-        <UpdateProblemDialog problem={params.row}/>{' '}
-        <DeleteProblemButton id={params.id}/>
-      </>
-    )},
+    { field: 'code', headerName: 'Code', width: 200 },
+    { field: 'name', headerName: 'Name', width: 200 }
   ];
 
   if (problems.isError) console.error(problems.error)
@@ -38,7 +31,6 @@ export default function CfProblems() {
           columns={columns}
           getRowId={(row) => row._links.self.href}
         />
-        <CreateProblemDialog/>
       </div>
     </>
   );
