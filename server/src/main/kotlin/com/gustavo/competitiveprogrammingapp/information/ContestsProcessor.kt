@@ -17,8 +17,10 @@ class ContestsProcessor(
         val contestList = resourceFetcher.getContestList()
 
         repository.deleteAll() // FIXME: deleting to avoid multiple entries, find a way to not need that
-        contestList.forEach { c ->
-            repository.save(CfContest(c.id, c.name))
+
+        val cfContests = contestList.map { c ->
+            CfContest(c.id, c.name)
         }
+        repository.saveAll(cfContests)
     }
 }
