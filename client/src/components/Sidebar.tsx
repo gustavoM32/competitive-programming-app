@@ -163,6 +163,8 @@ export default function Sidebar(props: any) {
         </DrawerHeader>
         <Divider />
         <List>
+          {props.sidebarData.filter((item: any) => item.type === "home").map(getListItem)}
+          <Divider/>
           {props.sidebarData.filter((item: any) => item.type === "cf").map(getListItem)}
           <Divider/>
           {props.sidebarData.filter((item: any) => item.type === undefined).map(getListItem)}

@@ -15,6 +15,7 @@ const pages = [
     path: "/",
     sidebar: "/",
     title: "Home",
+    type: "home",
     icon: <HomeIcon />,
     element: <Home />,
   },
