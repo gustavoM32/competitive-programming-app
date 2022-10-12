@@ -14,7 +14,7 @@ type TableParams = {
 // Let's add a fetchData method to our Table component that will be used to fetch
 // new data when pagination state changes
 // We can also add a loading state to let our table know it's loading new data
-function TableWithPagination({
+export default function TableWithPagination({
   columns,
   dataPath
 }: TableParams) {
@@ -46,6 +46,7 @@ function TableWithPagination({
       initialState: { pageIndex: 0, pageSize: 8 }, // Pass our hoisted table state
       manualPagination: true,
       pageCount: controlledPageCount,
+      defaultColumn: {width: "auto"}
     },
     usePagination
   )
@@ -64,7 +65,7 @@ function TableWithPagination({
           {headerGroups.map(headerGroup => (
             <TableRow {...headerGroup.getHeaderGroupProps()}>
               {headerGroup.headers.map(column => (
-                <TableCell {...column.getHeaderProps()}>
+                <TableCell {...column.getHeaderProps()} style={{width: (column.width)}}>
                   {column.render('Header')}
                   <span>
                     {column.isSorted
