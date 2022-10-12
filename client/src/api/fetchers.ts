@@ -1,6 +1,25 @@
 import { API_URL, SERVER_URL } from "constants/constants";
 import { readResource } from "./crud";
 
+export async function resourcePageFetcher({ queryKey } : { queryKey: string[] }, pageNumber: number, pageSize: number) {
+  const uri = `${API_URL}/${queryKey.join('/')}?page=${pageNumber}&size=${pageSize}`
+
+  if (queryKey.length === 0) {
+    throw Error("Empty queryKey")
+  }
+
+  const lastElement = queryKey[queryKey.length-1]
+
+  return readResource(uri)
+    .then(data => {
+      return {
+        resources: data._embedded[lastElement],
+        uri: data._links.self.href,
+        page: data.page
+      }
+    })
+}
+
 export async function resourceListFetcher({ queryKey } : { queryKey: string[] }) {
   const uri = `${API_URL}/${queryKey.join('/')}`
 

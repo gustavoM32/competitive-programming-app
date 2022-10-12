@@ -1,19 +1,14 @@
 // @ts-nocheck
-import { Button, Container, MenuItem, Select, Stack, Table, TableBody, TableCell, TableHead, TableRow, TextField } from '@mui/material'
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { Button, Container, MenuItem, Select, Stack, Table, TableBody, TableCell, TableHead, TableRow, Grid, TextField } from '@mui/material'
+import { useReadPage } from 'hooks/crudHooks'
+import { useEffect, useState } from 'react'
 import { usePagination, useTable } from 'react-table'
-
-type PageInfo = {
-  pageSize: number,
-  pageIndex: number
-}
+import { UpdateDataButton } from './general'
+import Spinner from 'react-bootstrap/Spinner'
 
 type TableParams = {
   columns: any,
-  data: any,
-  fetchData: any,
-  loading: boolean,
-  pageCount: number
+  dataPath: string[],
 }
 
 // Let's add a fetchData method to our Table component that will be used to fetch
@@ -21,11 +16,13 @@ type TableParams = {
 // We can also add a loading state to let our table know it's loading new data
 function TableWithPagination({
   columns,
-  data,
-  fetchData,
-  loading,
-  pageCount: controlledPageCount,
+  dataPath
 }: TableParams) {
+  const [tPageNumber, setTPageNumber] = useState(0)
+  const [tPageSize, setTPageSize] = useState(8)
+  const data = useReadPage(dataPath, tPageNumber, tPageSize)
+  const controlledPageCount = data.page.totalPages ?? 0
+
   const {
     getTableProps,
     getTableBodyProps,
@@ -45,12 +42,9 @@ function TableWithPagination({
   } = useTable(
     {
       columns,
-      data,
-      initialState: { pageIndex: 0, pageSize: 5 }, // Pass our hoisted table state
-      manualPagination: true, // Tell the usePagination
-      // hook that we'll handle our own data fetching
-      // This means we'll also have to provide our own
-      // pageCount.
+      data: data.resources,
+      initialState: { pageIndex: 0, pageSize: 8 }, // Pass our hoisted table state
+      manualPagination: true,
       pageCount: controlledPageCount,
     },
     usePagination
@@ -58,8 +52,9 @@ function TableWithPagination({
 
   // Listen for changes in pagination and use the state to fetch our new data
   useEffect(() => {
-    fetchData({ pageIndex, pageSize })
-  }, [fetchData, pageIndex, pageSize])
+    setTPageNumber(pageIndex);
+    setTPageSize(pageSize);
+  }, [pageIndex, pageSize])
 
   // Render the UI for your table
   return (
@@ -95,15 +90,20 @@ function TableWithPagination({
             )
           })}
           <TableRow>
-            {loading ? (
-              // Use our custom loading state to show a loading indicator
-              <TableCell colSpan={10000}>Loading...</TableCell>
-            ) : (
-              <TableCell colSpan={10000}>
-                Showing {page.length} of ~{controlledPageCount * pageSize}{' '}
-                results
-              </TableCell>
-            )}
+            <TableCell colSpan={10000}>
+              <Grid container alignItems="center" spacing={1}>
+                <Grid item>
+                  Page{' '}
+                  <strong>
+                    {pageIndex + 1} of {pageOptions.length}
+                  </strong>{' '}
+                </Grid>
+                {data.isPreviousData ? (
+                  // Use our custom loading state to show a loading indicator
+                  <Grid item><Spinner animation="border" size="sm"/></Grid>
+                  ) : null}
+              </Grid>
+            </TableCell>
           </TableRow>
         </TableBody>
       </Table>
@@ -112,27 +112,21 @@ function TableWithPagination({
         This is just a very basic UI implementation:
       */}
       <Container className="pagination">
-        <Button onClick={() => gotoPage(0)} disabled={!canPreviousPage}>
+        <Button variant="outlined" onClick={() => gotoPage(0)} disabled={!canPreviousPage}>
           {'<<'}
         </Button>{' '}
-        <Button onClick={() => previousPage()} disabled={!canPreviousPage}>
+        <Button variant="outlined" onClick={() => previousPage()} disabled={!canPreviousPage}>
           {'<'}
         </Button>{' '}
-        <Button onClick={() => nextPage()} disabled={!canNextPage}>
+        <Button variant="outlined" onClick={() => nextPage()} disabled={!canNextPage}>
           {'>'}
         </Button>{' '}
-        <Button onClick={() => gotoPage(pageCount - 1)} disabled={!canNextPage}>
+        <Button variant="outlined" onClick={() => gotoPage(pageCount - 1)} disabled={!canNextPage}>
           {'>>'}
         </Button>{' '}
         <span>
-          Page{' '}
-          <strong>
-            {pageIndex + 1} of {pageOptions.length}
-          </strong>{' '}
-        </span>
-        <span>
-          | Go to page:{' '}
           <TextField
+            label="Page"
             type="number"
             defaultValue={pageIndex + 1}
             onChange={e => {
@@ -143,14 +137,15 @@ function TableWithPagination({
           />
         </span>{' '}
         <Select
+          label="Rows"
           value={pageSize}
           onChange={e => {
             setPageSize(Number(e.target.value))
           }}
         >
-          {[2, 5, 10].map(pageSize => (
+          {[5, 8, 10].map(pageSize => (
             <MenuItem key={pageSize} value={pageSize}>
-              Show {pageSize}
+              {pageSize}
             </MenuItem>
           ))}
         </Select>
@@ -159,72 +154,30 @@ function TableWithPagination({
   )
 }
 
-// Let's simulate a large dataset on the server (outside of our component)
-const serverData = [
-  {olar: "1"},
-  {olar: "2"},
-  {olar: "3"},
-  {olar: "4"},
-  {olar: "5"},
-  {olar: "6"},
-  {olar: "7"},
-  {olar: "8"},
-  {olar: "9"},
-  {olar: "10"},
-]
-
 export function Aqui() {
-  const columns = useMemo(
-    () => [
-      {
-        Header: 'Olar',
-        accessor: 'olar',
-      },
-    ],
-    []
-  )
-
-  // We'll start our table without any data
-  const [data, setData] = useState([])
-  const [loading, setLoading] = useState(false)
-  const [pageCount, setPageCount] = useState(0)
-  const fetchIdRef = useRef(0)
-
-  const fetchData = useCallback(({ pageSize, pageIndex }: PageInfo) => {
-    // This will get called when the table needs new data
-    // You could fetch your data from literally anywhere,
-    // even a server. But for this example, we'll just fake it.
-
-    // Give this fetch an ID
-    const fetchId = ++fetchIdRef.current
-
-    // Set the loading state
-    setLoading(true)
-
-    // We'll even set a delay to simulate a server here
-    setTimeout(() => {
-      // Only update the data if this is the latest fetch
-      if (fetchId === fetchIdRef.current) {
-        const startRow = pageSize * pageIndex
-        const endRow = startRow + pageSize
-        setData(serverData.slice(startRow, endRow))
-
-        // Your server could send back total page count.
-        // For now we'll just fake it, too
-        setPageCount(Math.ceil(serverData.length / pageSize))
-
-        setLoading(false)
-      }
-    }, 1000)
-  }, [])
+  const columns = [
+    {
+      Header: 'Field 1',
+      accessor: 'field1',
+    },
+    {
+      Header: 'Field 2',
+      accessor: 'field2',
+      Cell: (cell) => <span>A {cell.value}</span>,
+    },
+    {
+      Header: 'Field 3',
+      accessor: 'field3',
+    },
+  ];
 
   return (
-    <TableWithPagination
-      columns={columns}
-      data={data}
-      fetchData={fetchData}
-      loading={loading}
-      pageCount={pageCount}
-    />
+    <>
+      <TableWithPagination
+        columns={columns}
+        dataPath={["allots"]}
+        />
+      <UpdateDataButton/>
+    </>
   )
 }
