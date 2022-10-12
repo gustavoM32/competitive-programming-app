@@ -57,9 +57,15 @@ export default function TableWithPagination({
     setTPageSize(pageSize);
   }, [pageIndex, pageSize])
 
+  if (data.isError) {
+    console.error(data.error)
+  }
+
   // Render the UI for your table
   return (
     <Stack spacing={2}>
+      {data.isLoading ? <p>Loading...</p> : null}
+      {data.isError ? <p>Error: check console</p> : null}
       <Table {...getTableProps()}>
         <TableHead>
           {headerGroups.map(headerGroup => (
