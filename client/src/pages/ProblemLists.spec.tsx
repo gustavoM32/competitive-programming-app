@@ -5,13 +5,14 @@ import ProblemLists from './ProblemLists';
 
 describe('when it is loading', () => {
   it('shows loading text', async () => {
-    const useReadList = () => ({
+    const useReadPage = () => ({
       isLoading: true,
-      resources: []
+      resources: [],
+      page: { totalPages: 1 }
     });
 
     // @ts-ignore
-    jest.spyOn(crudHooks, 'useReadList').mockImplementation(useReadList);
+    jest.spyOn(crudHooks, 'useReadPage').mockImplementation(useReadPage);
   
     renderWithClient(
       <ProblemLists/>
@@ -23,13 +24,14 @@ describe('when it is loading', () => {
 
 describe('when error on fetching', () => {
   it('prints to error console', async () => {
-    const useReadList = () => ({
+    const useReadPage = () => ({
       isError: true,
-      resources: []
+      resources: [],
+      page: { totalPages: 1 }
     });
     
     // @ts-ignore
-    jest.spyOn(crudHooks, 'useReadList').mockImplementation(useReadList);
+    jest.spyOn(crudHooks, 'useReadPage').mockImplementation(useReadPage);
     
     console.error = jest.fn();
 
@@ -44,16 +46,17 @@ describe('when error on fetching', () => {
 describe('when fetching is successful', () => {
   it('shows problem name in table', async () => {
     const problemName = "problem ABCD";
-    const useReadList = () => ({
+    const useReadPage = () => ({
       isLoading: false,
       resources: [{ 
         name: problemName,
         _links: { self: { href: "id"} }
-      }]
+      }],
+      page: { totalPages: 1 }
     });
     
     // @ts-ignore
-    jest.spyOn(crudHooks, 'useReadList').mockImplementation(useReadList);
+    jest.spyOn(crudHooks, 'useReadPage').mockImplementation(useReadPage);
     
     renderWithClient(
       <ProblemLists/>
