@@ -2,7 +2,7 @@ import axios, { AxiosRequestConfig } from "axios";
 
 const DEV_MODE = !process.env.NODE_ENV || process.env.NODE_ENV === 'development'
 const ADD_REQUEST_DELAY = true && DEV_MODE
-const REQUEST_DELAY = 500;
+const REQUEST_DELAY = 100;
 const MAKE_REQUESTS_FAIL = false && DEV_MODE
 
 function sleep(ms: number) {

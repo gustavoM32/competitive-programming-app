@@ -82,7 +82,7 @@ export function CreateProblemListDialog() {
     <ProblemListDialog
       title="Add problem list"
       actionName="Add"
-      actionFunc={addProblemList.mutate} />
+      actionFunc={addProblemList} />
   );
 }
 
@@ -93,19 +93,19 @@ export function UpdateProblemListDialog(props: { problemList: ProblemListType; }
     <ProblemListDialog
       title="Edit problem list"
       problemList={props.problemList}
-      actionFunc={editProblemList.mutate}
+      actionFunc={editProblemList}
       actionName="Save" />
   );
 }
 
 export function DeleteProblemListButton(props: { id: string }) {
-  const deleteProblemList = useDelete("problemLists");
+  const deleteProblemList = useDelete();
 
   const onDelClick = () => {
     focusManager.setFocused(false)
     const shouldDelete = window.confirm('Are you sure to delete?')
     
-    if (shouldDelete) deleteProblemList.mutate(props.id)
+    if (shouldDelete) deleteProblemList(props.id)
     
     setTimeout(() => focusManager.setFocused(undefined), 0)
   }
