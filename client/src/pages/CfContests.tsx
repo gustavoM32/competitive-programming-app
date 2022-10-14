@@ -1,5 +1,5 @@
 import { UpdateDataButton, UpdateCfDataButton } from "components/general";
-import TableWithPagination from "components/TableWithPagination";
+import { PaginatedTableFetchPage } from "components/TableWithPagination";
 
 
 export default function CfContests() {
@@ -17,7 +17,7 @@ export default function CfContests() {
 
   return (
     <>
-      <TableWithPagination
+      <PaginatedTableFetchPage
         columns={columns}
         dataPath={["cfContests"]}
         />

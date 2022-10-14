@@ -1,5 +1,5 @@
 import { UpdateDataButton, UpdateCfDataButton } from "components/general";
-import TableWithPagination from "components/TableWithPagination";
+import { PaginatedTableFetchPage } from "components/TableWithPagination";
 
 export default function CfProblems() {
   const columns = [
@@ -16,7 +16,7 @@ export default function CfProblems() {
 
   return (
     <>
-      <TableWithPagination
+      <PaginatedTableFetchPage
         columns={columns}
         dataPath={["cfProblems"]}
         />

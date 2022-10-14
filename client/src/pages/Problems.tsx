@@ -1,6 +1,6 @@
 import { CreateProblemDialog, UpdateProblemDialog, DeleteProblemButton } from "components/problemCRUD";
 import { UpdateDataButton } from "components/general";
-import TableWithPagination from "components/TableWithPagination";
+import { PaginatedTableFetchPage } from "components/TableWithPagination";
 import { problemsColumns } from "utils/ProblemUtils";
 
 export default function Problems() {
@@ -17,7 +17,7 @@ export default function Problems() {
 
   return (
     <div>
-      <TableWithPagination
+      <PaginatedTableFetchPage
         columns={columns}
         dataPath={["problems"]}
         />

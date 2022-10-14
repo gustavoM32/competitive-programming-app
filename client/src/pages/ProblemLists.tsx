@@ -1,7 +1,7 @@
 import { Button, Link } from "@mui/material";
 import { CreateProblemListDialog, DeleteProblemListButton } from "components/problemListCRUD";
 import { UpdateDataButton } from "components/general";
-import TableWithPagination from "components/TableWithPagination";
+import { PaginatedTableFetchPage } from "components/TableWithPagination";
 
 export default function ProblemLists() {
   const columns = [
@@ -25,7 +25,7 @@ export default function ProblemLists() {
 
   return (
     <div>
-      <TableWithPagination
+      <PaginatedTableFetchPage
         columns={columns}
         dataPath={["problemLists"]}
         />
