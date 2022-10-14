@@ -89,31 +89,31 @@ export function CreateProblemDialog() {
     <ProblemDialog
       title="Add problem"
       actionName="Add"
-      actionFunc={addProblem.mutate} />
+      actionFunc={addProblem} />
   );
 }
 
 export function UpdateProblemDialog(props: { problem: ProblemType; }) {
-  const editProblem = useUpdate("problems")
+  const editProblem = useUpdate();
 
   return (
     <ProblemDialog
       title="Edit problem"
       problem={props.problem}
-      actionFunc={editProblem.mutate}
+      actionFunc={editProblem}
       actionName="Save" />
   );
 }
 
 export function DeleteProblemButton(props: { id: string }) {
-  const deleteProblem = useDelete("problems");
+  const deleteProblem = useDelete();
 
   const onDelClick = () => {
     // the focus is disabled to prevent a refetch after the user confirms the deletion
     focusManager.setFocused(false)
     const shouldDelete = window.confirm('Are you sure to delete?')
     
-    if (shouldDelete) deleteProblem.mutate(props.id)
+    if (shouldDelete) deleteProblem(props.id)
     
     // it is re-enabled after the mutation is called
     setTimeout(() => focusManager.setFocused(undefined), 0)
