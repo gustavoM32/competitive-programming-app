@@ -14,7 +14,7 @@ class RestConfiguration : RepositoryRestConfigurer {
         val provider = ClassPathScanningCandidateComponentProvider(false)
         provider.addIncludeFilter(RegexPatternTypeFilter(Pattern.compile(".*")))
 
-        val beans = provider.findCandidateComponents("com.gustavo.competitiveprogrammingapp.domain")
+        val beans = provider.findCandidateComponents("com.gustavo.competitiveprogrammingapp")
 
         for (bean in beans) {
             var idExposedClasses: Class<*>?

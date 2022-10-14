@@ -1,7 +1,7 @@
-package com.gustavo.competitiveprogrammingapp.domain.problem
+package com.gustavo.competitiveprogrammingapp.cfApi
 
 import org.springframework.data.mongodb.repository.MongoRepository
 import org.springframework.stereotype.Repository
 
 @Repository
-interface ProblemRepository : MongoRepository<Problem, String>
+interface UrlCacheRepository : MongoRepository<UrlCache, String>

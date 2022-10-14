@@ -2,12 +2,9 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import reportWebVitals from './reportWebVitals';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import Home from './pages/Home';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-import Problems from 'pages/Problems';
-import ProblemLists from 'pages/ProblemLists';
-import ProblemList from 'pages/ProblemList';
 import Page from 'components/Page';
+import pages from 'pages';
 
 const queryClient = new QueryClient();
 
@@ -15,29 +12,24 @@ const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
 
-const router = createBrowserRouter([
-  {
-    path: "/",
-    element: <Page sidebarActiveItem="Home" title="Home"><Home/></Page>,
-  },
-  {
-    path: "/problems",
-    element: <Page sidebarActiveItem="Problems" title="Problems"><Problems/></Page>,
-  },
-  {
-    path: "/problemLists",
-    element: <Page sidebarActiveItem="Problem lists" title="Problem Lists"><ProblemLists/></Page>,
-  },
-  {
-    path: "/problemLists/:problemListId",
-    element: <Page sidebarActiveItem="Problem lists" title="Problem List"><ProblemList/></Page>,
-  },
-]);
+const routes = pages.map((page: any) => {
+  const sidebarData = pages.filter((innerPage: any) => innerPage.path === innerPage.sidebar)
+    .map((innerPage: any) => {
+      return {...innerPage, active: page.sidebar === innerPage.path};
+      });
+
+  return {
+    path: page.path,
+    element: <Page title={page.title} sidebarData={sidebarData}>{page.element}</Page>
+  }
+});
+
+const router = createBrowserRouter(routes);
 
 root.render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>
-      <RouterProvider router={router}/>
+      <RouterProvider router={router} />
     </QueryClientProvider>
   </React.StrictMode>
 );
