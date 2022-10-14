@@ -22,58 +22,7 @@ export const PaginatedTable = (props: any) => {
 
   return (
     <Stack spacing={2}>
-      {data.isLoading ? <p>Loading...</p> : null}
-      {data.isError ? <p>Error: check console</p> : null}
-      <Table {...getTableProps()}>
-        <TableHead>
-          {headerGroups.map((headerGroup: any) => (
-            <TableRow {...headerGroup.getHeaderGroupProps()}>
-              {headerGroup.headers.map((column: any) => (
-                <TableCell {...column.getHeaderProps()} style={{width: (column.width)}}>
-                  <b>{column.render('Header')}</b>
-                  <span>
-                    {column.isSorted
-                      ? column.isSortedDesc
-                        ? ' 🔽'
-                        : ' 🔼'
-                      : ''}
-                  </span>
-                </TableCell>
-              ))}
-            </TableRow>
-          ))}
-        </TableHead>
-        <TableBody {...getTableBodyProps()}>
-          {page.map((row: any, i: any) => {
-            prepareRow(row)
-            return (
-              <TableRow {...row.getRowProps()} className={props.tableClasses?.getRowClasses(row) ?? ""}>
-                {console.log(row)}
-                {row.cells.map((cell: any) => {
-                  return <TableCell {...cell.getCellProps()}>{cell.render('Cell')}</TableCell>
-                })}
-              </TableRow>
-            )
-          })}
-          <TableRow>
-            <TableCell colSpan={10000}>
-              <Grid container alignItems="center" spacing={1}>
-                <Grid item>
-                  Page{' '}
-                  <strong>
-                    {pageIndex + 1} of {pageOptions.length}
-                  </strong>{' '}
-                </Grid>
-                {data.isPreviousData ? (
-                  // Use our custom loading state to show a loading indicator
-                  <Grid item><Spinner animation="border" size="sm"/></Grid>
-                  ) : null}
-              </Grid>
-            </TableCell>
-          </TableRow>
-        </TableBody>
-      </Table>
-      <Container className="pagination">
+      <Container className="pagination py-3">
         <Button variant="outlined" onClick={() => gotoPage(0)} disabled={!canPreviousPage}>
           {'<<'}
         </Button>{' '}
@@ -112,6 +61,56 @@ export const PaginatedTable = (props: any) => {
           ))}
         </Select>
       </Container>
+      {data.isError ? <p>Error loading data</p> : null}
+      <Table {...getTableProps()}>
+        <TableHead>
+          {headerGroups.map((headerGroup: any) => (
+            <TableRow {...headerGroup.getHeaderGroupProps()}>
+              {headerGroup.headers.map((column: any) => (
+                <TableCell {...column.getHeaderProps()} style={{width: (column.width)}}>
+                  <b>{column.render('Header')}</b>
+                  <span>
+                    {column.isSorted
+                      ? column.isSortedDesc
+                        ? ' 🔽'
+                        : ' 🔼'
+                      : ''}
+                  </span>
+                </TableCell>
+              ))}
+            </TableRow>
+          ))}
+        </TableHead>
+        <TableBody {...getTableBodyProps()}>
+          {page.map((row: any, i: any) => {
+            prepareRow(row)
+            return (
+              <TableRow {...row.getRowProps()} className={props.tableClasses?.getRowClasses(row) ?? ""}>
+                {console.log(row)}
+                {row.cells.map((cell: any) => {
+                  return <TableCell {...cell.getCellProps()}>{cell.render('Cell')}</TableCell>
+                })}
+              </TableRow>
+            )
+          })}
+          <TableRow>
+            <TableCell colSpan={10000}>
+              <Grid container alignItems="center" spacing={1}>
+                {data.isLoading ? (
+                  // Use our custom loading state to show a loading indicator
+                  <Grid item><Spinner animation="border" size="sm"/></Grid>
+                  ) : 
+                  <Grid item>
+                    Page{' '}
+                    <strong>
+                      {pageIndex + 1} of {pageOptions.length}
+                    </strong>{' '}
+                  </Grid>}
+              </Grid>
+            </TableCell>
+          </TableRow>
+        </TableBody>
+      </Table>
     </Stack>
   )
 }
