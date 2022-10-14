@@ -7,11 +7,13 @@ import { PaginatedTable } from './PaginatedTable'
 type TableParams = {
   columns: any,
   dataPath: string[],
+  tableClasses?: any
 }
 
 export function PaginatedTableFetchPage({
   columns,
-  dataPath
+  dataPath,
+  tableClasses,
 }: TableParams) {
   const [tPageNumber, setTPageNumber] = useState(0)
   const [tPageSize, setTPageSize] = useState(8)
@@ -44,7 +46,8 @@ export function PaginatedTableFetchPage({
   return (
     <PaginatedTable
       table={table}
-      data={data}/>
+      data={data}
+      tableClasses={tableClasses}/>
   )
 }
 

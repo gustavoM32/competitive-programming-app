@@ -47,7 +47,8 @@ export const PaginatedTable = (props: any) => {
           {page.map((row: any, i: any) => {
             prepareRow(row)
             return (
-              <TableRow {...row.getRowProps()}>
+              <TableRow {...row.getRowProps()} className={props.tableClasses?.getRowClasses(row) ?? ""}>
+                {console.log(row)}
                 {row.cells.map((cell: any) => {
                   return <TableCell {...cell.getCellProps()}>{cell.render('Cell')}</TableCell>
                 })}
