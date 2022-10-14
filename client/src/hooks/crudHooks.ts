@@ -1,11 +1,24 @@
 import { useIsMutating, useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { resourceFetcher, resourceListFetcher } from "../api/fetchers";
+import { resourceFetcher, resourceListFetcher, resourcePageFetcher } from "../api/fetchers";
 import { createResource, updateResource, deleteResource } from "../api/crud"
 import { API_URL } from "constants/constants";
 import { Resource, ResourceData, ResourceList } from "../api/types";
 
 type crudContext<PreviousResourcesType> = {
   previousResources?: PreviousResourcesType
+}
+
+export function useReadPage(path: string[], pageNumber: number, pageSize: number) {
+  const query = useQuery([path, pageNumber.toString(), pageSize.toString()],
+    () => resourcePageFetcher({ queryKey: path}, pageNumber, pageSize),
+    { enabled: path.length !== 0, keepPreviousData: true } )
+
+  return {
+    ...query,
+    resources: query.data?.resources ?? [],
+    uri: query.data?.uri,
+    page: query.data?.page ?? {}
+  }
 }
 
 /* read */

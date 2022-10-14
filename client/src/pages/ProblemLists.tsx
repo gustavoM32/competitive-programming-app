@@ -1,49 +1,35 @@
 import { Button, Link } from "@mui/material";
-import { DataGrid } from "@mui/x-data-grid";
 import { CreateProblemListDialog, DeleteProblemListButton } from "components/problemListCRUD";
-import { useReadList } from "hooks/crudHooks";
 import { UpdateDataButton } from "components/general";
-
-type RowParams = {
-  id: any,
-  row: any
-}
+import { PaginatedTableFetchPage } from "components/TableWithPagination";
 
 export default function ProblemLists() {
-  const problemLists = useReadList(["problemLists"]);
-
   const columns = [
-    { field: 'dateAdded', headerName: 'Date added', type: 'dateTime', width: 250},
-    { field: 'link', headerName: 'Link', width: 50, renderCell: (params: RowParams) => (
-      <Link href={params.row.link} target="_blank" rel="noopener">Link</Link>
-    )},
-    { field: 'name', headerName: 'Name', width: 200},
-    { field: 'rating', headerName: 'Rating'},
-    { field: 'topics', headerName: 'Topics'},
-    { field: 'action', headerName: 'Action', width: 200, renderCell: (params: RowParams) => {
-      let listId = params.row._links.self.href.split("/").slice(-1)
-      return (
-        <>
-          <Button href={`/problemLists/${listId}`} variant="contained">View</Button>
-          <DeleteProblemListButton id={params.id}/>
-        </>
-      )
+    { Header: 'Date added', accessor: 'dateAdded', width: 250 },
+    { Header: 'Link', accessor: 'link', width: 50,
+      Cell: (cell: any) => <Link href={cell.value} target="_blank" rel="noopener">Link</Link>
+    },
+    { Header: 'Name', accessor: 'name', width: 200 },
+    { Header: 'Action', accessor: 'action', width: 200
+    , Cell: (cell: any) => {
+      let listId = cell.row.original.id
+        return (
+          <>
+            <Button href={`/problemLists/${listId}`} variant="contained">View</Button>
+            {' '}
+            <DeleteProblemListButton id={cell.row.original._links.self.href}/>
+          </>
+        )
     }},
   ];
 
-  if (problemLists.isError) console.error(problemLists.error)
-
   return (
     <div>
-      {problemLists.isLoading ? <p>Loading...</p> : null}
-      {problemLists.error ? <p>Error: check console</p> : null}
-      <UpdateDataButton/>
-      <DataGrid
-        autoHeight
-        rows={problemLists.resources}
+      <PaginatedTableFetchPage
         columns={columns}
-        getRowId={(row) => row._links.self.href}
-      />
+        dataPath={["problemLists"]}
+        />
+      <UpdateDataButton/>
       <CreateProblemListDialog/>
     </div>
   );

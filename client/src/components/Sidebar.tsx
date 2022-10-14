@@ -17,6 +17,7 @@ import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import { NavLink } from 'react-router-dom';
+import { Chip } from '@mui/material';
 
 const drawerWidth = 240;
 
@@ -163,8 +164,10 @@ export default function Sidebar(props: any) {
         </DrawerHeader>
         <Divider />
         <List>
+          {props.sidebarData.filter((item: any) => item.type === "home").map(getListItem)}
+          <Divider className="mt-4 mb-2"><Chip label="CF" /></Divider>
           {props.sidebarData.filter((item: any) => item.type === "cf").map(getListItem)}
-          <Divider/>
+          <Divider className="mt-4 mb-2"><Chip label="My" /></Divider>
           {props.sidebarData.filter((item: any) => item.type === undefined).map(getListItem)}
         </List>
       </Drawer>
