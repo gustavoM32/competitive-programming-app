@@ -55,7 +55,7 @@ class ReadOnlyController(val cfProblemRepository: CfProblemRepository) {
         return SliceImpl(subList, pageable, endIndex != list.size)
     }
 
-    @GetMapping("cfProblemWithUserStatus")
+    @GetMapping("cfProblemWithUserStatuses")
     @ResponseBody
     fun getCfProblemWithUserStatus(pageable: Pageable): ResponseEntity<*> {
         val content = cfProblemRepository.findWithUserStatus(pageable)

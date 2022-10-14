@@ -1,5 +1,6 @@
 import { UpdateDataButton, UpdateCfDataButton } from "components/general";
 import { PaginatedTableFetchPage } from "components/TableWithPagination";
+import 'styles/globals.css'
 
 export default function CfProblems() {
   const columns = [
@@ -14,11 +15,22 @@ export default function CfProblems() {
     },
   ];
 
+  const tableClasses = {
+    getRowClasses: (row: any) => {
+      console.log(row);
+      const problem = row.original
+      const acs = problem.submissions.filter((p: any) => p.verdict === "OK");
+      if (acs.length > 0) return "ac-color";
+      if (problem.submissions.length > 0) return "wa-color";
+    }
+  }
+
   return (
     <>
       <PaginatedTableFetchPage
         columns={columns}
-        dataPath={["cfProblems"]}
+        dataPath={["cfProblemWithUserStatuses"]}
+        tableClasses={tableClasses}
         />
       <UpdateDataButton/>
       <UpdateCfDataButton infoPath='problemsetProblems'/>
