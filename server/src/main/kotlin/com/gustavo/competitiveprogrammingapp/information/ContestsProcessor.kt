@@ -6,7 +6,6 @@ import com.gustavo.competitiveprogrammingapp.readOnly.cfContest.CfContestReposit
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
-import java.time.Duration
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneOffset
