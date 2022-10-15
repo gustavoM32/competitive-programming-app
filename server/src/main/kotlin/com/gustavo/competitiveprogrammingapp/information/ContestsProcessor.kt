@@ -6,6 +6,10 @@ import com.gustavo.competitiveprogrammingapp.readOnly.cfContest.CfContestReposit
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
+import java.time.Duration
+import java.time.Instant
+import java.time.LocalDateTime
+import java.time.ZoneOffset
 
 @Component
 class ContestsProcessor(
@@ -18,9 +22,14 @@ class ContestsProcessor(
 
         repository.deleteAll() // FIXME: deleting to avoid multiple entries, find a way to not need that
 
-        val cfContests = contestList.map { c ->
-            CfContest(c.id, c.name)
+            CfContest(
+                id = c.id,
+                name = c.name,
+                startTime = c.startTimeSeconds?.let { LocalDateTime.ofInstant(Instant.ofEpochSecond(it), ZoneOffset.UTC) },
+                durationSeconds = c.durationSeconds
+            )
         }
+
         repository.saveAll(cfContests)
     }
 }

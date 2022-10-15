@@ -2,12 +2,13 @@ package com.gustavo.competitiveprogrammingapp.readOnly.cfContest
 
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document
-import org.springframework.data.mongodb.core.mapping.Field
+import java.time.LocalDateTime
 
 @Document("cfContests")
 data class CfContest(
     @Id
     val id: Int? = null,
-    @Field(name = "name")
     val name: String?,
+    val startTime: LocalDateTime?,
+    val durationSeconds: Long?,
 )

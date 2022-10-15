@@ -34,8 +34,36 @@ export default function CfContests() {
       width: 80,
     },
     {
+      headerName: "Start time",
+      field: "startTime",
+      valueFormatter: (params: any) => {
+        const startTime = params.data.startTime + "Z"; // for some reason spring strips the z
+        const date = new Date(Date.parse(startTime));
+        return date.toLocaleTimeString([], {
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+          hour: "2-digit",
+          minute: "2-digit",
+        });
+      },
+      width: 180,
+    },
+    {
+      headerName: "Duration",
+      field: "durationSeconds",
+      width: 100,
+      valueFormatter: (params: any) => {
+        const durationSeconds = params.data.durationSeconds;
+        const hours = Math.floor(durationSeconds / 3600);
+        const minutes = String((durationSeconds / 60) % 60).padStart(2, "0");
+        return `${hours}h${minutes}`;
+      },
+    },
+    {
       headerName: "Name",
       field: "name",
+      flex: 1,
     },
   ];
 
