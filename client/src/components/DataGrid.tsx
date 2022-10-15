@@ -8,7 +8,7 @@ const DataGrid = (props: any) => {
   const {
     rowData,
     columnDefs,
-    defaultColDef = { sortable: true },
+    defaultColDef = { sortable: true, suppressMovable: true },
     cellClickedListener = () => {},
     getRowClass = () => "",
   } = props;
