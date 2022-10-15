@@ -22,6 +22,7 @@ class ContestsProcessor(
 
         repository.deleteAll() // FIXME: deleting to avoid multiple entries, find a way to not need that
 
+        val cfContests = contestList.filter { c -> c.phase == "FINISHED" }.map { c ->
             CfContest(
                 id = c.id,
                 name = c.name,
