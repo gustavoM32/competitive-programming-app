@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController
 class InformationController(
     val problemsetProblemsProcessor: ProblemsetProblemsProcessor,
     val contestsProcessor: ContestsProcessor,
+    val gymContestsProcessor: GymContestsProcessor,
     val submissionsProcessor: SubmissionsProcessor
     ) {
     private val logger: Logger = LoggerFactory.getLogger(javaClass)
@@ -24,6 +25,12 @@ class InformationController(
     @GetMapping("contests")
     fun getContests(): String {
         contestsProcessor.update()
+        return "OK"
+    }
+
+    @GetMapping("gymContests")
+    fun getGymContests(): String {
+        gymContestsProcessor.update()
         return "OK"
     }
 

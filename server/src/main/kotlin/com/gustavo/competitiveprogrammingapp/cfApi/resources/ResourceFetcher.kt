@@ -18,6 +18,11 @@ class ResourceFetcher(val fetcher: Fetcher) {
         return fetcher.getResource(apiResource, Array<ContestGson>::class.java, Duration.ofSeconds(DEV_CACHE_DURATION))
     }
 
+    fun getGymContestList(): Array<GymContestGson> {
+        val apiResource = "/contest.list?gym=true"
+        return fetcher.getResource(apiResource, Array<GymContestGson>::class.java, Duration.ofSeconds(DEV_CACHE_DURATION))
+    }
+
     fun getUserStatus(user: String): Array<UserStatusGson> {
         val apiResource = "/user.status?handle=$user"
         return fetcher.getResource(apiResource, Array<UserStatusGson>::class.java, Duration.ofSeconds(DEV_CACHE_DURATION))
