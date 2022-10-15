@@ -29,24 +29,21 @@ export default function CfContests() {
 
   const columns = [
     {
-      headerName: 'Id',
-      field: 'id',
-      width: 80
+      headerName: "Id",
+      field: "id",
+      width: 80,
     },
     {
-      headerName: 'Name',
-      field: 'name',
+      headerName: "Name",
+      field: "name",
     },
   ];
 
   return (
     <>
-      <DataGrid
-        rowData={cfContests.resources}
-        columnDefs={columns}
-      />
-      <UpdateDataButton/>
-      <UpdateCfDataButton infoPath='contests'/>
+      <DataGrid rowData={cfContests.resources} columnDefs={columns} />
+      <UpdateDataButton />
+      <UpdateCfDataButton infoPath="contests" />
     </>
   );
 }

@@ -1,8 +1,10 @@
-import { render, screen } from '@testing-library/react'
-import Home from './Home'
+import { render, screen } from "@testing-library/react";
+import Home from "./Home";
 
-test('loads and displays greeting', async () => {
-  render(<Home />)
+test("loads and displays greeting", async () => {
+  render(<Home />);
 
-  expect(screen.getByRole('heading')).toHaveTextContent('Competitive Programming Web App')
-})
+  expect(screen.getByRole("heading")).toHaveTextContent(
+    "Competitive Programming Web App"
+  );
+});

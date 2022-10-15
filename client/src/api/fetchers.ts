@@ -1,66 +1,72 @@
 import { API_URL, SERVER_URL } from "constants/constants";
 import { readResource } from "./crud";
 
-export async function resourcePageFetcher({ queryKey } : { queryKey: string[] }, pageNumber: number, pageSize: number) {
-  const uri = `${API_URL}/${queryKey.join('/')}?page=${pageNumber}&size=${pageSize}`
+export async function resourcePageFetcher(
+  { queryKey }: { queryKey: string[] },
+  pageNumber: number,
+  pageSize: number
+) {
+  const uri = `${API_URL}/${queryKey.join(
+    "/"
+  )}?page=${pageNumber}&size=${pageSize}`;
 
   if (queryKey.length === 0) {
-    throw Error("Empty queryKey")
+    throw Error("Empty queryKey");
   }
 
-  const lastElement = queryKey[queryKey.length-1]
+  const lastElement = queryKey[queryKey.length - 1];
 
-  return readResource(uri)
-    .then(data => {
-      return {
-        resources: data._embedded[lastElement],
-        uri: data._links.self.href,
-        page: data.page
-      }
-    })
+  return readResource(uri).then((data) => {
+    return {
+      resources: data._embedded[lastElement],
+      uri: data._links.self.href,
+      page: data.page,
+    };
+  });
 }
 
-export async function resourceListFetcher({ queryKey } : { queryKey: string[] }) {
-  const uri = `${API_URL}/${queryKey.join('/')}`
+export async function resourceListFetcher({
+  queryKey,
+}: {
+  queryKey: string[];
+}) {
+  const uri = `${API_URL}/${queryKey.join("/")}`;
 
   if (queryKey.length === 0) {
-    throw Error("Empty queryKey")
+    throw Error("Empty queryKey");
   }
 
-  const lastElement = queryKey[queryKey.length-1]
+  const lastElement = queryKey[queryKey.length - 1];
 
-  return readResource(uri)
-    .then(data => {
-      return {
-        resources: data._embedded[lastElement],
-        uri: data._links.self.href
-      }
-    })
+  return readResource(uri).then((data) => {
+    return {
+      resources: data._embedded[lastElement],
+      uri: data._links.self.href,
+    };
+  });
 }
 
-export async function resourceFetcher({ queryKey } : { queryKey: [string] }) {
+export async function resourceFetcher({ queryKey }: { queryKey: [string] }) {
   const [uri] = queryKey;
 
-  return readResource(uri)
-    .then(data => {
-      return {
-        resource: data,
-        uri: data._links.self.href
-      }
-    })
-}
-
-export async function readOnlyFetcher({ queryKey } : { queryKey: string[] }) {
-  const uri = `${SERVER_URL}/info/${queryKey.join('/')}`
-
-  if (queryKey.length === 0) {
-    throw Error("Empty queryKey")
-  }
-
-  return readResource(uri)
-  .then(data => {
+  return readResource(uri).then((data) => {
     return {
       resource: data,
-    }
-  })
+      uri: data._links.self.href,
+    };
+  });
+}
+
+export async function readOnlyFetcher({ queryKey }: { queryKey: string[] }) {
+  const uri = `${SERVER_URL}/info/${queryKey.join("/")}`;
+
+  if (queryKey.length === 0) {
+    throw Error("Empty queryKey");
+  }
+
+  return readResource(uri).then((data) => {
+    return {
+      resource: data,
+    };
+  });
 }

@@ -1,11 +1,11 @@
-export type ResourceData = any
+export type ResourceData = any;
 
 export type Resource = {
-  resource: ResourceData,
-  uri: string
-}
+  resource: ResourceData;
+  uri: string;
+};
 
 export type ResourceList = {
-  resources: ResourceData[],
-  uri: string
-}
+  resources: ResourceData[];
+  uri: string;
+};

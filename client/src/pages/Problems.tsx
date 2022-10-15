@@ -1,4 +1,8 @@
-import { CreateProblemDialog, UpdateProblemDialog, DeleteProblemButton } from "components/problemCRUD";
+import {
+  CreateProblemDialog,
+  UpdateProblemDialog,
+  DeleteProblemButton,
+} from "components/problemCRUD";
 import { UpdateDataButton } from "components/general";
 import { PaginatedTableFetchPage } from "components/TableWithPagination";
 import { problemsColumns } from "utils/ProblemUtils";
@@ -10,23 +14,24 @@ export default function Problems() {
 
   const columns = [
     ...problemsColumns,
-    { headerName: 'Action', accessor: 'action', width: 300
-    , cellRenderer: (cell: any) => (
-      <>
-        <UpdateProblemDialog problem={cell.data}/>{' '}
-        <DeleteProblemButton id={cell.data._links.self.href}/>
-      </>
-    ) },
+    {
+      headerName: "Action",
+      accessor: "action",
+      width: 300,
+      cellRenderer: (cell: any) => (
+        <>
+          <UpdateProblemDialog problem={cell.data} />{" "}
+          <DeleteProblemButton id={cell.data._links.self.href} />
+        </>
+      ),
+    },
   ];
 
   return (
     <>
-      <DataGrid
-        rowData={problems.resources}
-        columnDefs={columns}
-      />
-      <UpdateDataButton/>
-      <CreateProblemDialog/>
+      <DataGrid rowData={problems.resources} columnDefs={columns} />
+      <UpdateDataButton />
+      <CreateProblemDialog />
     </>
   );
 }

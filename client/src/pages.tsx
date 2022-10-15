@@ -8,7 +8,7 @@ import TextSnippetIcon from "@mui/icons-material/TextSnippet";
 import ListIcon from "@mui/icons-material/List";
 import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
 import CfProblems from "pages/CfProblems";
-import BallotIcon from '@mui/icons-material/Ballot';
+import BallotIcon from "@mui/icons-material/Ballot";
 
 const pages = [
   {
