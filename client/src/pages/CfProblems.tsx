@@ -1,37 +1,39 @@
 import { UpdateDataButton, UpdateCfDataButton } from "components/general";
-import { PaginatedTableFetchPage } from "components/TableWithPagination";
+import DataGrid from "components/DataGrid";
+import { useReadList, useReadPage } from "hooks/crudHooks";
 import 'styles/globals.css'
 
 export default function CfProblems() {
+  const cfProblems = useReadPage(["cfProblemWithUserStatuses"], 0, 200);
+  
   const columns = [
     {
-      Header: 'Code',
-      accessor: 'code',
-      width: 80
+      headerName: 'Code',
+      field: 'code',
+      width: 120
     },
     {
-      Header: 'Name',
-      accessor: 'name',
+      headerName: 'Name',
+      field: 'name',
+      flex: 1
     },
   ];
 
-  const tableClasses = {
-    getRowClasses: (row: any) => {
-      console.log(row);
-      const problem = row.original
-      const acs = problem.submissions.filter((p: any) => p.verdict === "OK");
-      if (acs.length > 0) return "ac-color";
-      if (problem.submissions.length > 0) return "wa-color";
-    }
+  const getRowClass = (row: any) => {
+    console.log(row);
+    const problem = row.data
+    const acs = problem.submissions.filter((p: any) => p.verdict === "OK");
+    if (acs.length > 0) return "ac-color";
+    if (problem.submissions.length > 0) return "wa-color";
   }
 
   return (
     <>
-      <PaginatedTableFetchPage
-        columns={columns}
-        dataPath={["cfProblemWithUserStatuses"]}
-        tableClasses={tableClasses}
-        />
+      <DataGrid
+        rowData={cfProblems.resources}
+        columnDefs={columns}
+        getRowClass={getRowClass}
+      />
       <UpdateDataButton/>
       <UpdateCfDataButton infoPath='problemsetProblems'/>
     </>

@@ -1,12 +1,13 @@
 import { Link } from '@mui/material'
 import { UpdateProblemListDialog, DeleteProblemListButtonOne, AddProblemToListDialog, RemoveProblemFromListButton, AddNewProblemToListDialog } from 'components/problemListCRUD'
 import { API_URL } from 'constants/constants'
-import { useRead } from 'hooks/crudHooks'
+import { useRead, useReadList } from 'hooks/crudHooks'
 import { UpdateDataButton } from 'components/general'
 import { DeleteProblemButton } from 'components/problemCRUD'
 import { useParams } from 'react-router-dom'
 import { PaginatedTableFetchAll } from 'components/TableWithPagination'
 import { problemsColumns } from 'utils/ProblemUtils'
+import DataGrid from 'components/DataGrid'
 
 
 export default function ProblemList() {
@@ -14,6 +15,7 @@ export default function ProblemList() {
   const resourceURI = problemListId !== undefined ? `${API_URL}/problemLists/${problemListId}` : ""
   const problemsKey = problemListId !== undefined ? ["problemLists", `${problemListId}`, "problems"] : []
   const problemListData = useRead(resourceURI)
+  const problemsListProblems = useReadList(problemsKey);
 
   if (problemListData.isLoading) return <p>Loading...</p>
   if (problemListData.isError || !problemListData.data) {
@@ -26,14 +28,13 @@ export default function ProblemList() {
   // FIXME: DeleteProblemButton does not invalidate queries because of optimistic mutation
   const columns = [
     ...problemsColumns,
-    { Header: 'Action', accessor: 'action', width: 300
-    , Cell: (cell: any) => {
-        console.log(cell.row.original);
+    { headerName: 'Action', field: 'action', width: 400
+    , cellRenderer: (cell: any) => {
         return (
           <>
             {/* <UpdateProblemDialog problem={params.row}/>*/}
-            <RemoveProblemFromListButton problemList={problemList} problemId={cell.row.original.id}/>
-            <DeleteProblemButton id={cell.row.original._links.self.href}/>
+            <RemoveProblemFromListButton problemList={problemList} problemId={cell.data.id}/>
+            <DeleteProblemButton id={cell.data._links.self.href}/>
           </>
         )
       }
@@ -47,10 +48,10 @@ export default function ProblemList() {
       <p>{problemList.description}</p>
       <p>{problemList.notes}</p>
       <h3>Problems</h3>
-      <PaginatedTableFetchAll
-        columns={columns}
-        dataPath={problemsKey}
-        />
+      <DataGrid
+        rowData={problemsListProblems.resources}
+        columnDefs={columns}
+      />
       <>
         <AddProblemToListDialog problemList={problemList}/>{' '}
         <AddNewProblemToListDialog problemList={problemList}/>{' '}

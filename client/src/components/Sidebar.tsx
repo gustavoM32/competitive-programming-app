@@ -171,7 +171,7 @@ export default function Sidebar(props: any) {
           {props.sidebarData.filter((item: any) => item.type === undefined).map(getListItem)}
         </List>
       </Drawer>
-      <Box component="main" sx={{ flexGrow: 1, p: 3 }} style={{marginTop: '64px', paddingTop: '0px'}}>
+      <Box component="main" sx={{ flexGrow: 1, p: 2 }} style={{marginTop: '64px', paddingTop: '0px'}}>
         {props.content}
       </Box>
     </Box>

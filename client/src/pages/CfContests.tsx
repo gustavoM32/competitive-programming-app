@@ -1,26 +1,30 @@
 import { UpdateDataButton, UpdateCfDataButton } from "components/general";
-import { PaginatedTableFetchPage } from "components/TableWithPagination";
+import { Grid, InputLabel, MenuItem, Select, TextField } from "@mui/material";
+import DataGrid from "components/DataGrid";
+import { useReadList } from "hooks/crudHooks";
 
 
 export default function CfContests() {
+  const cfContests = useReadList(["cfContests"]);
+
   const columns = [
     {
-      Header: 'Id',
-      accessor: 'id',
+      headerName: 'Id',
+      field: 'id',
       width: 80
     },
     {
-      Header: 'Name',
-      accessor: 'name',
+      headerName: 'Name',
+      field: 'name',
     },
   ];
 
   return (
     <>
-      <PaginatedTableFetchPage
-        columns={columns}
-        dataPath={["cfContests"]}
-        />
+      <DataGrid
+        rowData={cfContests.resources}
+        columnDefs={columns}
+      />
       <UpdateDataButton/>
       <UpdateCfDataButton infoPath='contests'/>
     </>

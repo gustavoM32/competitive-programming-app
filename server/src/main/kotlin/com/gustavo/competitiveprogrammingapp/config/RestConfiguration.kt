@@ -26,5 +26,8 @@ class RestConfiguration : RepositoryRestConfigurer {
                 throw RuntimeException("Failed to expose `id` field due to", e)
             }
         }
+
+        config.maxPageSize = 20000
+        config.defaultPageSize = Int.MAX_VALUE
     }
 }

@@ -35,15 +35,12 @@ const convertLinesToBr = () => {
 }
 
 export const problemsColumns = [
-  { Header: 'Date added', accessor: 'dateAdded', width: 250 },
-  { Header: 'Link', accessor: 'link', width: 50,
-    Cell: (cell: any) => <Link href={cell.value} target="_blank" rel="noopener">Link</Link>
+  { headerName: 'Date added', field: 'dateAdded', width: 150 },
+  { headerName: 'Link', field: 'link', width: 80,
+    cellRenderer: (cell: any) => <Link href={cell.value} target="_blank" rel="noopener">Link</Link>
   },
-  { Header: 'Name', accessor: 'name', width: 200 },
-  { Header: 'Status', accessor: 'problemStatus', width: 150
-  , Cell: convertStatus(problemStatusMap) },
-  { Header: 'Editorial', accessor: 'editorialStatus', width: 150
-  , Cell: convertStatus(editorialStatusMap) },
-  { Header: 'Comments', accessor: 'comments', width: 400
-  , Cell: convertLinesToBr() },
+  { headerName: 'Name', field: 'name', width: 200 },
+  { headerName: 'Status', field: 'problemStatus', width: 150, cellRenderer: convertStatus(problemStatusMap) },
+  { headerName: 'Editorial', field: 'editorialStatus', width: 150, cellRenderer: convertStatus(editorialStatusMap) },
+  { headerName: 'Comments', field: 'comments', flex: 1, cellRenderer: convertLinesToBr() },
 ];
