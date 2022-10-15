@@ -15,8 +15,6 @@ const DataGrid = (props: any) => {
 
   const rowHeight = 55;
 
-  console.log(defaultColDef)
-
   return (
     <Grid className="ag-theme-material p-2 w-100" style={{height: 500}}>
       <AgGridReact
