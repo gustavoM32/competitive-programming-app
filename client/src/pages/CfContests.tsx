@@ -71,7 +71,7 @@ export default function CfContests() {
     <>
       <DataGrid rowData={cfContests.resources} columnDefs={columns} />
       <UpdateDataButton />
-      <UpdateCfDataButton infoPath="contests" />
+      <UpdateCfDataButton infoPath="cfContests" />
     </>
   );
 }

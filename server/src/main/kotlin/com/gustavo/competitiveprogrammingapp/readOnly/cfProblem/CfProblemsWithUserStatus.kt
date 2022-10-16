@@ -3,7 +3,7 @@ package com.gustavo.competitiveprogrammingapp.readOnly.cfProblem
 import com.gustavo.competitiveprogrammingapp.readOnly.cfSubmission.CfSubmission
 import org.springframework.data.annotation.Id
 
-data class CfProblemWithUserStatus(
+data class CfProblemsWithUserStatus(
     @Id
     val code: String? = null,
     val contestId: Int?,

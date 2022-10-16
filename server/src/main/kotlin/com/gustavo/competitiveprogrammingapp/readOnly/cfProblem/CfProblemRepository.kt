@@ -11,6 +11,6 @@ interface CfProblemRepository : MongoRepository<CfProblem, String> {
     @Aggregation(pipeline = [
         "{ \$lookup: { from: 'cfSubmissions', localField: '_id', foreignField: 'code', as: 'submissions' } }"
     ])
-    fun findWithUserStatus(pageable: Pageable): Slice<CfProblemWithUserStatus>
+    fun findWithUserStatus(pageable: Pageable): Slice<CfProblemsWithUserStatus>
 }
 

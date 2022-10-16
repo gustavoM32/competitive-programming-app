@@ -11,7 +11,7 @@ import java.time.LocalDateTime
 import java.time.ZoneOffset
 
 @Component
-class ContestsProcessor(
+class CfContestsProcessor(
     private val resourceFetcher: ResourceFetcher,
     private val repository: CfContestRepository) : Processor {
     private val logger: Logger = LoggerFactory.getLogger(javaClass)

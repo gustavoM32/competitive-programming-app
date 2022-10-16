@@ -16,7 +16,7 @@ import kotlin.math.min
 
 @RestController
 @RequestMapping("api")
-class ReadOnlyController(val cfProblemRepository: CfProblemRepository) {
+class InformationController(val cfProblemRepository: CfProblemRepository) {
     private val logger: Logger = LoggerFactory.getLogger(javaClass)
 
     private fun <T> attachPageDataAndLinks(
@@ -55,12 +55,12 @@ class ReadOnlyController(val cfProblemRepository: CfProblemRepository) {
         return SliceImpl(subList, pageable, endIndex != list.size)
     }
 
-    @GetMapping("cfProblemWithUserStatuses")
+    @GetMapping("cfProblemsWithUserStatuses")
     @ResponseBody
-    fun getCfProblemWithUserStatus(pageable: Pageable): ResponseEntity<*> {
+    fun getCfProblemsWithUserStatus(pageable: Pageable): ResponseEntity<*> {
         val content = cfProblemRepository.findWithUserStatus(pageable)
-        val link = linkTo<ReadOnlyController> {
-            WebMvcLinkBuilder.methodOn(ReadOnlyController::class.java).getCfProblemWithUserStatus(pageable)
+        val link = linkTo<InformationController> {
+            WebMvcLinkBuilder.methodOn(InformationController::class.java).getCfProblemsWithUserStatus(pageable)
         }.withSelfRel()
         return attachPageDataAndLinksToSlice(content, pageable, cfProblemRepository.count(), link)
     }

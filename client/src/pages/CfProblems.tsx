@@ -14,13 +14,15 @@ import {
 import { useState } from "react";
 
 export default function CfProblems() {
-  const cfProblems = useReadPage(["cfProblemWithUserStatuses"], 0, 200); // FIXME: Fetch all
+  const cfProblems = useReadPage(["cfProblemsWithUserStatuses"], 0, 200); // FIXME: Fetch all
   const [queryName, setQueryName] = useState("");
   const [statusFilter, setStatusFilter]: any = useState({
     nothing: true,
     wa: true,
     ac: true,
   });
+
+  console.log(cfProblems.resources);
 
   const columns = [
     {
@@ -129,7 +131,7 @@ export default function CfProblems() {
         getRowClass={getRowClass}
       />
       <UpdateDataButton />
-      <UpdateCfDataButton infoPath="problemsetProblems" />
+      <UpdateCfDataButton infoPath="cfProblems" />
     </>
   );
 }

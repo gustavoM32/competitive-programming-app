@@ -3,7 +3,7 @@ import DataGrid from "components/DataGrid";
 import { useReadList } from "hooks/crudHooks";
 
 export default function CfGym() {
-  const cfGym = useReadList(["cfGyms"]);
+  const cfGym = useReadList(["cfGymContests"]);
 
   const columns = [
     {
@@ -53,7 +53,7 @@ export default function CfGym() {
     <>
       <DataGrid rowData={cfGym.resources} columnDefs={columns} />
       <UpdateDataButton />
-      <UpdateCfDataButton infoPath="contests" />
+      <UpdateCfDataButton infoPath="cfGymContests" />
     </>
   );
 }
