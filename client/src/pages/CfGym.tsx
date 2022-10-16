@@ -12,7 +12,6 @@ export default function CfGym() {
       headerName: "Id",
       field: "id",
       width: 100,
-      sort: "desc",
     },
     {
       headerName: "Start time",
@@ -79,9 +78,11 @@ export default function CfGym() {
     },
   ];
 
+  const reversedList = [...cfGym.resources].reverse();
+
   return (
     <>
-      <DataGrid rowData={cfGym.resources} columnDefs={columns} />
+      <DataGrid rowData={reversedList} columnDefs={columns} />
       <UpdateDataButton />
       <UpdateCfDataButton infoPath="cfGymContests" />
     </>
