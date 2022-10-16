@@ -1,5 +1,9 @@
-package com.gustavo.competitiveprogrammingapp.processors
+package com.gustavo.competitiveprogrammingapp.information
 
+import com.gustavo.competitiveprogrammingapp.information.cfContest.CfContestsProcessor
+import com.gustavo.competitiveprogrammingapp.information.cfGymContest.CfGymContestsProcessor
+import com.gustavo.competitiveprogrammingapp.information.cfProblem.CfProblemsProcessor
+import com.gustavo.competitiveprogrammingapp.information.cfSubmission.CfSubmissionsProcessor
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.web.bind.annotation.GetMapping
@@ -8,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("info")
-class InformationProcessorController(
+class UpdateController(
     val cfProblemsProcessor: CfProblemsProcessor,
     val cfContestsProcessor: CfContestsProcessor,
     val cfGymContestsProcessor: CfGymContestsProcessor,

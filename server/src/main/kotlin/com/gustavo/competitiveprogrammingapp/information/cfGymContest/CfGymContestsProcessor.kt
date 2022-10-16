@@ -1,8 +1,7 @@
-package com.gustavo.competitiveprogrammingapp.processors
+package com.gustavo.competitiveprogrammingapp.information.cfGymContest
 
 import com.gustavo.competitiveprogrammingapp.cfApi.ResourceFetcher
-import com.gustavo.competitiveprogrammingapp.information.cfGymContest.CfGymContest
-import com.gustavo.competitiveprogrammingapp.information.cfGymContest.CfGymContestRepository
+import com.gustavo.competitiveprogrammingapp.information.Processor
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component

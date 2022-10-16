@@ -1,8 +1,6 @@
-package com.gustavo.competitiveprogrammingapp.processors
+package com.gustavo.competitiveprogrammingapp.information.cfSubmission
 
 import com.gustavo.competitiveprogrammingapp.cfApi.ResourceFetcher
-import com.gustavo.competitiveprogrammingapp.information.cfSubmission.CfSubmission
-import com.gustavo.competitiveprogrammingapp.information.cfSubmission.CfSubmissionRepository
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
