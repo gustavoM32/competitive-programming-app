@@ -1,4 +1,4 @@
-package com.gustavo.competitiveprogrammingapp.readOnly.cfContest
+package com.gustavo.competitiveprogrammingapp.information.cfContest
 
 import org.springframework.data.mongodb.repository.MongoRepository
 import org.springframework.data.rest.core.annotation.RepositoryRestResource

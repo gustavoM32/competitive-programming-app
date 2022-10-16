@@ -1,6 +1,6 @@
-package com.gustavo.competitiveprogrammingapp.readOnly.cfProblem
+package com.gustavo.competitiveprogrammingapp.information.cfProblem
 
-import com.gustavo.competitiveprogrammingapp.readOnly.cfSubmission.CfSubmission
+import com.gustavo.competitiveprogrammingapp.information.cfSubmission.CfSubmission
 import org.springframework.data.annotation.Id
 
 data class CfProblemsWithUserStatus(

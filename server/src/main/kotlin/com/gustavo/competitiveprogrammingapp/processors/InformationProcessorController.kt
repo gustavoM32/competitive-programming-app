@@ -1,4 +1,4 @@
-package com.gustavo.competitiveprogrammingapp.information
+package com.gustavo.competitiveprogrammingapp.processors
 
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("info")
-class UpdateInformationController(
+class InformationProcessorController(
     val cfProblemsProcessor: CfProblemsProcessor,
     val cfContestsProcessor: CfContestsProcessor,
     val cfGymContestsProcessor: CfGymContestsProcessor,

@@ -1,4 +1,4 @@
-package com.gustavo.competitiveprogrammingapp.readOnly.cfSubmission
+package com.gustavo.competitiveprogrammingapp.information.cfSubmission
 
 import org.springframework.data.mongodb.repository.MongoRepository
 import org.springframework.stereotype.Repository

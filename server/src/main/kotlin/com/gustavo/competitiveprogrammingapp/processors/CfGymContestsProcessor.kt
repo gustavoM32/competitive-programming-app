@@ -1,8 +1,8 @@
-package com.gustavo.competitiveprogrammingapp.information
+package com.gustavo.competitiveprogrammingapp.processors
 
 import com.gustavo.competitiveprogrammingapp.cfApi.ResourceFetcher
-import com.gustavo.competitiveprogrammingapp.readOnly.cfContest.CfContest
-import com.gustavo.competitiveprogrammingapp.readOnly.cfContest.CfContestRepository
+import com.gustavo.competitiveprogrammingapp.information.cfGymContest.CfGymContest
+import com.gustavo.competitiveprogrammingapp.information.cfGymContest.CfGymContestRepository
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
@@ -11,18 +11,19 @@ import java.time.LocalDateTime
 import java.time.ZoneOffset
 
 @Component
-class CfContestsProcessor(
+class CfGymContestsProcessor(
     private val resourceFetcher: ResourceFetcher,
-    private val repository: CfContestRepository) : Processor {
+    private val repository: CfGymContestRepository
+) : Processor {
     private val logger: Logger = LoggerFactory.getLogger(javaClass)
 
     override fun update() {
-        val contestList = resourceFetcher.getContestList()
+        val contestList = resourceFetcher.getContestList(gym = true)
 
         repository.deleteAll() // FIXME: deleting to avoid multiple entries, find a way to not need that
 
-        val cfContests = contestList.filter { c -> c.phase == "FINISHED" }.map { c ->
-            CfContest(
+        val cfGymContests = contestList.filter { c -> c.phase == "FINISHED" }.map { c ->
+            CfGymContest(
                 id = c.id,
                 name = c.name,
                 startTime = c.startTimeSeconds?.let { LocalDateTime.ofInstant(Instant.ofEpochSecond(it), ZoneOffset.UTC) },
@@ -30,6 +31,6 @@ class CfContestsProcessor(
             )
         }
 
-        repository.saveAll(cfContests)
+        repository.saveAll(cfGymContests)
     }
 }

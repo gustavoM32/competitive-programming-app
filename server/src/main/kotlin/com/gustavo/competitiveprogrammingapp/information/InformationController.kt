@@ -1,6 +1,6 @@
-package com.gustavo.competitiveprogrammingapp.readOnly
+package com.gustavo.competitiveprogrammingapp.information
 
-import com.gustavo.competitiveprogrammingapp.readOnly.cfProblem.CfProblemRepository
+import com.gustavo.competitiveprogrammingapp.information.cfProblem.CfProblemRepository
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.data.domain.Pageable

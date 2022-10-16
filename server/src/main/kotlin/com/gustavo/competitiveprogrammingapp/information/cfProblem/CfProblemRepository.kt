@@ -1,4 +1,4 @@
-package com.gustavo.competitiveprogrammingapp.readOnly.cfProblem
+package com.gustavo.competitiveprogrammingapp.information.cfProblem
 
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Slice
