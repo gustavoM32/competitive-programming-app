@@ -1,6 +1,6 @@
 package com.gustavo.competitiveprogrammingapp.information
 
-import com.gustavo.competitiveprogrammingapp.cfApi.resources.ResourceFetcher
+import com.gustavo.competitiveprogrammingapp.cfApi.ResourceFetcher
 import com.gustavo.competitiveprogrammingapp.readOnly.cfSubmission.CfSubmission
 import com.gustavo.competitiveprogrammingapp.readOnly.cfSubmission.CfSubmissionRepository
 import org.slf4j.Logger

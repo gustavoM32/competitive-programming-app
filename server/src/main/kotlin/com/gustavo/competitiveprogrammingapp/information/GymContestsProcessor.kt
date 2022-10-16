@@ -1,6 +1,6 @@
 package com.gustavo.competitiveprogrammingapp.information
 
-import com.gustavo.competitiveprogrammingapp.cfApi.resources.ResourceFetcher
+import com.gustavo.competitiveprogrammingapp.cfApi.ResourceFetcher
 import com.gustavo.competitiveprogrammingapp.readOnly.cfGymContest.CfGym
 import com.gustavo.competitiveprogrammingapp.readOnly.cfGymContest.CfGymRepository
 import org.slf4j.Logger
@@ -18,7 +18,7 @@ class GymContestsProcessor(
     private val logger: Logger = LoggerFactory.getLogger(javaClass)
 
     override fun update() {
-        val contestList = resourceFetcher.getGymContestList()
+        val contestList = resourceFetcher.getContestList(gym = true)
 
         repository.deleteAll() // FIXME: deleting to avoid multiple entries, find a way to not need that
 
