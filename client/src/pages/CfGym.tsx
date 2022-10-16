@@ -1,6 +1,8 @@
 import { UpdateDataButton, UpdateCfDataButton } from "components/general";
 import DataGrid from "components/DataGrid";
 import { useReadList } from "hooks/crudHooks";
+import StarIcon from "@mui/icons-material/Star";
+import { Grid } from "@mui/material";
 
 export default function CfGym() {
   const cfGym = useReadList(["cfGymContests"]);
@@ -40,6 +42,30 @@ export default function CfGym() {
         const hours = Math.floor(durationSeconds / 3600);
         const minutes = String((durationSeconds / 60) % 60).padStart(2, "0");
         return `${hours}h${minutes}`;
+      },
+    },
+    {
+      headerName: "Difficulty",
+      field: "difficulty",
+      width: 150,
+      cellRenderer: (params: any) => {
+        const diff = params.data.difficulty;
+        if (diff == null)
+          return (
+            <Grid container direction="row" justifyContent="center">
+              <Grid item>-</Grid>
+            </Grid>
+          );
+
+        const stars = [];
+        for (let i = 0; i < diff; i++)
+          stars.push(<StarIcon fontSize="small" />);
+
+        return (
+          <Grid container direction="row" justifyContent="center">
+            <Grid item>{stars}</Grid>
+          </Grid>
+        );
       },
     },
     {

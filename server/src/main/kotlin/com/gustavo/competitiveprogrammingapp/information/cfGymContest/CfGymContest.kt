@@ -11,4 +11,5 @@ data class CfGymContest(
     val name: String?,
     val startTime: LocalDateTime?,
     val durationSeconds: Long?,
+    val difficulty: Int?,
 )

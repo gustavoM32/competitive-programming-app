@@ -5,5 +5,6 @@ data class ApiContest(
     val name: String?,
     val phase: String?,
     val durationSeconds: Long?,
-    val startTimeSeconds: Long?
+    val startTimeSeconds: Long?,
+    val difficulty: Int?,
 )
