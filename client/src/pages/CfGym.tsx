@@ -59,11 +59,15 @@ export default function CfGym() {
 
         const stars = [];
         for (let i = 0; i < diff; i++)
-          stars.push(<StarIcon fontSize="small" />);
+          stars.push(
+            <Grid item key={i}>
+              <StarIcon fontSize="small" />
+            </Grid>
+          );
 
         return (
           <Grid container direction="row" justifyContent="center">
-            <Grid item>{stars}</Grid>
+            {stars}
           </Grid>
         );
       },
