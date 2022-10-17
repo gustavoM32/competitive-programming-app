@@ -1,5 +1,12 @@
 import { UpdateDataButton, UpdateCfDataButton } from "components/general";
-import { Grid, InputLabel, MenuItem, Select, TextField } from "@mui/material";
+import {
+  Grid,
+  InputLabel,
+  Link,
+  MenuItem,
+  Select,
+  TextField,
+} from "@mui/material";
 import DataGrid from "components/DataGrid";
 import { useReadList } from "hooks/crudHooks";
 
@@ -32,6 +39,15 @@ export default function CfContests() {
       headerName: "Id",
       field: "id",
       width: 80,
+      cellRenderer: (params: any) => {
+        const { id } = params.data;
+        const link = `http://codeforces.com/contest/${id}`;
+        return (
+          <Link href={link} target="_blank" rel="noopener">
+            {id}
+          </Link>
+        );
+      },
     },
     {
       headerName: "Start time",

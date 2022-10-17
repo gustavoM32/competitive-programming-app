@@ -9,6 +9,7 @@ import {
   FormGroup,
   FormLabel,
   Grid,
+  Link,
   TextField,
 } from "@mui/material";
 import { useState } from "react";
@@ -22,13 +23,20 @@ export default function CfProblems() {
     ac: true,
   });
 
-  console.log(cfProblems.resources);
-
   const columns = [
     {
       headerName: "Code",
       field: "code",
       width: 120,
+      cellRenderer: (params: any) => {
+        const { code, contestId, index } = params.data;
+        const link = `http://codeforces.com/problemset/problem/${contestId}/${index}`;
+        return (
+          <Link href={link} target="_blank" rel="noopener">
+            {code}
+          </Link>
+        );
+      },
     },
     {
       headerName: "Name",

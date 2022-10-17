@@ -8,6 +8,7 @@ import {
   FormControlLabel,
   Grid,
   InputLabel,
+  Link,
   ListItemText,
   MenuItem,
   OutlinedInput,
@@ -48,6 +49,15 @@ export default function CfGym() {
         headerName: "Id",
         field: "id",
         width: 100,
+        cellRenderer: (params: any) => {
+          const { id } = params.data;
+          const link = `http://codeforces.com/gym/${id}`;
+          return (
+            <Link href={link} target="_blank" rel="noopener">
+              {id}
+            </Link>
+          );
+        },
       },
       {
         headerName: "Start time",
