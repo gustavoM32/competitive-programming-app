@@ -5,7 +5,7 @@ import {
 } from "components/problemCRUD";
 import { UpdateDataButton } from "components/general";
 import { PaginatedTableFetchPage } from "components/TableWithPagination";
-import { problemsColumns } from "utils/ProblemUtils";
+import { problemsColumns } from "utils/problemUtils";
 import DataGrid from "components/DataGrid";
 import { useReadList } from "hooks/crudHooks";
 

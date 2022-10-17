@@ -21,7 +21,7 @@ import {
   Typography,
 } from "@mui/material";
 import { useCallback, useMemo, useState } from "react";
-import { problemStatusMap } from "utils/ProblemUtils";
+import { problemStatusMap } from "utils/problemUtils";
 
 export default function CfProblems() {
   const cfProblems = useReadPage(["cfProblemsWithUserStatuses"], 0, 200); // FIXME: Fetch all
