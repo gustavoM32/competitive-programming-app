@@ -80,8 +80,8 @@ export default function CfProblems() {
       >
         <Grid item>
           <TextField
-            label="Nome"
-            name="query"
+            label="Name"
+            name="name"
             value={queryName}
             onChange={handleChange}
           />
