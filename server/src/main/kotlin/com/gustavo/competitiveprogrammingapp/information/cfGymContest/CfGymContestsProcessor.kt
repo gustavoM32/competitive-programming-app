@@ -27,7 +27,11 @@ class CfGymContestsProcessor(
                 name = c.name,
                 startTime = c.startTimeSeconds?.let { LocalDateTime.ofInstant(Instant.ofEpochSecond(it), ZoneOffset.UTC) },
                 durationSeconds = c.durationSeconds,
-                difficulty = c.difficulty
+                difficulty = c.difficulty,
+                type = c.kind,
+                region = c.icpcRegion,
+                country = c.country,
+                season = c.season
             )
         }
 

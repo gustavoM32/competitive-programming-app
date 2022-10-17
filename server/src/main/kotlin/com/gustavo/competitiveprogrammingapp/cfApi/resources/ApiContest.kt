@@ -7,4 +7,8 @@ data class ApiContest(
     val durationSeconds: Long?,
     val startTimeSeconds: Long?,
     val difficulty: Int?,
+    val kind: String?,
+    val icpcRegion: String?,
+    val country: String?,
+    val season: String?,
 )
