@@ -5,7 +5,7 @@ type CellParams = {
   value: string;
 };
 
-const problemStatusMap: { [key: string]: string } = {
+export const problemStatusMap: { [key: string]: string } = {
   NOTHING: "Not read",
   READ: "Read",
   WA: "WA",
