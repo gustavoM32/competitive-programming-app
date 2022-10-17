@@ -19,6 +19,7 @@ import {
   Typography,
 } from "@mui/material";
 import { useCallback, useMemo, useState } from "react";
+import { getPossibleFieldValues } from "utils/filterUtils";
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -29,15 +30,6 @@ const MenuProps = {
       width: 400,
     },
   },
-};
-
-const getFieldPossibleValues = (objectList: any, field: string): string[] => {
-  console.log("calc");
-  const valuesSet = new Set<string>();
-  for (let object of objectList) {
-    if (object[field] != null) valuesSet.add(object[field]);
-  }
-  return Array.from(valuesSet);
 };
 
 export default function CfGym() {
@@ -128,17 +120,17 @@ export default function CfGym() {
 
   // filters
   const contestTypes = useMemo(
-    () => getFieldPossibleValues(cfGym.resources, "type"),
+    () => getPossibleFieldValues(cfGym.resources, "type"),
     [cfGym.resources]
   );
 
   const contestRegions = useMemo(
-    () => getFieldPossibleValues(cfGym.resources, "region"),
+    () => getPossibleFieldValues(cfGym.resources, "region"),
     [cfGym.resources]
   );
 
   const contestCountries = useMemo(
-    () => getFieldPossibleValues(cfGym.resources, "country"),
+    () => getPossibleFieldValues(cfGym.resources, "country"),
     [cfGym.resources]
   );
 
