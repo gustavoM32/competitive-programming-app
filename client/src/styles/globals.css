@@ -5,3 +5,8 @@
 .ac-color {
   background-color: #cdf7cd;
 }
+
+/* this fixes a UI error in Text Field caused by bootstrap styling */
+fieldset legend {
+  width: unset;
+}
