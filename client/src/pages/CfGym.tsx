@@ -19,18 +19,7 @@ import {
   Typography,
 } from "@mui/material";
 import { useCallback, useMemo, useState } from "react";
-import { getPossibleFieldValues } from "utils/filterUtils";
-
-const ITEM_HEIGHT = 48;
-const ITEM_PADDING_TOP = 8;
-const MenuProps = {
-  PaperProps: {
-    style: {
-      // maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
-      width: 400,
-    },
-  },
-};
+import { getPossibleFieldValues, MenuProps } from "utils/filterUtils";
 
 export default function CfGym() {
   const cfGym = useReadList(["cfGymContests"]);
