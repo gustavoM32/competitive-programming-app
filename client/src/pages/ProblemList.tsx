@@ -11,7 +11,6 @@ import { useRead, useReadList } from "hooks/crudHooks";
 import { UpdateDataButton } from "components/general";
 import { DeleteProblemButton } from "components/problemCRUD";
 import { useParams } from "react-router-dom";
-import { PaginatedTableFetchAll } from "components/TableWithPagination";
 import { problemsColumns } from "utils/problemUtils";
 import DataGrid from "components/DataGrid";
 

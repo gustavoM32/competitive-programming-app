@@ -1,6 +1,9 @@
 package com.gustavo.competitiveprogrammingapp.information
 
 import com.gustavo.competitiveprogrammingapp.information.cfProblem.CfProblemRepository
+import com.gustavo.competitiveprogrammingapp.information.cfProblem.CfProblemsWithUserStatus
+import com.gustavo.competitiveprogrammingapp.information.cfSubmission.CfSubmissionRepository
+import com.gustavo.competitiveprogrammingapp.rest.problem.ProblemStatus
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.data.domain.Pageable
@@ -16,7 +19,7 @@ import kotlin.math.min
 
 @RestController
 @RequestMapping("api")
-class RetrievalController(val cfProblemRepository: CfProblemRepository) {
+class RetrievalController(val cfProblemRepository: CfProblemRepository, val cfSubmissionRepository: CfSubmissionRepository) {
     private val logger: Logger = LoggerFactory.getLogger(javaClass)
 
     private fun <T> attachPageDataAndLinks(
@@ -55,13 +58,48 @@ class RetrievalController(val cfProblemRepository: CfProblemRepository) {
         return SliceImpl(subList, pageable, endIndex != list.size)
     }
 
+    fun calcCfProblemsWithUserStatus(user: String): List<CfProblemsWithUserStatus> {
+        val problems = cfProblemRepository.findAll()
+        val submission = cfSubmissionRepository.findByUser(user)
+
+        val problemStatusMap = mutableMapOf<String, String>()
+
+        submission.forEach { s ->
+            if (s.verdict != null) {
+                val problemId = "${s.contestId}${s.index}"
+                if (!problemStatusMap.containsKey(problemId) || problemStatusMap[problemId] != "OK") {
+                    problemStatusMap[problemId] = s.verdict
+                }
+            }
+        }
+
+        return problems.map { p ->
+            var problemStatus = ProblemStatus.NOTHING
+
+            if (problemStatusMap.containsKey(p.code)) {
+                problemStatus = if (problemStatusMap[p.code] == "OK") ProblemStatus.AC else ProblemStatus.WA;
+            }
+
+            CfProblemsWithUserStatus(
+                code = p.code,
+                contestId = p.contestId,
+                index = p.index,
+                name = p.name,
+                rating = p.rating,
+                user = user,
+                userStatus = problemStatus
+            )
+        }
+    }
+
     @GetMapping("cfProblemsWithUserStatuses")
     @ResponseBody
     fun getCfProblemsWithUserStatus(pageable: Pageable): ResponseEntity<*> {
-        val content = cfProblemRepository.findWithUserStatus(pageable)
+        val user = "gustavo_m32" // FIXME
+        val content = calcCfProblemsWithUserStatus(user)
         val link = linkTo<RetrievalController> {
             WebMvcLinkBuilder.methodOn(RetrievalController::class.java).getCfProblemsWithUserStatus(pageable)
         }.withSelfRel()
-        return attachPageDataAndLinksToSlice(content, pageable, cfProblemRepository.count(), link)
+        return attachPageDataAndLinks(content, pageable, cfProblemRepository.count(), link)
     }
 }

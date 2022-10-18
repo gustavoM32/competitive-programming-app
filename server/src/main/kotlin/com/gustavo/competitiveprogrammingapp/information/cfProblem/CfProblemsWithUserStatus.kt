@@ -1,6 +1,6 @@
 package com.gustavo.competitiveprogrammingapp.information.cfProblem
 
-import com.gustavo.competitiveprogrammingapp.information.cfSubmission.CfSubmission
+import com.gustavo.competitiveprogrammingapp.rest.problem.ProblemStatus
 import org.springframework.data.annotation.Id
 
 data class CfProblemsWithUserStatus(
@@ -10,5 +10,6 @@ data class CfProblemsWithUserStatus(
     val index: String?,
     val name: String?,
     val rating: Int?,
-    val submissions: List<CfSubmission>?
+    val user: String?,
+    val userStatus: ProblemStatus?
 )

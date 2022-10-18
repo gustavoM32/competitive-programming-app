@@ -1,13 +1,11 @@
 import { UpdateDataButton, UpdateCfDataButton } from "components/general";
 import DataGrid from "components/DataGrid";
-import { useReadList, useReadPage } from "hooks/crudHooks";
+import { useReadList } from "hooks/crudHooks";
 import "styles/globals.css";
 import {
   Checkbox,
   FormControl,
   FormControlLabel,
-  FormGroup,
-  FormLabel,
   Grid,
   InputLabel,
   Link,
@@ -24,7 +22,7 @@ import { useCallback, useMemo, useState } from "react";
 import { problemStatusMap } from "utils/problemUtils";
 
 export default function CfProblems() {
-  const cfProblems = useReadPage(["cfProblemsWithUserStatuses"], 0, 200); // FIXME: Fetch all
+  const cfProblems = useReadList(["cfProblemsWithUserStatuses"]);
 
   const columns = useMemo(
     () => [
@@ -57,10 +55,9 @@ export default function CfProblems() {
   );
 
   const getRowClass = useCallback((row: any) => {
-    const problem = row.data;
-    const acs = problem.submissions.filter((p: any) => p.verdict === "OK");
-    if (acs.length > 0) return "ac-color";
-    if (problem.submissions.length > 0) return "wa-color";
+    const status = row.data.userStatus;
+    if (status === "AC") return "ac-color";
+    if (status === "WA") return "wa-color";
     return "";
   }, []);
 
@@ -106,19 +103,21 @@ export default function CfProblems() {
         const lowercasedName = p.name.toLowerCase();
         if (!lowercasedName.includes(problemName)) return false;
 
-        let status: string = getRowClass({ data: p });
-        if (status === "ac-color") status = "AC";
-        else if (status === "wa-color") status = "WA";
-        else status = "NOTHING";
-
         return (
-          (problemStatus.length === 0 || problemStatus.includes(status)) &&
+          (problemStatus.length === 0 ||
+            problemStatus.includes(p.userStatus)) &&
           (!problemHasRating || p.rating != null) &&
           (p.rating == null ||
             (problemRating[0] <= p.rating && p.rating <= problemRating[1]))
         );
       }),
-    [cfProblems.resources, getRowClass, problemName, problemStatus, problemHasRating, problemRating]
+    [
+      cfProblems.resources,
+      problemName,
+      problemStatus,
+      problemHasRating,
+      problemRating,
+    ]
   );
 
   return (
