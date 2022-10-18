@@ -27,6 +27,8 @@ const DataGrid = (props: any) => {
         // rowSelection='multiple' // Options - allows click selection of rows
 
         onCellClicked={cellClickedListener} // Optional - registering for Grid Event
+        enableCellTextSelection={true}
+        ensureDomOrder={true}
       />
     </Grid>
   );
