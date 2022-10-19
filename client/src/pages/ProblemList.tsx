@@ -14,7 +14,7 @@ import {
   UpdateProblemDialog,
 } from "components/problemCRUD";
 import { useParams } from "react-router-dom";
-import { problemsColumns } from "utils/problemUtils";
+import { getRowClass, problemsColumns } from "utils/problemUtils";
 import DataGrid from "components/DataGrid";
 
 export default function ProblemList() {
@@ -70,8 +70,11 @@ export default function ProblemList() {
       </p>
       <p>{problemList.description}</p>
       <p>{problemList.notes}</p>
-      <h3>Problems</h3>
-      <DataGrid rowData={problemsListProblems.resources} columnDefs={columns} />
+      <DataGrid
+        rowData={problemListProblems.resources}
+        columnDefs={columns}
+        getRowClass={getRowClass}
+      />
       <>
         <AddProblemToListDialog problemList={problemList} />{" "}
         <AddNewProblemToListDialog problemList={problemList} />{" "}

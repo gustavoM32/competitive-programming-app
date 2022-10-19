@@ -58,6 +58,7 @@ export default function CfProblems() {
     const status = row.data.userStatus;
     if (status === "AC") return "ac-color";
     if (status === "WA") return "wa-color";
+    if (status === "READ") return "read-color";
     return "";
   }, []);
 

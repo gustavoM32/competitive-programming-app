@@ -71,3 +71,11 @@ export const problemsColumns = [
     cellRenderer: convertLinesToBr(),
   },
 ];
+
+export const getRowClass = (row: any) => {
+  const status = row.data.problemStatus;
+  if (status === "AC") return "ac-color";
+  if (status === "WA") return "wa-color";
+  if (status === "READ") return "read-color";
+  return "";
+};

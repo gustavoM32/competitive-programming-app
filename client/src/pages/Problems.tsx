@@ -4,8 +4,7 @@ import {
   DeleteProblemButton,
 } from "components/problemCRUD";
 import { UpdateDataButton } from "components/general";
-import { PaginatedTableFetchPage } from "components/TableWithPagination";
-import { problemsColumns } from "utils/problemUtils";
+import { getRowClass, problemsColumns } from "utils/problemUtils";
 import DataGrid from "components/DataGrid";
 import { useReadList } from "hooks/crudHooks";
 
@@ -29,7 +28,11 @@ export default function Problems() {
 
   return (
     <>
-      <DataGrid rowData={problems.resources} columnDefs={columns} />
+      <DataGrid
+        rowData={problems.resources}
+        columnDefs={columns}
+        getRowClass={getRowClass}
+      />
       <UpdateDataButton />
       <CreateProblemDialog />
     </>
