@@ -1,4 +1,4 @@
-import { Link } from "@mui/material";
+import { Grid, Link } from "@mui/material";
 import {
   UpdateProblemListDialog,
   DeleteProblemListButtonOne,
@@ -16,6 +16,8 @@ import {
 import { useParams } from "react-router-dom";
 import { getRowClass, problemsColumns } from "utils/problemUtils";
 import DataGrid from "components/DataGrid";
+import { ProblemType } from "types";
+import { useMemo } from "react";
 
 export default function ProblemList() {
   const { problemListId } = useParams();
@@ -28,17 +30,22 @@ export default function ProblemList() {
       ? ["problemLists", `${problemListId}`, "problems"]
       : [];
   const problemListData = useRead(resourceURI);
-  const problemsListProblems = useReadList(problemsKey);
+  const problemListProblems = useReadList(problemsKey);
 
-  if (problemListData.isLoading) return <p>Loading...</p>;
-  if (problemListData.isError || !problemListData.data) {
-    console.error(problemListData.error);
-    return <p>Error: check console</p>;
-  }
+  const explicitSolved = useMemo(
+    () =>
+      problemListProblems.resources.filter(
+        (p: ProblemType) => p.problemStatus === "AC"
+      ).length,
+    [problemListProblems.resources]
+  );
+  const explicitTotal = useMemo(
+    () => problemListProblems.resources.length,
+    [problemListProblems.resources]
+  );
 
-  const { resource: problemList, uri } = problemListData.data;
+  const { resource: problemList } = problemListData;
 
-  // FIXME: DeleteProblemButton does not invalidate queries because of optimistic mutation
   const columns = [
     ...problemsColumns,
     {
@@ -60,16 +67,28 @@ export default function ProblemList() {
     },
   ];
 
+  const solved = problemList.solvedCount + explicitSolved;
+  const total = problemList.totalCount + explicitTotal;
+
+  if (problemListData.isError) console.error(problemListData.error);
+
+
   return (
     <>
-      <h2>{problemList.name}</h2>
-      <p>
-        <Link href={problemList.link} target="_blank" rel="noopener">
-          Link
-        </Link>
-      </p>
+      {problemListData.isLoading ? <p>Loading...</p> : null}
+      {problemListData.isError ? <p>Error: check console</p> : null}
+      <Grid container>
+        <h2>
+          <Link href={problemList.link} target="_blank" rel="noopener">
+            {problemList.name}
+          </Link>
+        </h2>
+      </Grid>
       <p>{problemList.description}</p>
       <p>{problemList.notes}</p>
+      <h3>
+        Problems ({solved}/{total})
+      </h3>
       <DataGrid
         rowData={problemListProblems.resources}
         columnDefs={columns}
@@ -79,7 +98,7 @@ export default function ProblemList() {
         <AddProblemToListDialog problemList={problemList} />{" "}
         <AddNewProblemToListDialog problemList={problemList} />{" "}
         <UpdateProblemListDialog problemList={problemList} />{" "}
-        <DeleteProblemListButtonOne id={uri} />
+        <DeleteProblemListButtonOne id={problemListData.uri} />
         <UpdateDataButton />
       </>
     </>

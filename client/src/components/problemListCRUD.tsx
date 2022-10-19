@@ -167,7 +167,7 @@ export function CreateProblemListDialog() {
 export function UpdateProblemListDialog(props: {
   problemList: ProblemListType;
 }) {
-  const editProblemList = useUpdateOne(props.problemList._links.self.href);
+  const editProblemList = useUpdateOne(props.problemList._links?.self?.href);
 
   return (
     <ProblemListDialog

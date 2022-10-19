@@ -49,7 +49,7 @@ export function useRead(uri: string) {
 
   return {
     ...query,
-    resources: query.data?.resource ?? {},
+    resource: query.data?.resource ?? {},
     uri: query.data?.uri,
   };
 }
