@@ -46,7 +46,7 @@ export const problemsColumns = [
     field: "link",
     width: 80,
     cellRenderer: (cell: any) => (
-      <Link href={cell.value} target="_blank" rel="noopener">
+      <Link href={"//" + cell.value} target="_blank" rel="noopener">
         Link
       </Link>
     ),

@@ -72,6 +72,7 @@ export default function ProblemList() {
 
   if (problemListData.isError) console.error(problemListData.error);
 
+  const link = "//" + problemList.link;
 
   return (
     <>
@@ -79,7 +80,7 @@ export default function ProblemList() {
       {problemListData.isError ? <p>Error: check console</p> : null}
       <Grid container>
         <h2>
-          <Link href={problemList.link} target="_blank" rel="noopener">
+          <Link href={link} target="_blank" rel="noopener">
             {problemList.name}
           </Link>
         </h2>
