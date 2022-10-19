@@ -1,10 +1,9 @@
-import { Button, Link } from "@mui/material";
+import { Button, Link, Tooltip } from "@mui/material";
 import {
   CreateProblemListDialog,
   DeleteProblemListButton,
 } from "components/problemListCRUD";
 import { UpdateDataButton } from "components/general";
-import { PaginatedTableFetchPage } from "components/TableWithPagination";
 import { useReadList } from "hooks/crudHooks";
 import DataGrid from "components/DataGrid";
 
@@ -32,9 +31,11 @@ export default function ProblemLists() {
         let listId = cell.data.id;
         return (
           <>
-            <Button href={`/problemLists/${listId}`} variant="contained">
-              View
-            </Button>{" "}
+            <Tooltip title="View problem list">
+              <Button href={`/problemLists/${listId}`} variant="contained">
+                View
+              </Button>
+            </Tooltip>{" "}
             <DeleteProblemListButton id={cell.data._links.self.href} />
           </>
         );

@@ -9,6 +9,7 @@ import {
   FormControlLabel,
   Radio,
   DialogActions,
+  Tooltip,
 } from "@mui/material";
 import { useState } from "react";
 import { ProblemType } from "types";
@@ -18,6 +19,7 @@ import { focusManager } from "@tanstack/react-query";
 
 type ProblemDialogProps = {
   title: string;
+  tooltip?: string;
   problem?: ProblemType;
   actionName: string;
   actionFunc: (problem: ProblemType) => void;
@@ -46,9 +48,11 @@ export function ProblemDialog(props: ProblemDialogProps) {
 
   return (
     <>
-      <Button variant="outlined" color="primary" onClick={handleOpen}>
-        {props.title}{" "}
-      </Button>
+      <Tooltip title={props.tooltip ?? ""}>
+        <Button variant="outlined" color="primary" onClick={handleOpen}>
+          {props.title}{" "}
+        </Button>
+      </Tooltip>
       <Dialog open={open} onClose={handleClose}>
         <DialogTitle id="form-dialog-title">{props.title}</DialogTitle>
         <DialogContent>
@@ -143,8 +147,9 @@ export function CreateProblemDialog() {
 
   return (
     <ProblemDialog
-      title="Add problem"
-      actionName="Add"
+      title="Create"
+      tooltip="Create problem"
+      actionName="Create"
       actionFunc={addProblem}
     />
   );
@@ -155,7 +160,8 @@ export function UpdateProblemDialog(props: { problem: ProblemType }) {
 
   return (
     <ProblemDialog
-      title="Edit problem"
+      title="Edit"
+      tooltip="Edit problem"
       problem={props.problem}
       actionFunc={editProblem}
       actionName="Save"
@@ -178,8 +184,10 @@ export function DeleteProblemButton(props: { id: string }) {
   };
 
   return (
-    <Button variant="outlined" color="error" onClick={onDelClick}>
-      Delete
-    </Button>
+    <Tooltip title="Delete problem">
+      <Button variant="outlined" color="error" onClick={onDelClick}>
+        Delete
+      </Button>
+    </Tooltip>
   );
 }

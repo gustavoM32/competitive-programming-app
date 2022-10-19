@@ -9,6 +9,7 @@ import {
   Select,
   MenuItem,
   SelectChangeEvent,
+  Tooltip,
 } from "@mui/material";
 import { useState } from "react";
 import { ProblemListType, ProblemType } from "types";
@@ -25,6 +26,7 @@ import { API_URL } from "constants/constants";
 
 type ProblemListDialogProps = {
   title: string;
+  tooltip?: string;
   problemList?: ProblemListType;
   actionName: string;
   actionFunc: (problemList: ProblemListType) => void;
@@ -55,9 +57,11 @@ export function ProblemListDialog(props: ProblemListDialogProps) {
 
   return (
     <>
-      <Button variant="outlined" color="primary" onClick={handleOpen}>
-        {props.title}{" "}
-      </Button>
+      <Tooltip title={props.tooltip ?? ""}>
+        <Button variant="outlined" color="primary" onClick={handleOpen}>
+          {props.title}{" "}
+        </Button>
+      </Tooltip>
       <Dialog open={open} onClose={handleClose}>
         <DialogTitle id="form-dialog-title">{props.title}</DialogTitle>
         <DialogContent>
@@ -134,13 +138,14 @@ export function ProblemListDialog(props: ProblemListDialogProps) {
 }
 
 export function CreateProblemListDialog() {
-  const addProblemList = useCreate("problemLists");
+  const createProblemList = useCreate("problemLists");
 
   return (
     <ProblemListDialog
-      title="Add problem list"
-      actionName="Add"
-      actionFunc={addProblemList}
+      title="Create"
+      tooltip="Create problem list"
+      actionName="Create"
+      actionFunc={createProblemList}
     />
   );
 }
@@ -152,7 +157,8 @@ export function UpdateProblemListDialog(props: {
 
   return (
     <ProblemListDialog
-      title="Edit problem list"
+      title="Edit"
+      tooltip="Edit problem list"
       problemList={props.problemList}
       actionFunc={editProblemList}
       actionName="Save"
@@ -173,9 +179,11 @@ export function DeleteProblemListButton(props: { id: string }) {
   };
 
   return (
-    <Button variant="outlined" color="error" onClick={onDelClick}>
-      Delete
-    </Button>
+    <Tooltip title="Delete problem list">
+      <Button variant="outlined" color="error" onClick={onDelClick}>
+        Delete
+      </Button>
+    </Tooltip>
   );
 }
 
@@ -193,9 +201,11 @@ export function DeleteProblemListButtonOne(props: { id: string }) {
   };
 
   return (
-    <Button variant="outlined" color="error" onClick={onDelClick}>
-      Delete Problem List
-    </Button>
+    <Tooltip title="Delete problem list">
+      <Button variant="outlined" color="error" onClick={onDelClick}>
+        Delete problem list
+      </Button>
+    </Tooltip>
   );
 }
 
@@ -256,9 +266,11 @@ export function AddProblemToListDialog(props: {
 
   return (
     <>
-      <Button variant="outlined" color="primary" onClick={handleOpen}>
-        Add problem
-      </Button>
+      <Tooltip title="Add existing problem to list">
+        <Button variant="outlined" color="primary" onClick={handleOpen}>
+          Add problem
+        </Button>
+      </Tooltip>
       <Dialog open={open} onClose={handleClose}>
         <DialogTitle id="form-dialog-title">Add problem</DialogTitle>
         <DialogContent>
@@ -317,7 +329,8 @@ export function AddNewProblemToListDialog(props: {
 
   return (
     <ProblemDialog
-      title="Add new problem to list"
+      title="Create and add"
+      tooltip="Create problem and add it to list"
       actionName="Add new problem to list"
       actionFunc={addNewProblemToList}
     />
@@ -348,8 +361,14 @@ export function RemoveProblemFromListButton(props: {
   };
 
   return (
-    <Button variant="outlined" color="warning" onClick={deleteProblemFromList}>
-      Remove from list
-    </Button>
+    <Tooltip title="Remove problem from list">
+      <Button
+        variant="outlined"
+        color="warning"
+        onClick={deleteProblemFromList}
+      >
+        Remove
+      </Button>
+    </Tooltip>
   );
 }
