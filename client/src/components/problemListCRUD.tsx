@@ -50,6 +50,18 @@ export function ProblemListDialog(props: ProblemListDialogProps) {
     setProblemList({ ...problemList, [e.target.name]: e.target.value });
   };
 
+  const handleSolvedChange = (e: { target: { name: any; value: any } }) => {
+    let solved = Math.max(0, e.target.value);
+    let total = Math.max(solved, problemList.totalCount);
+    setProblemList({ ...problemList, solvedCount: solved, totalCount: total });
+  };
+
+  const handleTotalChange = (e: { target: { name: any; value: any } }) => {
+    let total = Math.max(0, e.target.value);
+    let solved = Math.min(total, problemList.solvedCount);
+    setProblemList({ ...problemList, solvedCount: solved, totalCount: total });
+  };
+
   const actionProblemList = async () => {
     await props.actionFunc(problemList);
     handleClose();
@@ -106,20 +118,22 @@ export function ProblemListDialog(props: ProblemListDialogProps) {
 
           <TextField
             margin="dense"
-            onChange={handleChange}
+            onChange={handleSolvedChange}
             fullWidth
             value={problemList.solvedCount ?? ""}
+            type="number"
             name="solvedCount"
-            label="Solved count"
+            label="Implicit solved"
           />
 
           <TextField
             margin="dense"
-            onChange={handleChange}
+            onChange={handleTotalChange}
             fullWidth
             value={problemList.totalCount ?? ""}
+            type="number"
             name="totalCount"
-            label="Total count"
+            label="Implicit total"
           />
 
           {/* TODO: add problems */}
