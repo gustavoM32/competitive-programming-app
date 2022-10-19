@@ -26,6 +26,7 @@ const DataGrid = (props: any) => {
         animateRows={true} // Optional - set to 'true' to have rows animate when sorted
         // rowSelection='multiple' // Options - allows click selection of rows
 
+        suppressRowHoverHighlight={true}
         onCellClicked={cellClickedListener} // Optional - registering for Grid Event
         enableCellTextSelection={true}
         ensureDomOrder={true}

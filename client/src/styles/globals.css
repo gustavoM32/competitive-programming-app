@@ -1,9 +1,13 @@
+.ac-color {
+  background-color: #cdf7cd;
+}
+
 .wa-color {
   background-color: #f7cdcd;
 }
 
-.ac-color {
-  background-color: #cdf7cd;
+.read-color {
+  background-color: #d4e2ff;
 }
 
 /* this fixes a UI error in Text Field caused by bootstrap styling */
