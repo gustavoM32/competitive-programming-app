@@ -9,7 +9,10 @@ import {
 import { API_URL } from "constants/constants";
 import { useRead, useReadList } from "hooks/crudHooks";
 import { UpdateDataButton } from "components/general";
-import { DeleteProblemButton } from "components/problemCRUD";
+import {
+  DeleteProblemButton,
+  UpdateProblemDialog,
+} from "components/problemCRUD";
 import { useParams } from "react-router-dom";
 import { problemsColumns } from "utils/problemUtils";
 import DataGrid from "components/DataGrid";
@@ -45,7 +48,7 @@ export default function ProblemList() {
       cellRenderer: (cell: any) => {
         return (
           <>
-            {/* <UpdateProblemDialog problem={params.row}/>*/}
+            <UpdateProblemDialog problem={cell.data} />
             <RemoveProblemFromListButton
               problemList={problemList}
               problemId={cell.data.id}
