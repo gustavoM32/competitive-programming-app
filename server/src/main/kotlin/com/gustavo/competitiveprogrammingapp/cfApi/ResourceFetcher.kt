@@ -1,8 +1,7 @@
 package com.gustavo.competitiveprogrammingapp.cfApi
 
 import com.gustavo.competitiveprogrammingapp.cfApi.resources.ApiContest
-import com.gustavo.competitiveprogrammingapp.cfApi.resources.ApiProblem
-import com.gustavo.competitiveprogrammingapp.cfApi.resources.ApiProblemList
+import com.gustavo.competitiveprogrammingapp.cfApi.resources.ApiProblemsetProblems
 import com.gustavo.competitiveprogrammingapp.cfApi.resources.ApiSubmission
 import org.springframework.stereotype.Component
 import java.time.Duration
@@ -18,9 +17,9 @@ class ResourceFetcher(val fetcher: Fetcher) {
         val DEFAULT_RECENCY: Duration = Duration.ofSeconds(10L)
     }
 
-    fun getProblemSetProblems(requiredRecency: Duration = DEFAULT_RECENCY): ApiProblemList {
+    fun getProblemSetProblems(requiredRecency: Duration = DEFAULT_RECENCY): ApiProblemsetProblems {
         val apiResource = "/problemset.problems"
-        return fetcher.getResource(apiResource, ApiProblemList::class.java, requiredRecency)
+        return fetcher.getResource(apiResource, ApiProblemsetProblems::class.java, requiredRecency)
     }
 
     fun getContestList(gym: Boolean = false, requiredRecency: Duration = DEFAULT_RECENCY): Array<ApiContest> {
