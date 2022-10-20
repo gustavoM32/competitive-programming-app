@@ -15,7 +15,7 @@ class CfProblemsProcessor(val resourceFetcher: ResourceFetcher, val repository: 
     // light: only updates existing information
 
     override fun update() {
-        val problemsetProblems = resourceFetcher.getProblemSetProblems()
+        val problemsetProblems = resourceFetcher.getProblemsetProblems()
         val problems = problemsetProblems.problems
 
         repository.deleteAll() // FIXME: deleting to avoid multiple entries, find a way to not need that

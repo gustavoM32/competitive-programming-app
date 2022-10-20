@@ -17,7 +17,7 @@ class ResourceFetcher(val fetcher: Fetcher) {
         val DEFAULT_RECENCY: Duration = Duration.ofSeconds(10L)
     }
 
-    fun getProblemSetProblems(requiredRecency: Duration = DEFAULT_RECENCY): ApiProblemsetProblems {
+    fun getProblemsetProblems(requiredRecency: Duration = DEFAULT_RECENCY): ApiProblemsetProblems {
         val apiResource = "/problemset.problems"
         return fetcher.getResource(apiResource, ApiProblemsetProblems::class.java, requiredRecency)
     }
