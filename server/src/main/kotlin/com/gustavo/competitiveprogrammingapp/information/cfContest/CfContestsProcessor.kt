@@ -1,6 +1,6 @@
 package com.gustavo.competitiveprogrammingapp.information.cfContest
 
-import com.gustavo.competitiveprogrammingapp.cfApi.ResourceFetcher
+import com.gustavo.competitiveprogrammingapp.cfApi.CfApiResourceFetcher
 import com.gustavo.competitiveprogrammingapp.information.Processor
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -11,12 +11,13 @@ import java.time.ZoneOffset
 
 @Component
 class CfContestsProcessor(
-    private val resourceFetcher: ResourceFetcher,
-    private val repository: CfContestRepository) : Processor {
+    private val cfApiResourceFetcher: CfApiResourceFetcher,
+    private val repository: CfContestRepository
+) : Processor {
     private val logger: Logger = LoggerFactory.getLogger(javaClass)
 
     override fun update() {
-        val contestList = resourceFetcher.getContestList()
+        val contestList = cfApiResourceFetcher.getContestList()
 
         repository.deleteAll() // FIXME: deleting to avoid multiple entries, find a way to not need that
 

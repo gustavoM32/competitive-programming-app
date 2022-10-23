@@ -1,13 +1,13 @@
 package com.gustavo.competitiveprogrammingapp.information.cfProblem
 
-import com.gustavo.competitiveprogrammingapp.cfApi.ResourceFetcher
+import com.gustavo.competitiveprogrammingapp.cfApi.CfApiResourceFetcher
 import com.gustavo.competitiveprogrammingapp.information.Processor
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 
 @Component
-class CfProblemsProcessor(val resourceFetcher: ResourceFetcher, val repository: CfProblemRepository):
+class CfProblemsProcessor(val cfApiResourceFetcher: CfApiResourceFetcher, val repository: CfProblemRepository) :
     Processor {
     private val logger: Logger = LoggerFactory.getLogger(javaClass)
 
@@ -15,7 +15,7 @@ class CfProblemsProcessor(val resourceFetcher: ResourceFetcher, val repository: 
     // light: only updates existing information
 
     override fun update() {
-        val problemsetProblems = resourceFetcher.getProblemsetProblems()
+        val problemsetProblems = cfApiResourceFetcher.getProblemsetProblems()
         val problems = problemsetProblems.problems
 
         repository.deleteAll() // FIXME: deleting to avoid multiple entries, find a way to not need that

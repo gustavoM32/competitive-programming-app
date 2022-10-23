@@ -9,7 +9,7 @@ import java.time.Duration
  * the actual calls to the API.
  */
 @Component
-class ResourceFetcher(val fetcher: Fetcher) {
+class CfApiResourceFetcher(val fetcher: Fetcher) {
     companion object {
         val DEFAULT_RECENCY: Duration = Duration.ofSeconds(1000L)
     }
