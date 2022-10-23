@@ -26,7 +26,7 @@ class Fetcher(private val urlCacheRepository: UrlCacheRepository) {
 
     private val logger: Logger = LoggerFactory.getLogger(javaClass)
 
-    private data class ApiResult (
+    private data class ApiResponse (
         val status: String? = null,
         val result: JsonElement? = null
     )
@@ -48,7 +48,7 @@ class Fetcher(private val urlCacheRepository: UrlCacheRepository) {
         val response = makeCfApiRequest(apiResource)
         logger.info("Got response string")
 
-        val gsonResponse = Gson().fromJson(response, ApiResult::class.java)
+        val gsonResponse = Gson().fromJson(response, ApiResponse::class.java)
         logger.info("Got response gson")
 
         if (gsonResponse.status == null || gsonResponse.status != "OK") {
