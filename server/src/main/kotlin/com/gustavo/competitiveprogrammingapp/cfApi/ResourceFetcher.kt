@@ -1,6 +1,7 @@
 package com.gustavo.competitiveprogrammingapp.cfApi
 
 import com.gustavo.competitiveprogrammingapp.cfApi.resources.ApiContest
+import com.gustavo.competitiveprogrammingapp.cfApi.resources.ApiContestStandings
 import com.gustavo.competitiveprogrammingapp.cfApi.resources.ApiProblemsetProblems
 import com.gustavo.competitiveprogrammingapp.cfApi.resources.ApiSubmission
 import org.springframework.stereotype.Component
@@ -25,6 +26,11 @@ class ResourceFetcher(val fetcher: Fetcher) {
     fun getContestList(gym: Boolean = false, requiredRecency: Duration = DEFAULT_RECENCY): Array<ApiContest> {
         val apiResource = "/contest.list?gym=$gym"
         return fetcher.getResource(apiResource, Array<ApiContest>::class.java, requiredRecency)
+    }
+
+    fun getContestStandings(contestId: Int, requiredRecency: Duration = DEFAULT_RECENCY): ApiContestStandings {
+        val apiResource = "/contest.standings?contestId=$contestId"
+        return fetcher.getResource(apiResource, ApiContestStandings::class.java, requiredRecency)
     }
 
     fun getUserStatus(user: String, requiredRecency: Duration = DEFAULT_RECENCY): Array<ApiSubmission> {
