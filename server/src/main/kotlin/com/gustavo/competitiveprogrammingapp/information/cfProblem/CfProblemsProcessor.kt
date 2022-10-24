@@ -2,6 +2,7 @@ package com.gustavo.competitiveprogrammingapp.information.cfProblem
 
 import com.gustavo.competitiveprogrammingapp.cfApi.CfApiResourceFetcher
 import com.gustavo.competitiveprogrammingapp.information.Processor
+import com.gustavo.competitiveprogrammingapp.information.newInformation.ProblemId
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
@@ -20,10 +21,10 @@ class CfProblemsProcessor(val cfApiResourceFetcher: CfApiResourceFetcher, val re
 
         repository.deleteAll() // FIXME: deleting to avoid multiple entries, find a way to not need that
         logger.info("Drop database")
-        problems?.let { ps ->
-            val cfp = ps.map { p ->
-                val code = "${p.contestId.toString()}${p.index}"
-                CfProblem(code, p.contestId, p.index, p.name, p.rating)
+        problems.let { ps ->
+            val cfp = ps.mapNotNull { p ->
+                if (p.contestId == null || p.index == null || p.name == null) null
+                else CfProblem(ProblemId(p.contestId, p.index), p.name, p.rating)
             }
             repository.saveAll(cfp)
         }

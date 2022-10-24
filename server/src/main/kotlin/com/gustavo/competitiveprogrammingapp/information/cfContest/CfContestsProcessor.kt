@@ -21,13 +21,20 @@ class CfContestsProcessor(
 
         repository.deleteAll() // FIXME: deleting to avoid multiple entries, find a way to not need that
 
-        val cfContests = contestList.filter { c -> c.phase == "FINISHED" }.map { c ->
-            CfContest(
-                id = c.id,
-                name = c.name,
-                startTime = c.startTimeSeconds?.let { LocalDateTime.ofInstant(Instant.ofEpochSecond(it), ZoneOffset.UTC) },
-                durationSeconds = c.durationSeconds
-            )
+        val cfContests = contestList.filter { c -> c.phase == "FINISHED" }.mapNotNull { c ->
+            if (c.id == null || c.name == null) null
+            else
+                CfContest(
+                    id = c.id,
+                    name = c.name,
+                    startTime = c.startTimeSeconds?.let {
+                        LocalDateTime.ofInstant(
+                            Instant.ofEpochSecond(it),
+                            ZoneOffset.UTC
+                        )
+                    },
+                    durationSeconds = c.durationSeconds
+                )
         }
 
         repository.saveAll(cfContests)

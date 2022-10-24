@@ -3,6 +3,7 @@ package com.gustavo.competitiveprogrammingapp.information
 import com.gustavo.competitiveprogrammingapp.information.cfProblem.CfProblemRepository
 import com.gustavo.competitiveprogrammingapp.information.cfProblem.CfProblemsWithUserStatus
 import com.gustavo.competitiveprogrammingapp.information.cfSubmission.CfSubmissionRepository
+import com.gustavo.competitiveprogrammingapp.information.newInformation.ProblemId
 import com.gustavo.competitiveprogrammingapp.rest.problem.ProblemStatus
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -62,28 +63,26 @@ class RetrievalController(val cfProblemRepository: CfProblemRepository, val cfSu
         val problems = cfProblemRepository.findAll()
         val submission = cfSubmissionRepository.findByUser(user)
 
-        val problemStatusMap = mutableMapOf<String, String>()
+        val problemStatusMap = mutableMapOf<ProblemId, String>()
 
         submission.forEach { s ->
-            if (s.verdict != null) {
-                val problemId = "${s.contestId}${s.index}"
-                if (!problemStatusMap.containsKey(problemId) || problemStatusMap[problemId] != "OK") {
-                    problemStatusMap[problemId] = s.verdict
-                }
+            if (!problemStatusMap.containsKey(s.problemId) || problemStatusMap[s.problemId] != "OK") {
+                problemStatusMap[s.problemId] = s.verdict
             }
         }
 
         return problems.map { p ->
             var problemStatus = ProblemStatus.NOTHING
+            val code = p.problemId.toString()
 
-            if (problemStatusMap.containsKey(p.code)) {
-                problemStatus = if (problemStatusMap[p.code] == "OK") ProblemStatus.AC else ProblemStatus.WA;
+            if (problemStatusMap.containsKey(p.problemId)) {
+                problemStatus = if (problemStatusMap[p.problemId] == "OK") ProblemStatus.AC else ProblemStatus.WA;
             }
 
             CfProblemsWithUserStatus(
-                code = p.code,
-                contestId = p.contestId,
-                index = p.index,
+                code = code,
+                contestId = p.problemId.contestId,
+                index = p.problemId.index,
                 name = p.name,
                 rating = p.rating,
                 user = user,
