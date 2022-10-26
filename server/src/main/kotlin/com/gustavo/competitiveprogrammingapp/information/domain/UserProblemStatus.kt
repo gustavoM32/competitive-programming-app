@@ -1,6 +1,6 @@
-package com.gustavo.competitiveprogrammingapp.information.newInformation.domain
+package com.gustavo.competitiveprogrammingapp.information.domain
 
-import com.gustavo.competitiveprogrammingapp.information.newInformation.ProblemId
+import com.gustavo.competitiveprogrammingapp.information.ProblemId
 import com.gustavo.competitiveprogrammingapp.rest.problem.ProblemStatus
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document

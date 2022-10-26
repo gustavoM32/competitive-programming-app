@@ -1,5 +1,6 @@
-package com.gustavo.competitiveprogrammingapp.information.cfSubmission
+package com.gustavo.competitiveprogrammingapp.information.repositories
 
+import com.gustavo.competitiveprogrammingapp.information.domain.CfSubmission
 import org.springframework.data.mongodb.repository.MongoRepository
 import org.springframework.stereotype.Repository
 

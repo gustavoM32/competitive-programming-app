@@ -1,9 +1,11 @@
 package com.gustavo.competitiveprogrammingapp.information
 
-import com.gustavo.competitiveprogrammingapp.information.cfContest.CfContestsProcessor
-import com.gustavo.competitiveprogrammingapp.information.cfGymContest.CfGymContestsProcessor
-import com.gustavo.competitiveprogrammingapp.information.cfProblem.CfProblemsProcessor
-import com.gustavo.competitiveprogrammingapp.information.cfSubmission.CfSubmissionsProcessor
+import com.gustavo.competitiveprogrammingapp.information.processors.CfContestsProcessor
+import com.gustavo.competitiveprogrammingapp.information.processors.CfGymContestsProcessor
+import com.gustavo.competitiveprogrammingapp.information.processors.CfProblemsProcessor
+import com.gustavo.competitiveprogrammingapp.information.processors.UserStatusProcessor
+import com.gustavo.competitiveprogrammingapp.information.processors.CfSubmissionsProcessor
+import com.gustavo.competitiveprogrammingapp.information.processors.ProblemMappingProcessor
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.web.bind.annotation.GetMapping
@@ -16,8 +18,10 @@ class UpdateController(
     val cfProblemsProcessor: CfProblemsProcessor,
     val cfContestsProcessor: CfContestsProcessor,
     val cfGymContestsProcessor: CfGymContestsProcessor,
-    val cfSubmissionsProcessor: CfSubmissionsProcessor
-    ) {
+    val cfSubmissionsProcessor: CfSubmissionsProcessor,
+    val userStatusProcessor: UserStatusProcessor,
+    val problemMappingProcessor: ProblemMappingProcessor
+) {
     private val logger: Logger = LoggerFactory.getLogger(javaClass)
 
     @GetMapping("cfProblems")

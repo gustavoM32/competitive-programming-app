@@ -1,6 +1,6 @@
-package com.gustavo.competitiveprogrammingapp.information.newInformation.repositories
+package com.gustavo.competitiveprogrammingapp.information.repositories
 
-import com.gustavo.competitiveprogrammingapp.information.newInformation.domain.UserProblemStatus
+import com.gustavo.competitiveprogrammingapp.information.domain.UserProblemStatus
 import org.springframework.data.mongodb.repository.MongoRepository
 import org.springframework.data.rest.core.annotation.RepositoryRestResource
 

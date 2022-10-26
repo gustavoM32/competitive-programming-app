@@ -1,6 +1,6 @@
-package com.gustavo.competitiveprogrammingapp.information.newInformation.domain
+package com.gustavo.competitiveprogrammingapp.information.domain
 
-import com.gustavo.competitiveprogrammingapp.information.newInformation.ProblemId
+import com.gustavo.competitiveprogrammingapp.information.ProblemId
 import org.springframework.data.mongodb.core.mapping.Document
 import java.time.LocalDateTime
 

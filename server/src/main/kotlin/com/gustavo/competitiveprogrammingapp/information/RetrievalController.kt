@@ -1,9 +1,8 @@
 package com.gustavo.competitiveprogrammingapp.information
 
-import com.gustavo.competitiveprogrammingapp.information.cfProblem.CfProblemRepository
-import com.gustavo.competitiveprogrammingapp.information.cfProblem.CfProblemsWithUserStatus
-import com.gustavo.competitiveprogrammingapp.information.cfSubmission.CfSubmissionRepository
-import com.gustavo.competitiveprogrammingapp.information.newInformation.ProblemId
+import com.gustavo.competitiveprogrammingapp.information.repositories.CfProblemRepository
+import com.gustavo.competitiveprogrammingapp.information.deprecated.CfProblemsWithUserStatus
+import com.gustavo.competitiveprogrammingapp.information.repositories.CfSubmissionRepository
 import com.gustavo.competitiveprogrammingapp.rest.problem.ProblemStatus
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory

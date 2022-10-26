@@ -1,4 +1,4 @@
-package com.gustavo.competitiveprogrammingapp.information.cfProblem
+package com.gustavo.competitiveprogrammingapp.information.deprecated
 
 import com.gustavo.competitiveprogrammingapp.rest.problem.ProblemStatus
 import org.springframework.data.annotation.Id

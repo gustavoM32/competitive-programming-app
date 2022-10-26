@@ -1,4 +1,4 @@
-package com.gustavo.competitiveprogrammingapp.information.newInformation
+package com.gustavo.competitiveprogrammingapp.information
 
 data class ProblemId(
     val contestId: Int,

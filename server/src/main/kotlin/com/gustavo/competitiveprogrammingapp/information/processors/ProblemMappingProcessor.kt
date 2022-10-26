@@ -1,12 +1,11 @@
-package com.gustavo.competitiveprogrammingapp.information.newInformation.processors
+package com.gustavo.competitiveprogrammingapp.information.processors
 
 import com.gustavo.competitiveprogrammingapp.information.SingleResourceProcessor
-import com.gustavo.competitiveprogrammingapp.information.cfProblem.CfProblem
-import com.gustavo.competitiveprogrammingapp.information.cfProblem.CfProblemsProcessor
-import com.gustavo.competitiveprogrammingapp.information.newInformation.ProblemId
-import com.gustavo.competitiveprogrammingapp.information.newInformation.domain.ContestProblem
-import com.gustavo.competitiveprogrammingapp.information.newInformation.domain.ProblemMapping
-import com.gustavo.competitiveprogrammingapp.information.newInformation.repositories.ProblemMappingRepository
+import com.gustavo.competitiveprogrammingapp.information.domain.CfProblem
+import com.gustavo.competitiveprogrammingapp.information.ProblemId
+import com.gustavo.competitiveprogrammingapp.information.domain.ContestProblem
+import com.gustavo.competitiveprogrammingapp.information.domain.ProblemMapping
+import com.gustavo.competitiveprogrammingapp.information.repositories.ProblemMappingRepository
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
