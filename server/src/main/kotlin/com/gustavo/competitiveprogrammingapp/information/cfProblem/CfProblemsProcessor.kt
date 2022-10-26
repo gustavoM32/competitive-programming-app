@@ -1,26 +1,24 @@
 package com.gustavo.competitiveprogrammingapp.information.cfProblem
 
 import com.gustavo.competitiveprogrammingapp.cfApi.CfApiResourceFetcher
-import com.gustavo.competitiveprogrammingapp.information.Processor
+import com.gustavo.competitiveprogrammingapp.information.SingleResourceProcessor
 import com.gustavo.competitiveprogrammingapp.information.newInformation.ProblemId
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 
 @Component
-class CfProblemsProcessor(val cfApiResourceFetcher: CfApiResourceFetcher, val repository: CfProblemRepository) :
-    Processor {
+class CfProblemsProcessor(
+    override val repository: CfProblemRepository,
+    private val cfApiResourceFetcher: CfApiResourceFetcher
+) : SingleResourceProcessor<CfProblem, ProblemId> {
     private val logger: Logger = LoggerFactory.getLogger(javaClass)
 
-    // heavy: calculates the full information, drops the old database
-    // light: only updates existing information
-
     override fun update() {
+        logger.info("CfProblemsProcessor update start...")
         val problemsetProblems = cfApiResourceFetcher.getProblemsetProblems()
         val problems = problemsetProblems.problems
 
-        repository.deleteAll() // FIXME: deleting to avoid multiple entries, find a way to not need that
-        logger.info("Drop database")
         problems.let { ps ->
             val cfp = ps.mapNotNull { p ->
                 if (p.contestId == null || p.index == null || p.name == null) null
@@ -28,6 +26,7 @@ class CfProblemsProcessor(val cfApiResourceFetcher: CfApiResourceFetcher, val re
             }
             repository.saveAll(cfp)
         }
-        logger.info("Updated database")
+
+        logger.info("CfProblemsProcessor update completed.")
     }
 }

@@ -1,7 +1,7 @@
 package com.gustavo.competitiveprogrammingapp.information.cfGymContest
 
 import com.gustavo.competitiveprogrammingapp.cfApi.CfApiResourceFetcher
-import com.gustavo.competitiveprogrammingapp.information.Processor
+import com.gustavo.competitiveprogrammingapp.information.SingleResourceProcessor
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
@@ -11,12 +11,13 @@ import java.time.ZoneOffset
 
 @Component
 class CfGymContestsProcessor(
-    private val cfApiResourceFetcher: CfApiResourceFetcher,
-    private val repository: CfGymContestRepository
-) : Processor {
+    override val repository: CfGymContestRepository,
+    private val cfApiResourceFetcher: CfApiResourceFetcher
+) : SingleResourceProcessor<CfGymContest, Int> {
     private val logger: Logger = LoggerFactory.getLogger(javaClass)
 
     override fun update() {
+        logger.info("CfGymContestsProcessor update start...")
         val contestList = cfApiResourceFetcher.getContestList(gym = true)
 
         repository.deleteAll() // FIXME: deleting to avoid multiple entries, find a way to not need that
@@ -36,5 +37,6 @@ class CfGymContestsProcessor(
         }
 
         repository.saveAll(cfGymContests)
+        logger.info("CfGymContestsProcessor update completed.")
     }
 }
