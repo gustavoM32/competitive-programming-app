@@ -26,15 +26,11 @@ class ProblemMappingProcessor(
         val associatedProblems = mutableMapOf<String, MutableList<ContestProblem>>()
         val problemAssociationId = mutableMapOf<ProblemId, String>()
 
-        contestProblems.forEach a@{
-            val contestId = it.problemId.contestId
-            val startTime = it.contestStartTime
-            if (contestId < 1735) return@a // FIXME: this is to avoid too many request when developing
+        contestProblems.forEach {
+            val associationId =
+                "${it.contestStartTime}${it.name}" // problem association definition for this application
 
-            val problemId = it.problemId
-            val associationId = "${startTime}${it.name}" // problem association definition for this application
-
-            problemAssociationId[problemId] = associationId
+            problemAssociationId[it.problemId] = associationId
             if (!associatedProblems.containsKey(associationId)) associatedProblems[associationId] = mutableListOf(it)
             associatedProblems[associationId]!!.add(it)
         }

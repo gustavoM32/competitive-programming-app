@@ -48,6 +48,10 @@ class UpdateController(
         cfSubmissionProcessor.update(user)
         return "OK"
     }
+
+    @GetMapping("userStatus")
+    fun getUserStatus(): String {
+        userStatusProcessor.update()
         return "OK"
     }
 }
