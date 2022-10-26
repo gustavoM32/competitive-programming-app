@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 
 @Component
-class CfSubmissionsProcessor(
+class CfSubmissionProcessor(
     private val repository: CfSubmissionRepository,
     private val cfApiResourceFetcher: CfApiResourceFetcher
 ) {

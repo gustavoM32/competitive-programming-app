@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 
 @Component
-class CfProblemsProcessor(
+class CfProblemProcessor(
     override val repository: CfProblemRepository,
     private val cfApiResourceFetcher: CfApiResourceFetcher
 ) : SingleResourceProcessor<CfProblem, ProblemId> {

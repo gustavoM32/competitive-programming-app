@@ -12,7 +12,7 @@ import java.time.LocalDateTime
 import java.time.ZoneOffset
 
 @Component
-class CfGymContestsProcessor(
+class CfGymContestProcessor(
     override val repository: CfGymContestRepository,
     private val cfApiResourceFetcher: CfApiResourceFetcher
 ) : SingleResourceProcessor<CfGymContest, Int> {

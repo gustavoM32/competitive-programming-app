@@ -17,7 +17,7 @@ import org.springframework.stereotype.Component
 class ContestProblemProcessor(
     override val repository: ContestProblemRepository,
     private val cfApiResourceFetcher: CfApiResourceFetcher,
-    private val cfContestsProcessor: CfContestsProcessor,
+    private val cfContestProcessor: CfContestProcessor,
     private val cfContestsRepository: CfContestRepository
 ) : SingleResourceProcessor<ContestProblem, ProblemId> {
     private val logger: Logger = LoggerFactory.getLogger(javaClass)
@@ -25,7 +25,7 @@ class ContestProblemProcessor(
     override fun update() {
         logger.info("Updating ContestProblem...")
         // update dependent data
-        cfContestsProcessor.update()
+        cfContestProcessor.update()
 
         // get dependent data
         val cfContests = cfContestsRepository.findAll()

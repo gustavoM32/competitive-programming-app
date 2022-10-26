@@ -1,10 +1,10 @@
 package com.gustavo.competitiveprogrammingapp.information
 
-import com.gustavo.competitiveprogrammingapp.information.processors.CfContestsProcessor
-import com.gustavo.competitiveprogrammingapp.information.processors.CfGymContestsProcessor
-import com.gustavo.competitiveprogrammingapp.information.processors.CfProblemsProcessor
+import com.gustavo.competitiveprogrammingapp.information.processors.CfContestProcessor
+import com.gustavo.competitiveprogrammingapp.information.processors.CfGymContestProcessor
+import com.gustavo.competitiveprogrammingapp.information.processors.CfProblemProcessor
 import com.gustavo.competitiveprogrammingapp.information.processors.UserStatusProcessor
-import com.gustavo.competitiveprogrammingapp.information.processors.CfSubmissionsProcessor
+import com.gustavo.competitiveprogrammingapp.information.processors.CfSubmissionProcessor
 import com.gustavo.competitiveprogrammingapp.information.processors.ProblemMappingProcessor
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -15,10 +15,10 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 @RequestMapping("info")
 class UpdateController(
-    val cfProblemsProcessor: CfProblemsProcessor,
-    val cfContestsProcessor: CfContestsProcessor,
-    val cfGymContestsProcessor: CfGymContestsProcessor,
-    val cfSubmissionsProcessor: CfSubmissionsProcessor,
+    val cfProblemProcessor: CfProblemProcessor,
+    val cfContestProcessor: CfContestProcessor,
+    val cfGymContestProcessor: CfGymContestProcessor,
+    val cfSubmissionProcessor: CfSubmissionProcessor,
     val userStatusProcessor: UserStatusProcessor,
     val problemMappingProcessor: ProblemMappingProcessor
 ) {
@@ -26,26 +26,28 @@ class UpdateController(
 
     @GetMapping("cfProblems")
     fun getCfProblems(): String {
-        cfProblemsProcessor.update()
+        cfProblemProcessor.update()
         return "OK"
     }
 
     @GetMapping("cfContests")
     fun getCfContests(): String {
-        cfContestsProcessor.update()
+        cfContestProcessor.update()
         return "OK"
     }
 
     @GetMapping("cfGymContests")
     fun getCfGymContests(): String {
-        cfGymContestsProcessor.update()
+        cfGymContestProcessor.update()
         return "OK"
     }
 
     @GetMapping("cfSubmissions")
     fun getCfSubmissions(): String {
         val user = "gustavo_m32" // TODO: get user from request
-        cfSubmissionsProcessor.update(user)
+        cfSubmissionProcessor.update(user)
+        return "OK"
+    }
         return "OK"
     }
 }

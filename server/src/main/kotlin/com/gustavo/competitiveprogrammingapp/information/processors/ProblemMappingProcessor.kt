@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component
 @Component
 class ProblemMappingProcessor(
     override val repository: ProblemMappingRepository,
-    private val cfProblemsProcessor: CfProblemsProcessor,
+    private val cfProblemProcessor: CfProblemProcessor,
     private val contestProblemProcessor: ContestProblemProcessor
 ) : SingleResourceProcessor<ProblemMapping, ProblemId> {
     private val logger: Logger = LoggerFactory.getLogger(javaClass)
@@ -60,7 +60,7 @@ class ProblemMappingProcessor(
     override fun update() {
         logger.info("ProblemMappingProcessor update start...")
         // update and get dependent data
-        val cfProblems = cfProblemsProcessor.updateAndFindAll()
+        val cfProblems = cfProblemProcessor.updateAndFindAll()
         val contestProblems = contestProblemProcessor.updateAndFindAll()
 
         // process it

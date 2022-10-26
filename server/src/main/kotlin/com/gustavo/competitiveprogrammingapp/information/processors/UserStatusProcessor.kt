@@ -21,10 +21,10 @@ class UserStatusProcessor(
     private val userProblemStatusRepository: UserProblemStatusRepository,
     private val userContestStatusRepository: UserContestStatusRepository,
     private val problemMappingProcessor: ProblemMappingProcessor,
-    private val cfProblemsProcessor: CfProblemsProcessor,
-    private val cfContestsProcessor: CfContestsProcessor,
+    private val cfProblemProcessor: CfProblemProcessor,
+    private val cfContestProcessor: CfContestProcessor,
     private val contestProblemProcessor: ContestProblemProcessor,
-    private val cfSubmissionsProcessor: CfSubmissionsProcessor
+    private val cfSubmissionProcessor: CfSubmissionProcessor
 ) : Processor {
     private val logger: Logger = LoggerFactory.getLogger(javaClass)
 
@@ -71,15 +71,15 @@ class UserStatusProcessor(
         val timer = Timer("Problemset update")
 
         // update and get dependent data
-        val cfProblems = cfProblemsProcessor.updateAndFindAll()
-        val cfContests = cfContestsProcessor.updateAndFindAll()
+        val cfProblems = cfProblemProcessor.updateAndFindAll()
+        val cfContests = cfContestProcessor.updateAndFindAll()
         val contestProblems = contestProblemProcessor.updateAndFindAll()
         val problemMappingList = problemMappingProcessor.updateAndFindAll()
-        val userSubmissions = cfSubmissionsProcessor.updateAndFindAll(user)
+        val userSubmissions = cfSubmissionProcessor.updateAndFindAll(user)
         timer.check("Got dependent data")
 
         // process it
-        val problemMapping = problemMappingList.associateBy({it.contestProblemId}, {it.problemsetProblemId})
+        val problemMapping = problemMappingList.associateBy({ it.contestProblemId }, { it.problemsetProblemId })
         timer.check("Processed problemMapping")
 
         // get problems status from user submissions, with the mapping
