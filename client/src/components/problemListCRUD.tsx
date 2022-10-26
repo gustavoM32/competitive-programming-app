@@ -78,6 +78,15 @@ export function ProblemListDialog(props: ProblemListDialogProps) {
         <DialogTitle id="form-dialog-title">{props.title}</DialogTitle>
         <DialogContent>
           <TextField
+            margin="dense"
+            onChange={handleChange}
+            fullWidth
+            value={problemList.name ?? ""}
+            name="name"
+            label="Name"
+          />
+
+          <TextField
             autoFocus
             margin="dense"
             onChange={handleChange}
@@ -85,15 +94,6 @@ export function ProblemListDialog(props: ProblemListDialogProps) {
             value={problemList.link ?? ""}
             name="link"
             label="Link"
-          />
-
-          <TextField
-            margin="dense"
-            onChange={handleChange}
-            fullWidth
-            value={problemList.name ?? ""}
-            name="name"
-            label="Name"
           />
 
           <TextField
