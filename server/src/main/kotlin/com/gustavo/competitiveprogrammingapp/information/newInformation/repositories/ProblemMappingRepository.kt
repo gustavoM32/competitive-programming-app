@@ -1,0 +1,9 @@
+package com.gustavo.competitiveprogrammingapp.information.newInformation.repositories
+
+import com.gustavo.competitiveprogrammingapp.information.newInformation.ProblemId
+import com.gustavo.competitiveprogrammingapp.information.newInformation.domain.ProblemMapping
+import org.springframework.data.mongodb.repository.MongoRepository
+import org.springframework.data.rest.core.annotation.RepositoryRestResource
+
+@RepositoryRestResource
+interface ProblemMappingRepository : MongoRepository<ProblemMapping, ProblemId>
