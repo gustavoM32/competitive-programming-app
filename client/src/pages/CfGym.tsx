@@ -20,6 +20,7 @@ import {
 } from "@mui/material";
 import { useCallback, useMemo, useState } from "react";
 import { getPossibleFieldValues, MenuProps } from "utils/filterUtils";
+import { formatDateTime } from "utils/utils";
 
 export default function CfGym() {
   const cfGym = useReadList(["cfGymContests"]);
@@ -43,20 +44,7 @@ export default function CfGym() {
       {
         headerName: "Start time",
         field: "startTime",
-        valueFormatter: (params: any) => {
-          const startTime = params.data.startTime;
-          if (startTime == null) return "No date";
-
-          const utcStartTime = startTime + "Z"; // for some reason spring strips the z
-          const date = new Date(Date.parse(utcStartTime));
-          return date.toLocaleTimeString([], {
-            year: "numeric",
-            month: "2-digit",
-            day: "2-digit",
-            hour: "2-digit",
-            minute: "2-digit",
-          });
-        },
+        valueFormatter: (params: any) => formatDateTime(params.data.startTime),
         width: 180,
       },
       {

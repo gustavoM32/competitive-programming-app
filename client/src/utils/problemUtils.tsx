@@ -8,6 +8,7 @@ import {
   UserContestStatus,
   UserProblemStatus,
 } from "types";
+import { formatDateTime } from "./utils";
 
 type CellParams = {
   value: string;
@@ -54,7 +55,12 @@ const convertLinesToBr = () => {
 };
 
 export const problemsColumns = [
-  { headerName: "Date added", field: "dateAdded", width: 150 },
+  {
+    headerName: "Creation date",
+    field: "dateAdded",
+    width: 180,
+    valueFormatter: (params: any) => formatDateTime(params.data.dateAdded),
+  },
   {
     headerName: "Link",
     field: "link",

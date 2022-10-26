@@ -6,12 +6,18 @@ import {
 import { UpdateDataButton } from "components/general";
 import { useReadList } from "hooks/crudHooks";
 import DataGrid from "components/DataGrid";
+import { formatDateTime } from "utils/utils";
 
 export default function ProblemLists() {
   const problemLists = useReadList(["problemLists"]);
 
   const columns = [
-    { headerName: "Date added", field: "dateAdded", width: 150 },
+    {
+      headerName: "Creation date",
+      field: "dateAdded",
+      width: 180,
+      valueFormatter: (params: any) => formatDateTime(params.data.dateAdded),
+    },
     {
       headerName: "Link",
       field: "link",
