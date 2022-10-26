@@ -1,8 +1,15 @@
 import { UpdateDataButton, UpdateCfDataButton } from "components/general";
 import {
+  Checkbox,
   FormControl,
   Grid,
+  InputLabel,
   Link,
+  ListItemText,
+  MenuItem,
+  OutlinedInput,
+  Select,
+  SelectChangeEvent,
   Slider,
   TextField,
   Typography,
@@ -11,7 +18,11 @@ import DataGrid from "components/DataGrid";
 import { useReadList } from "hooks/crudHooks";
 import { useCallback, useMemo, useState } from "react";
 import { UserContestStatus } from "types";
-import { getContestRowClass } from "utils/problemUtils";
+import {
+  contestStatusMap,
+  getContestRowClass,
+  getContestStatus,
+} from "utils/problemUtils";
 
 export default function CfContests() {
   const cfContests = useReadList(["cfContests"]);
@@ -79,7 +90,10 @@ export default function CfContests() {
 
   // filters
   const [contestName, setContestName] = useState<string>("");
+  const [contestStatus, setContestStatus] = useState<string[]>([]);
   const [contestDuration, setContestDuration] = useState<number[]>([0, 8]);
+
+  const contestStatuses = useMemo(() => Object.keys(contestStatusMap), []);
 
   const handleNameChange = useCallback(
     (event: any) => {
@@ -87,6 +101,14 @@ export default function CfContests() {
       setContestName(value);
     },
     [setContestName]
+  );
+
+  const handleContestStatusChange = useCallback(
+    (event: SelectChangeEvent<typeof contestStatus>) => {
+      const value = event.target.value;
+      setContestStatus(typeof value === "string" ? value.split(",") : value);
+    },
+    [setContestStatus]
   );
 
   const calcDurationValue = useCallback((value: number) => {
@@ -110,10 +132,19 @@ export default function CfContests() {
     return cfContests.resources.filter(
       (c: any) =>
         c.name.toLowerCase().includes(contestName.toLowerCase()) &&
+        (contestStatus.length === 0 ||
+          contestStatus.includes(getContestStatus(c, userContestStatusMap))) &&
         SECONDS_IN_A_HOUR * duration[0] <= c.durationSeconds &&
         c.durationSeconds <= SECONDS_IN_A_HOUR * duration[1]
     );
-  }, [cfContests.resources, calcDurationValue, contestName, contestDuration]);
+  }, [
+    cfContests.resources,
+    calcDurationValue,
+    contestName,
+    contestStatus,
+    contestDuration,
+    userContestStatusMap,
+  ]);
 
   return (
     <>
@@ -124,6 +155,26 @@ export default function CfContests() {
           value={contestName}
           onChange={handleNameChange}
         />
+      </FormControl>
+
+      <FormControl sx={{ mx: 2, my: 1, width: 400 }}>
+        <InputLabel>Contest status</InputLabel>
+        <Select
+          multiple
+          value={contestStatus}
+          onChange={handleContestStatusChange}
+          input={<OutlinedInput label="Contest status" />}
+          renderValue={(selected) =>
+            selected.map((s: string) => contestStatusMap[s]).join(", ")
+          }
+        >
+          {contestStatuses.map((status) => (
+            <MenuItem key={status} value={status}>
+              <Checkbox checked={contestStatus.indexOf(status) > -1} />
+              <ListItemText primary={contestStatusMap[status]} />
+            </MenuItem>
+          ))}
+        </Select>
       </FormControl>
 
       <FormControl sx={{ mx: 2, my: 1, width: 400 }}>
