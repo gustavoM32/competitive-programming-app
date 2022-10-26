@@ -29,8 +29,8 @@ export const contestStatusMap: { [key: string]: string } = {
 
 const editorialStatusMap: { [key: string]: string } = {
   NOTHING: "Not read",
-  READ_BEFORE_AC: "Read before",
-  READ_AFTER_AC: "Read after",
+  READ_BEFORE_AC: "Read before AC",
+  READ_AFTER_AC: "Read after AC",
 };
 
 const convertStatus = (map: { [key: string]: string }) => {
