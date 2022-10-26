@@ -76,10 +76,12 @@ export default function CfProblems() {
 
   const [problemName, setProblemName] = useState("");
   const [problemStatus, setProblemStatus] = useState<string[]>([]);
+  const [contestStatus, setContestStatus] = useState<string[]>([]);
   const [problemHasRating, setContestHasRating] = useState<boolean>(false);
   const [problemRating, setContestRating] = useState<number[]>([0, 4000]);
 
   const problemStatuses = useMemo(() => Object.keys(problemStatusMap), []);
+  const contestStatuses = useMemo(() => Object.keys(contestStatusMap), []);
 
   const handleNameChange = useCallback(
     (e: any) => {
@@ -88,12 +90,20 @@ export default function CfProblems() {
     [setProblemName]
   );
 
-  const handleStatusChange = useCallback(
+  const handleProblemStatusChange = useCallback(
     (event: SelectChangeEvent<typeof problemStatus>) => {
       const value = event.target.value;
       setProblemStatus(typeof value === "string" ? value.split(",") : value);
     },
     [setProblemStatus]
+  );
+
+  const handleContestStatusChange = useCallback(
+    (event: SelectChangeEvent<typeof contestStatus>) => {
+      const value = event.target.value;
+      setContestStatus(typeof value === "string" ? value.split(",") : value);
+    },
+    [setContestStatus]
   );
 
   const handleHasRatingChange = useCallback(
@@ -121,6 +131,10 @@ export default function CfProblems() {
             problemStatus.includes(
               getProblemStatus(p, userProblemStatusMap)
             )) &&
+          (contestStatus.length === 0 ||
+            contestStatus.includes(
+              getProblemContestStatus(p, userProblemStatusMap)
+            )) &&
           (!problemHasRating || p.rating != null) &&
           (p.rating == null ||
             (problemRating[0] <= p.rating && p.rating <= problemRating[1]))
@@ -130,6 +144,7 @@ export default function CfProblems() {
       cfProblems.resources,
       problemName,
       problemStatus,
+      contestStatus,
       problemHasRating,
       problemRating,
       userProblemStatusMap,
@@ -152,7 +167,7 @@ export default function CfProblems() {
         <Select
           multiple
           value={problemStatus}
-          onChange={handleStatusChange}
+          onChange={handleProblemStatusChange}
           input={<OutlinedInput label="Problem status" />}
           renderValue={(selected) =>
             selected.map((s: string) => problemStatusMap[s]).join(", ")
@@ -162,6 +177,26 @@ export default function CfProblems() {
             <MenuItem key={status} value={status}>
               <Checkbox checked={problemStatus.indexOf(status) > -1} />
               <ListItemText primary={problemStatusMap[status]} />
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
+
+      <FormControl sx={{ mx: 2, my: 1, width: 400 }}>
+        <InputLabel>Contest status</InputLabel>
+        <Select
+          multiple
+          value={contestStatus}
+          onChange={handleContestStatusChange}
+          input={<OutlinedInput label="Contest status" />}
+          renderValue={(selected) =>
+            selected.map((s: string) => contestStatusMap[s]).join(", ")
+          }
+        >
+          {contestStatuses.map((status) => (
+            <MenuItem key={status} value={status}>
+              <Checkbox checked={contestStatus.indexOf(status) > -1} />
+              <ListItemText primary={contestStatusMap[status]} />
             </MenuItem>
           ))}
         </Select>
