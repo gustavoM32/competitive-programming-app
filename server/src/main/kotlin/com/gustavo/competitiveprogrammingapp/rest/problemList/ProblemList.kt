@@ -20,12 +20,12 @@ data class ProblemList(
     @Field(name = "notes")
     val notes: String?,
     @Field(name = "dateAdded")
-    val dateAdded: LocalDateTime?,
+    var dateAdded: LocalDateTime?,
     @Field(name = "solvedCount")
     val solvedCount: Int?,
     @Field(name = "totalCount")
     val totalCount: Int?,
 
-    @DocumentReference(lazy=true)
+    @DocumentReference(lazy = true)
     @Field val problems: MutableList<Problem> = mutableListOf(), // problem list has many problems
 )

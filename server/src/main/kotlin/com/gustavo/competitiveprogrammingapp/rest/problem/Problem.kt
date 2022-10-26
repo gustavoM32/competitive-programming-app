@@ -12,7 +12,7 @@ data class Problem(
     @Field(name = "link")
     val link: String?,
     @Field(name = "dateAdded")
-    val dateAdded: LocalDateTime?,
+    var dateAdded: LocalDateTime?,
     @Field(name = "name")
     val name: String?,
     @Field(name = "problemStatus")
