@@ -10,9 +10,20 @@ import {
 import DataGrid from "components/DataGrid";
 import { useReadList } from "hooks/crudHooks";
 import { useCallback, useMemo, useState } from "react";
+import { UserContestStatus } from "types";
+import { getContestRowClass } from "utils/problemUtils";
 
 export default function CfContests() {
   const cfContests = useReadList(["cfContests"]);
+  const userContestStatus = useReadList(["userContestStatuses"]);
+
+  const userContestStatusMap = useMemo(
+    () =>
+      new Map<number, UserContestStatus>(
+        userContestStatus.resources.map((el: UserContestStatus) => [el.id, el])
+      ),
+    [userContestStatus.resources]
+  );
 
   const columns = useMemo(
     () => [
@@ -138,7 +149,13 @@ export default function CfContests() {
         </Grid>
       </FormControl>
 
-      <DataGrid rowData={filteredContests} columnDefs={columns} />
+      <DataGrid
+        rowData={filteredContests}
+        columnDefs={columns}
+        getRowClass={(row: any) =>
+          getContestRowClass(row, userContestStatusMap)
+        }
+      />
       <UpdateDataButton />
       <UpdateCfDataButton infoPath="cfContests" />
     </>

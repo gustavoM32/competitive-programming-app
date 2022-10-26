@@ -19,10 +19,30 @@ import {
   Typography,
 } from "@mui/material";
 import { useCallback, useMemo, useState } from "react";
-import { problemStatusMap } from "utils/problemUtils";
+import {
+  contestStatusMap,
+  getProblemCode,
+  getProblemContestStatus,
+  getProblemRowClass,
+  getProblemStatus,
+  problemStatusMap,
+} from "utils/problemUtils";
+import { UserProblemStatus } from "types";
 
 export default function CfProblems() {
-  const cfProblems = useReadList(["cfProblemsWithUserStatuses"]);
+  const cfProblems = useReadList(["cfProblems"]);
+  const userProblemStatus = useReadList(["userProblemStatuses"]);
+
+  const userProblemStatusMap = useMemo(
+    () =>
+      new Map<string, UserProblemStatus>(
+        userProblemStatus.resources.map((el: UserProblemStatus) => [
+          getProblemCode(el.problemId),
+          el,
+        ])
+      ),
+    [userProblemStatus.resources]
+  );
 
   const columns = useMemo(
     () => [
@@ -31,11 +51,11 @@ export default function CfProblems() {
         field: "code",
         width: 120,
         cellRenderer: (params: any) => {
-          const { code, contestId, index } = params.data;
+          const { contestId, index } = params.data.problemId;
           const link = `http://codeforces.com/problemset/problem/${contestId}/${index}`;
           return (
             <Link href={link} target="_blank" rel="noopener">
-              {code}
+              {`${contestId}${index}`}
             </Link>
           );
         },
@@ -53,14 +73,6 @@ export default function CfProblems() {
     ],
     []
   );
-
-  const getRowClass = useCallback((row: any) => {
-    const status = row.data.userStatus;
-    if (status === "AC") return "ac-color";
-    if (status === "WA") return "wa-color";
-    if (status === "READ") return "read-color";
-    return "";
-  }, []);
 
   const [problemName, setProblemName] = useState("");
   const [problemStatus, setProblemStatus] = useState<string[]>([]);
@@ -106,7 +118,9 @@ export default function CfProblems() {
 
         return (
           (problemStatus.length === 0 ||
-            problemStatus.includes(p.userStatus)) &&
+            problemStatus.includes(
+              getProblemStatus(p, userProblemStatusMap)
+            )) &&
           (!problemHasRating || p.rating != null) &&
           (p.rating == null ||
             (problemRating[0] <= p.rating && p.rating <= problemRating[1]))
@@ -118,6 +132,7 @@ export default function CfProblems() {
       problemStatus,
       problemHasRating,
       problemRating,
+      userProblemStatusMap,
     ]
   );
 
@@ -194,10 +209,12 @@ export default function CfProblems() {
       <DataGrid
         rowData={filteredCfProblems}
         columnDefs={columns}
-        getRowClass={getRowClass}
+        getRowClass={(row: any) =>
+          getProblemRowClass(row, userProblemStatusMap)
+        }
       />
       <UpdateDataButton />
-      <UpdateCfDataButton infoPath="cfProblems" />
+      <UpdateCfDataButton infoPath="userStatus" />
     </>
   );
 }
