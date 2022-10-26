@@ -87,9 +87,7 @@ export default function ProblemList() {
       </Grid>
       <p>{problemList.description}</p>
       <p>{problemList.notes}</p>
-      <h3>
-        Problems ({solved}/{total})
-      </h3>
+      <h3>Problems {Number.isFinite(total) ? `${solved}/${total}` : null}</h3>
       <DataGrid
         rowData={problemListProblems.resources}
         columnDefs={columns}
