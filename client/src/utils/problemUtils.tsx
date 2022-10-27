@@ -17,7 +17,7 @@ type CellParams = {
 export const problemStatusMap: { [key: string]: string } = {
   NOTHING: "Not read",
   READ: "Read",
-  WA: "WA",
+  WA: "Wrong answer",
   AC: "Accepted",
 };
 
@@ -56,7 +56,7 @@ const convertLinesToBr = () => {
 
 export const problemsColumns = [
   {
-    headerName: "Creation date",
+    headerName: "Addition date",
     field: "dateAdded",
     width: 180,
     valueFormatter: (params: any) => formatDateTime(params.data.dateAdded),
