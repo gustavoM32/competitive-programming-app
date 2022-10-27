@@ -9,8 +9,6 @@ import java.time.LocalDateTime
 data class UrlCache(
     @Id
     val apiResource: String,
-    @Field(name = "json")
     val json: String,
-    @Field(name = "response")
-    val responseTime: LocalDateTime
+    val lastUpdate: LocalDateTime
 )

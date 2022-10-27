@@ -17,6 +17,8 @@
     "@types/react": "^18.0.18",
     "@types/react-dom": "^18.0.6",
     "@types/react-table": "^7.7.12",
+    "ag-grid-community": "^28.2.0",
+    "ag-grid-react": "^28.2.0",
     "axios": "^0.27.2",
     "bootstrap": "^5.2.2",
     "husky": "^8.0.1",

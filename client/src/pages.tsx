@@ -1,4 +1,5 @@
 import CfContests from "pages/CfContests";
+import CfGym from "pages/CfGym";
 import Home from "pages/Home";
 import ProblemList from "pages/ProblemList";
 import ProblemLists from "pages/ProblemLists";
@@ -8,7 +9,8 @@ import TextSnippetIcon from "@mui/icons-material/TextSnippet";
 import ListIcon from "@mui/icons-material/List";
 import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
 import CfProblems from "pages/CfProblems";
-import BallotIcon from '@mui/icons-material/Ballot';
+import BallotIcon from "@mui/icons-material/Ballot";
+import FitnessCenterIcon from "@mui/icons-material/FitnessCenter";
 
 const pages = [
   {
@@ -22,14 +24,14 @@ const pages = [
   {
     path: "/problems",
     sidebar: "/problems",
-    title: "Problems",
+    title: "My problems",
     icon: <TextSnippetIcon />,
     element: <Problems />,
   },
   {
     path: "/problemLists",
     sidebar: "/problemLists",
-    title: "Problem lists",
+    title: "My problem lists",
     icon: <ListIcon />,
     element: <ProblemLists />,
   },
@@ -54,6 +56,14 @@ const pages = [
     type: "cf",
     icon: <EmojiEventsIcon />,
     element: <CfContests />,
+  },
+  {
+    path: "/cfGym",
+    sidebar: "/cfGym",
+    title: "CF Gym",
+    type: "cf",
+    icon: <FitnessCenterIcon />,
+    element: <CfGym />,
   },
 ];
 

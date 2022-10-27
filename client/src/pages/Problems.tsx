@@ -1,28 +1,40 @@
-import { CreateProblemDialog, UpdateProblemDialog, DeleteProblemButton } from "components/problemCRUD";
+import {
+  CreateProblemDialog,
+  UpdateProblemDialog,
+  DeleteProblemButton,
+} from "components/problemCRUD";
 import { UpdateDataButton } from "components/general";
-import { PaginatedTableFetchPage } from "components/TableWithPagination";
-import { problemsColumns } from "utils/ProblemUtils";
+import { getRowClass, problemsColumns } from "utils/problemUtils";
+import DataGrid from "components/DataGrid";
+import { useReadList } from "hooks/crudHooks";
 
 export default function Problems() {
+  const problems = useReadList(["problems"]);
+
   const columns = [
     ...problemsColumns,
-    { Header: 'Action', accessor: 'action', width: 300
-    , Cell: (cell: any) => (
-      <>
-        <UpdateProblemDialog problem={cell.row.original}/>{' '}
-        <DeleteProblemButton id={cell.row.original._links.self.href}/>
-      </>
-    ) },
+    {
+      headerName: "Action",
+      accessor: "action",
+      width: 300,
+      cellRenderer: (cell: any) => (
+        <>
+          <UpdateProblemDialog problem={cell.data} />{" "}
+          <DeleteProblemButton id={cell.data._links.self.href} />
+        </>
+      ),
+    },
   ];
 
   return (
-    <div>
-      <PaginatedTableFetchPage
-        columns={columns}
-        dataPath={["problems"]}
-        />
-      <UpdateDataButton/>
-      <CreateProblemDialog/>
-    </div>
+    <>
+      <DataGrid
+        rowData={problems.resources}
+        columnDefs={columns}
+        getRowClass={getRowClass}
+      />
+      <UpdateDataButton />
+      <CreateProblemDialog />
+    </>
   );
 }

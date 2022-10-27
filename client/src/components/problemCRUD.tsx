@@ -1,19 +1,29 @@
 import {
-  Button, Dialog, DialogTitle, DialogContent, TextField, FormLabel, RadioGroup,
-  FormControlLabel, Radio, DialogActions
+  Button,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  TextField,
+  FormLabel,
+  RadioGroup,
+  FormControlLabel,
+  Radio,
+  DialogActions,
+  Tooltip,
 } from "@mui/material";
 import { useState } from "react";
-import { ProblemType } from "types"
+import { ProblemType } from "types";
 
 import { useCreate, useUpdate, useDelete } from "hooks/crudHooks";
 import { focusManager } from "@tanstack/react-query";
 
 type ProblemDialogProps = {
-  title: string,
-  problem?: ProblemType,
-  actionName: string,
-  actionFunc: (problem: ProblemType) => void,
-}
+  title: string;
+  tooltip?: string;
+  problem?: ProblemType;
+  actionName: string;
+  actionFunc: (problem: ProblemType) => void;
+};
 
 export function ProblemDialog(props: ProblemDialogProps) {
   const [problem, setProblem] = useState(props.problem ?? {});
@@ -21,61 +31,111 @@ export function ProblemDialog(props: ProblemDialogProps) {
 
   const handleOpen = () => {
     setOpen(true);
-  }
+  };
 
   const handleClose = () => {
     setOpen(false);
-  }
+  };
 
-  const handleChange = (e: { target: { name: any; value: any; }; }) => {
+  const handleChange = (e: { target: { name: any; value: any } }) => {
     setProblem({ ...problem, [e.target.name]: e.target.value });
-  }
+  };
 
   const actionProblem = async () => {
     await props.actionFunc(problem);
     handleClose();
-  }
+  };
 
   return (
     <>
-      <Button variant="outlined" color="primary" onClick={handleOpen}>{props.title} </Button>
+      <Tooltip title={props.tooltip ?? ""}>
+        <Button variant="outlined" color="primary" onClick={handleOpen}>
+          {props.title}{" "}
+        </Button>
+      </Tooltip>
       <Dialog open={open} onClose={handleClose}>
         <DialogTitle id="form-dialog-title">{props.title}</DialogTitle>
         <DialogContent>
-          <TextField autoFocus margin="dense" onChange={handleChange} fullWidth
-            value={problem.link ?? ''} name="link" label="Link" />
-          <TextField margin="dense" onChange={handleChange} fullWidth
-            value={problem.name ?? ''} name="name" label="Name" />
+          <TextField
+            margin="dense"
+            onChange={handleChange}
+            fullWidth
+            value={problem.name ?? ""}
+            name="name"
+            label="Name"
+          />
+          <TextField
+            autoFocus
+            margin="dense"
+            onChange={handleChange}
+            fullWidth
+            value={problem.link ?? ""}
+            name="link"
+            label="Link"
+          />
 
           <FormLabel>Status</FormLabel>
-          <RadioGroup row
+          <RadioGroup
+            row
             name="problemStatus"
-            value={problem.problemStatus ?? ''}
+            value={problem.problemStatus ?? ""}
             onChange={handleChange}
           >
-            <FormControlLabel value="NOTHING" control={<Radio />} label="Not read" />
-            <FormControlLabel value="READ" control={<Radio />} label="Read before" />
+            <FormControlLabel
+              value="NOTHING"
+              control={<Radio />}
+              label="Not read"
+            />
+            <FormControlLabel
+              value="READ"
+              control={<Radio />}
+              label="Read before"
+            />
             <FormControlLabel value="WA" control={<Radio />} label="WA" />
             <FormControlLabel value="AC" control={<Radio />} label="AC" />
           </RadioGroup>
 
           <FormLabel>Editorial</FormLabel>
-          <RadioGroup row
+          <RadioGroup
+            row
             name="editorialStatus"
-            value={problem.editorialStatus ?? ''}
+            value={problem.editorialStatus ?? ""}
             onChange={handleChange}
           >
-            <FormControlLabel value="NOTHING" control={<Radio />} label="Not read" />
-            <FormControlLabel value="READ_BEFORE_AC" control={<Radio />} label="Read before" />
-            <FormControlLabel value="READ_AFTER_AC" control={<Radio />} label="Read after" />
+            <FormControlLabel
+              value="NOTHING"
+              control={<Radio />}
+              label="Not read"
+            />
+            <FormControlLabel
+              value="READ_BEFORE_AC"
+              control={<Radio />}
+              label="Read before"
+            />
+            <FormControlLabel
+              value="READ_AFTER_AC"
+              control={<Radio />}
+              label="Read after"
+            />
           </RadioGroup>
 
-          <TextField margin="dense" onChange={handleChange} fullWidth multiline
-            value={problem.comments ?? ''} name="comments" label="Comments" />
+          <TextField
+            margin="dense"
+            onChange={handleChange}
+            fullWidth
+            multiline
+            value={problem.comments ?? ""}
+            name="comments"
+            label="Comments"
+          />
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose} color="warning">Cancel</Button>
-          <Button onClick={actionProblem} color="primary">{props.actionName}</Button>
+          <Button onClick={handleClose} color="warning">
+            Cancel
+          </Button>
+          <Button onClick={actionProblem} color="primary">
+            {props.actionName}
+          </Button>
         </DialogActions>
       </Dialog>
     </>
@@ -83,25 +143,29 @@ export function ProblemDialog(props: ProblemDialogProps) {
 }
 
 export function CreateProblemDialog() {
-  const addProblem = useCreate("problems")
+  const addProblem = useCreate("problems");
 
   return (
     <ProblemDialog
-      title="Add problem"
-      actionName="Add"
-      actionFunc={addProblem} />
+      title="Create"
+      tooltip="Create problem"
+      actionName="Create"
+      actionFunc={addProblem}
+    />
   );
 }
 
-export function UpdateProblemDialog(props: { problem: ProblemType; }) {
+export function UpdateProblemDialog(props: { problem: ProblemType }) {
   const editProblem = useUpdate();
 
   return (
     <ProblemDialog
-      title="Edit problem"
+      title="Edit"
+      tooltip="Edit problem"
       problem={props.problem}
       actionFunc={editProblem}
-      actionName="Save" />
+      actionName="Save"
+    />
   );
 }
 
@@ -110,16 +174,20 @@ export function DeleteProblemButton(props: { id: string }) {
 
   const onDelClick = () => {
     // the focus is disabled to prevent a refetch after the user confirms the deletion
-    focusManager.setFocused(false)
-    const shouldDelete = window.confirm('Are you sure to delete?')
-    
-    if (shouldDelete) deleteProblem(props.id)
-    
+    focusManager.setFocused(false);
+    const shouldDelete = window.confirm("Are you sure to delete?");
+
+    if (shouldDelete) deleteProblem(props.id);
+
     // it is re-enabled after the mutation is called
-    setTimeout(() => focusManager.setFocused(undefined), 0)
-  }
+    setTimeout(() => focusManager.setFocused(undefined), 0);
+  };
 
   return (
-    <Button variant="outlined" color="error" onClick={onDelClick}>Delete</Button>
+    <Tooltip title="Delete problem">
+      <Button variant="outlined" color="error" onClick={onDelClick}>
+        Delete
+      </Button>
+    </Tooltip>
   );
 }

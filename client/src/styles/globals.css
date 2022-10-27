@@ -1,8 +1,16 @@
+.ac-color {
+  background-color: #cdf7cd;
+}
+
 .wa-color {
   background-color: #f7cdcd;
 }
 
+.read-color {
+  background-color: #d4e2ff;
+}
 
-.ac-color {
-  background-color: #cdf7cd;
+/* this fixes a UI error in Text Field caused by bootstrap styling */
+fieldset legend {
+  width: unset;
 }

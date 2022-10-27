@@ -1,36 +1,59 @@
-import { Button, Link } from "@mui/material";
-import { CreateProblemListDialog, DeleteProblemListButton } from "components/problemListCRUD";
+import { Button, Link, Tooltip } from "@mui/material";
+import {
+  CreateProblemListDialog,
+  DeleteProblemListButton,
+} from "components/problemListCRUD";
 import { UpdateDataButton } from "components/general";
-import { PaginatedTableFetchPage } from "components/TableWithPagination";
+import { useReadList } from "hooks/crudHooks";
+import DataGrid from "components/DataGrid";
+import { formatDateTime } from "utils/utils";
 
 export default function ProblemLists() {
+  const problemLists = useReadList(["problemLists"]);
+
   const columns = [
-    { Header: 'Date added', accessor: 'dateAdded', width: 250 },
-    { Header: 'Link', accessor: 'link', width: 50,
-      Cell: (cell: any) => <Link href={cell.value} target="_blank" rel="noopener">Link</Link>
+    {
+      headerName: "Creation date",
+      field: "dateAdded",
+      width: 180,
+      valueFormatter: (params: any) => formatDateTime(params.data.dateAdded),
     },
-    { Header: 'Name', accessor: 'name', width: 200 },
-    { Header: 'Action', accessor: 'action', width: 200
-    , Cell: (cell: any) => {
-      let listId = cell.row.original.id
+    {
+      headerName: "Link",
+      field: "link",
+      width: 80,
+      cellRenderer: (cell: any) => (
+        <Link href={cell.value} target="_blank" rel="noopener">
+          Link
+        </Link>
+      ),
+    },
+    { headerName: "Name", field: "name", width: 200 },
+    {
+      headerName: "Action",
+      field: "action",
+      flex: 1,
+      cellRenderer: (cell: any) => {
+        let listId = cell.data.id;
         return (
           <>
-            <Button href={`/problemLists/${listId}`} variant="contained">View</Button>
-            {' '}
-            <DeleteProblemListButton id={cell.row.original._links.self.href}/>
+            <Tooltip title="View problem list">
+              <Button href={`/problemLists/${listId}`} variant="contained">
+                View
+              </Button>
+            </Tooltip>{" "}
+            <DeleteProblemListButton id={cell.data._links.self.href} />
           </>
-        )
-    }},
+        );
+      },
+    },
   ];
 
   return (
     <div>
-      <PaginatedTableFetchPage
-        columns={columns}
-        dataPath={["problemLists"]}
-        />
-      <UpdateDataButton/>
-      <CreateProblemListDialog/>
+      <DataGrid rowData={problemLists.resources} columnDefs={columns} />
+      <UpdateDataButton />
+      <CreateProblemListDialog />
     </div>
   );
 }

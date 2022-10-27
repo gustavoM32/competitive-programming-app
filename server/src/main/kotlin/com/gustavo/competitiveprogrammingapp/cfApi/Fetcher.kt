@@ -1,6 +1,7 @@
 package com.gustavo.competitiveprogrammingapp.cfApi
 
 import com.google.gson.Gson
+import com.google.gson.JsonElement
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
@@ -11,15 +12,24 @@ import java.net.URL
 import java.time.Duration
 import java.time.LocalDateTime
 
+/**
+ * The Fetcher provides an interface to Codeforces API requests. It handles the parsing and caching of the API JSON
+ * response, and limits the number of requests to comply with the API limit.
+ */
 @Component
 class Fetcher(private val urlCacheRepository: UrlCacheRepository) {
-    private val logger: Logger = LoggerFactory.getLogger(javaClass)
-
     companion object {
         private const val CODEFORCES_API_URL = "http://codeforces.com/api"
         private val TIME_BETWEEN_REQUESTS = Duration.ofSeconds(2)
         private var lastRequest: LocalDateTime? = null
     }
+
+    private val logger: Logger = LoggerFactory.getLogger(javaClass)
+
+    private data class ApiResponse (
+        val status: String? = null,
+        val result: JsonElement? = null
+    )
 
     fun <T> getResource(apiResource: String, resourceClass: Class<T>, cacheTimeTolerance: Duration?): T {
         val cacheOptional = urlCacheRepository.findById(apiResource)
@@ -27,7 +37,7 @@ class Fetcher(private val urlCacheRepository: UrlCacheRepository) {
 
         if (cacheOptional.isPresent) {
             val cache = cacheOptional.get()
-            val lastResponseTime = cache.responseTime
+            val lastResponseTime = cache.lastUpdate
             logger.info(Duration.between(lastResponseTime, LocalDateTime.now()).toString())
             if (cacheTimeTolerance == null || Duration.between(lastResponseTime, LocalDateTime.now()) <= cacheTimeTolerance) {
                 logger.info("Got from cache")
@@ -38,7 +48,7 @@ class Fetcher(private val urlCacheRepository: UrlCacheRepository) {
         val response = makeCfApiRequest(apiResource)
         logger.info("Got response string")
 
-        val gsonResponse = Gson().fromJson(response, ApiResult::class.java)
+        val gsonResponse = Gson().fromJson(response, ApiResponse::class.java)
         logger.info("Got response gson")
 
         if (gsonResponse.status == null || gsonResponse.status != "OK") {
@@ -53,13 +63,16 @@ class Fetcher(private val urlCacheRepository: UrlCacheRepository) {
         val cache = Gson().toJson(resource)
 
         logger.info("Got cache string")
-        urlCacheRepository.save(UrlCache(apiResource, cache, LocalDateTime.now()))
+        urlCacheRepository.save(UrlCache(
+            apiResource,
+            json = cache,
+            lastUpdate = LocalDateTime.now()))
         logger.info("Saved to cache")
 
         return resource
     }
 
-    fun makeCfApiRequest(apiResource: String): String {
+    private fun makeCfApiRequest(apiResource: String): String {
         logger.info("Fetching $apiResource")
 
         while (lastRequest != null && Duration.between(lastRequest, LocalDateTime.now()) < TIME_BETWEEN_REQUESTS) {
