@@ -24,14 +24,14 @@ const pages = [
   {
     path: "/problems",
     sidebar: "/problems",
-    title: "Problems",
+    title: "My problems",
     icon: <TextSnippetIcon />,
     element: <Problems />,
   },
   {
     path: "/problemLists",
     sidebar: "/problemLists",
-    title: "Problem lists",
+    title: "My problem lists",
     icon: <ListIcon />,
     element: <ProblemLists />,
   },
