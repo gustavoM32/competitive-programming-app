@@ -1,7 +1,7 @@
 version: '3.8'
 
 services:
-  client-dev:
+  client_dev:
     image: node
     working_dir: /app
     ports:
@@ -10,7 +10,7 @@ services:
       - ./client/:/app
     command: npm start
 
-  server-dev:
+  server_dev:
     build:
       context: server
       dockerfile: Dockerfile
@@ -26,7 +26,7 @@ services:
     profiles:
       - server
 
-  mongo-dev:
+  mongo_dev:
     image: mongo
     ports:
       - 27017:27017
