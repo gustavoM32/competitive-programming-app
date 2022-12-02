@@ -1,17 +1,14 @@
 import { Button, TextField } from "@mui/material";
 import { useEffect, useState } from "react";
-
-const CF_HANDLE_STORAGE_KEY = "cfHandle";
+import { getCfHandleFromStorage, setCfHandleToStorage } from "utils/userUtils";
 
 export default function Home() {
-  const [cfHandle, setCfHandle] = useState(
-    localStorage.getItem(CF_HANDLE_STORAGE_KEY) ?? ""
-  );
+  const [cfHandle, setCfHandle] = useState(getCfHandleFromStorage());
   const [cfHandleInput, setCfHandleInput] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
-    localStorage.setItem(CF_HANDLE_STORAGE_KEY, cfHandle);
+    setCfHandleToStorage(cfHandle);
   }, [cfHandle]);
 
   const handleChange = (e: { target: { name: any; value: any } }) => {
