@@ -26,11 +26,13 @@ class Fetcher(private val urlCacheRepository: UrlCacheRepository) {
 
     private val logger: Logger = LoggerFactory.getLogger(javaClass)
 
-    private data class ApiResponse (
+    private data class ApiResponse(
         val status: String? = null,
         val result: JsonElement? = null
     )
 
+    /** Returns a Codeforces API resource. It checks the cache and gets the cached response from it if it is within the
+     * given time tolerance. It fetches the data from the API otherwise. */
     fun <T> getResource(apiResource: String, resourceClass: Class<T>, cacheTimeTolerance: Duration?): T {
         val cacheOptional = urlCacheRepository.findById(apiResource)
         logger.info("Get resource $apiResource")
@@ -39,7 +41,11 @@ class Fetcher(private val urlCacheRepository: UrlCacheRepository) {
             val cache = cacheOptional.get()
             val lastResponseTime = cache.lastUpdate
             logger.info(Duration.between(lastResponseTime, LocalDateTime.now()).toString())
-            if (cacheTimeTolerance == null || Duration.between(lastResponseTime, LocalDateTime.now()) <= cacheTimeTolerance) {
+            if (cacheTimeTolerance == null || Duration.between(
+                    lastResponseTime,
+                    LocalDateTime.now()
+                ) <= cacheTimeTolerance
+            ) {
                 logger.info("Got from cache")
                 return Gson().fromJson(cache.json, resourceClass)
             }
@@ -60,18 +66,25 @@ class Fetcher(private val urlCacheRepository: UrlCacheRepository) {
         }
 
         val resource = Gson().fromJson(gsonResponse.result, resourceClass)
+        // The parsed resource is converted to a string again so that only the necessary data is stored. This lowers the
+        // memory consumption, but invalidates the cache if the domain changes.
         val cache = Gson().toJson(resource)
 
         logger.info("Got cache string")
-        urlCacheRepository.save(UrlCache(
-            apiResource,
-            json = cache,
-            lastUpdate = LocalDateTime.now()))
+        urlCacheRepository.save(
+            UrlCache(
+                apiResource,
+                json = cache,
+                lastUpdate = LocalDateTime.now()
+            )
+        )
         logger.info("Saved to cache")
 
         return resource
     }
 
+    /** Makes the actual call to the API and returns the response String. It tries to obey the API request rate limit.
+     */
     private fun makeCfApiRequest(apiResource: String): String {
         logger.info("Fetching $apiResource")
 
@@ -97,6 +110,7 @@ class Fetcher(private val urlCacheRepository: UrlCacheRepository) {
         return getConnectionResponse(connection)
     }
 
+    /** Returns the connection response as a String. */
     private fun getConnectionResponse(connection: HttpURLConnection): String {
         val responseContent = StringBuilder()
         val reader = BufferedReader(InputStreamReader(connection.inputStream))
