@@ -1,4 +1,5 @@
 import axios, { AxiosRequestConfig } from "axios";
+import { RequestParameters, UriString } from "utils/queryUtils";
 
 const DEV_MODE =
   !process.env.NODE_ENV || process.env.NODE_ENV === "development";
@@ -12,16 +13,26 @@ function sleep(ms: number) {
   });
 }
 
-export async function readResource(uri: string) {
+function parametersToString(parameters?: RequestParameters) {
+  if (parameters === undefined) return "";
+  return Object.keys(parameters)
+    .map((key: string, i: number) => `${i === 0 ? "?" : "&"}${key}=${parameters[key]}`)
+    .join('');
+}
+
+export async function readResource(
+  uri: UriString,
+  parameters?: RequestParameters
+) {
   const success = (res: any) => {
-    console.log(`GET ${uri} success`);
+    console.log(`GET ${uri}${parametersToString(parameters)} success`);
     return res.data;
   };
   const fail = (e: any) => {
     console.error(e);
   };
 
-  console.log(`GET ${uri}`);
+  console.log(`GET ${uri}${parametersToString(parameters)}`);
 
   if (ADD_REQUEST_DELAY) await sleep(REQUEST_DELAY);
   if (MAKE_REQUESTS_FAIL)
@@ -29,7 +40,7 @@ export async function readResource(uri: string) {
       throw Error("ERROR");
     });
 
-  return axios.get(uri).then(success).catch(fail);
+  return axios.get(uri, { params: parameters }).then(success).catch(fail);
 }
 
 export async function createResource(

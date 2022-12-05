@@ -23,10 +23,13 @@ import {
   getContestRowClass,
   getContestStatus,
 } from "utils/problemUtils";
+import { getCfHandleFromStorage } from "utils/userUtils";
 
 export default function CfContests() {
   const cfContests = useReadList(["cfContests"]);
-  const userContestStatus = useReadList(["userContestStatuses"]);
+  const userContestStatus = useReadList(["userContestStatuses"], {
+    handle: getCfHandleFromStorage(),
+  });
 
   const userContestStatusMap = useMemo(
     () =>

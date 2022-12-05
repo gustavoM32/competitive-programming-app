@@ -28,10 +28,13 @@ import {
   problemStatusMap,
 } from "utils/problemUtils";
 import { UserProblemStatus } from "types";
+import { getCfHandleFromStorage } from "utils/userUtils";
 
 export default function CfProblems() {
   const cfProblems = useReadList(["cfProblems"]);
-  const userProblemStatus = useReadList(["userProblemStatuses"]);
+  const userProblemStatus = useReadList(["userProblemStatuses"], {
+    handle: getCfHandleFromStorage(),
+  });
 
   const userProblemStatusMap = useMemo(
     () =>
@@ -249,7 +252,10 @@ export default function CfProblems() {
         }
       />
       <UpdateDataButton />
-      <UpdateCfDataButton infoPath="userStatus" />
+      <UpdateCfDataButton
+        infoPath="userStatus"
+        parameters={{ handle: getCfHandleFromStorage() }}
+      />
     </>
   );
 }

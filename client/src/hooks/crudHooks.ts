@@ -7,6 +7,7 @@ import {
 import { createResource, updateResource, deleteResource } from "../api/crud";
 import { API_URL } from "constants/constants";
 import { Resource, ResourceData } from "../api/types";
+import {  ReadListRequestKey, ReadOneRequestKey, RequestParameters, ResourcePath, UriString } from "utils/queryUtils";
 
 export function useReadPage(
   path: string[],
@@ -28,10 +29,11 @@ export function useReadPage(
 }
 
 /* read */
-export function useReadList(key: string[]) {
+export function useReadList(resourcePath: ResourcePath, parameters?: RequestParameters) {
+  const key: ReadListRequestKey = [resourcePath, parameters];
   const isMutating = useIsMutating(key);
   const query = useQuery(key, resourceListFetcher, {
-    enabled: key.length !== 0 && isMutating === 0,
+    enabled: resourcePath.length !== 0 && isMutating === 0,
   });
 
   return {
@@ -41,9 +43,10 @@ export function useReadList(key: string[]) {
   };
 }
 
-export function useRead(uri: string) {
-  const isMutating = useIsMutating([uri]);
-  const query = useQuery([uri], resourceFetcher, {
+export function useRead(uri: UriString, parameters?: RequestParameters) {
+  const key: ReadOneRequestKey = [uri, parameters];
+  const isMutating = useIsMutating(key);
+  const query = useQuery(key, resourceFetcher, {
     enabled: uri !== "" && isMutating === 0,
   });
 

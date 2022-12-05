@@ -43,15 +43,16 @@ class UpdateController(
     }
 
     @GetMapping("cfSubmissions")
-    fun getCfSubmissions(): String {
-        val user = "gustavo_m32" // TODO: get user from request
-        cfSubmissionProcessor.update(user)
+    fun getCfSubmissions(@RequestParam handle: String): String {
+        cfSubmissionProcessor.update(handle)
         return "OK"
     }
 
     @GetMapping("userStatus")
-    fun getUserStatus(): String {
-        userStatusProcessor.update()
+    fun getUserStatus(@RequestParam handle: String): String {
+        userStatusProcessor.update(handle)
+        return "OK"
+    }
         return "OK"
     }
 }

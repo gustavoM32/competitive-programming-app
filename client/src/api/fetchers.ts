@@ -1,4 +1,5 @@
 import { API_URL, SERVER_URL } from "constants/constants";
+import { ReadListRequestKey, ReadOneRequestKey } from "utils/queryUtils";
 import { readResource } from "./crud";
 
 export async function resourcePageFetcher(
@@ -28,17 +29,18 @@ export async function resourcePageFetcher(
 export async function resourceListFetcher({
   queryKey,
 }: {
-  queryKey: string[];
+  queryKey: ReadListRequestKey;
 }) {
-  const uri = `${API_URL}/${queryKey.join("/")}`;
+  const [path, parameters] = queryKey;
+  const uri = `${API_URL}/${path.join("/")}`;
 
-  if (queryKey.length === 0) {
-    throw Error("Empty queryKey");
+  if (path.length === 0) {
+    throw Error("Empty query path");
   }
 
-  const lastElement = queryKey[queryKey.length - 1];
+  const lastElement = path[path.length - 1];
 
-  return readResource(uri).then((data) => {
+  return readResource(uri, parameters).then((data) => {
     return {
       resources: data._embedded[lastElement],
       uri: data._links.self.href,
@@ -46,10 +48,10 @@ export async function resourceListFetcher({
   });
 }
 
-export async function resourceFetcher({ queryKey }: { queryKey: [string] }) {
-  const [uri] = queryKey;
+export async function resourceFetcher({ queryKey }: { queryKey: ReadOneRequestKey }) {
+  const [uri, parameters] = queryKey;
 
-  return readResource(uri).then((data) => {
+  return readResource(uri, parameters).then((data) => {
     return {
       resource: data,
       uri: data._links.self.href,

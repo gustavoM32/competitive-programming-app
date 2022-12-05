@@ -28,7 +28,7 @@ class UserStatusProcessor(
 ) : Processor {
     private val logger: Logger = LoggerFactory.getLogger(javaClass)
 
-    fun getProblemStatusMap(problemsetProblems: List<CfProblem>, problemMapping: Map<ProblemId, ProblemId>, userStatus: List<CfSubmission>): Map<ProblemId, ProblemStatus> {
+    fun getProblemStatusMap(problemMapping: Map<ProblemId, ProblemId>, userStatus: List<CfSubmission>): Map<ProblemId, ProblemStatus> {
         val problemStatusMap = mutableMapOf<ProblemId, ProblemStatus>()
 
         userStatus.forEach a@{
@@ -65,9 +65,8 @@ class UserStatusProcessor(
         return contestStatusMap
     }
 
-    override fun update() {
+    override fun update(user: String) {
         logger.info("UserStatusProcessor update start...")
-        val user = "gustavo_m32" // TODO: get user in the parameter
         val timer = Timer("Problemset update")
 
         // update and get dependent data
@@ -83,7 +82,7 @@ class UserStatusProcessor(
         timer.check("Processed problemMapping")
 
         // get problems status from user submissions, with the mapping
-        val problemStatusMap = getProblemStatusMap(cfProblems, problemMapping, userSubmissions)
+        val problemStatusMap = getProblemStatusMap(problemMapping, userSubmissions)
         timer.check("problemStatusMap calculated")
 
         // get contest status from its problems
