@@ -57,47 +57,4 @@ class RetrievalController(val cfProblemRepository: CfProblemRepository, val cfSu
 
         return SliceImpl(subList, pageable, endIndex != list.size)
     }
-
-    fun calcCfProblemsWithUserStatus(user: String): List<CfProblemsWithUserStatus> {
-        val problems = cfProblemRepository.findAll()
-        val submission = cfSubmissionRepository.findByUser(user)
-
-        val problemStatusMap = mutableMapOf<ProblemId, String>()
-
-        submission.forEach { s ->
-            if (!problemStatusMap.containsKey(s.problemId) || problemStatusMap[s.problemId] != "OK") {
-                problemStatusMap[s.problemId] = s.verdict
-            }
-        }
-
-        return problems.map { p ->
-            var problemStatus = ProblemStatus.NOTHING
-            val code = p.problemId.toString()
-
-            if (problemStatusMap.containsKey(p.problemId)) {
-                problemStatus = if (problemStatusMap[p.problemId] == "OK") ProblemStatus.AC else ProblemStatus.WA;
-            }
-
-            CfProblemsWithUserStatus(
-                code = code,
-                contestId = p.problemId.contestId,
-                index = p.problemId.index,
-                name = p.name,
-                rating = p.rating,
-                user = user,
-                userStatus = problemStatus
-            )
-        }
-    }
-
-    @GetMapping("cfProblemsWithUserStatuses")
-    @ResponseBody
-    fun getCfProblemsWithUserStatus(pageable: Pageable): ResponseEntity<*> {
-        val user = "gustavo_m32" // FIXME
-        val content = calcCfProblemsWithUserStatus(user)
-        val link = linkTo<RetrievalController> {
-            WebMvcLinkBuilder.methodOn(RetrievalController::class.java).getCfProblemsWithUserStatus(pageable)
-        }.withSelfRel()
-        return attachPageDataAndLinks(content, pageable, cfProblemRepository.count(), link)
-    }
 }
