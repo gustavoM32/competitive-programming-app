@@ -22,31 +22,31 @@ class UpdateController(
     private val logger: Logger = LoggerFactory.getLogger(javaClass)
 
     @GetMapping("cfContests")
-    fun getCfContests(): String {
+    fun updateCfContests(): String {
         cfContestProcessor.update()
         return "OK"
     }
 
     @GetMapping("cfGymContests")
-    fun getCfGymContests(): String {
+    fun updateCfGymContests(): String {
         cfGymContestProcessor.update()
         return "OK"
     }
 
     @GetMapping("cfProblems")
-    fun getCfProblems(): String {
+    fun updateCfProblems(): String {
         cfProblemProcessor.update()
         return "OK"
     }
 
     @GetMapping("cfSubmissions")
-    fun getCfSubmissions(@RequestParam handle: String): String {
+    fun updateCfSubmissions(@RequestParam handle: String): String {
         cfSubmissionProcessor.update(handle)
         return "OK"
     }
 
     @GetMapping("userStatus")
-    fun getUserStatus(@RequestParam handle: String): String {
+    fun updateUserStatus(@RequestParam handle: String): String {
         userStatusProcessor.update(handle)
         return "OK"
     }
