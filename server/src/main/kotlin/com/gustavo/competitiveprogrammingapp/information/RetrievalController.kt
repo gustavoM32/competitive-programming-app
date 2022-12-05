@@ -1,9 +1,5 @@
 package com.gustavo.competitiveprogrammingapp.information
 
-import com.gustavo.competitiveprogrammingapp.information.repositories.CfProblemRepository
-import com.gustavo.competitiveprogrammingapp.information.deprecated.CfProblemsWithUserStatus
-import com.gustavo.competitiveprogrammingapp.information.repositories.CfSubmissionRepository
-import com.gustavo.competitiveprogrammingapp.rest.problem.ProblemStatus
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.data.domain.Pageable
@@ -18,8 +14,9 @@ import org.springframework.web.bind.annotation.*
 import kotlin.math.min
 
 @RestController
-@RequestMapping("api")
-class RetrievalController(val cfProblemRepository: CfProblemRepository, val cfSubmissionRepository: CfSubmissionRepository) {
+@RequestMapping("info/")
+class RetrievalController(
+) {
     private val logger: Logger = LoggerFactory.getLogger(javaClass)
 
     private fun <T> attachPageDataAndLinks(
@@ -57,4 +54,15 @@ class RetrievalController(val cfProblemRepository: CfProblemRepository, val cfSu
 
         return SliceImpl(subList, pageable, endIndex != list.size)
     }
+
+    /*@GetMapping("userProblemStatuses")
+    @ResponseBody
+    fun linkingExample(pageable: Pageable, @RequestParam handle: String): ResponseEntity<*> {
+        val content = userProblemStatusRepository.findByUser(handle)
+        val link = linkTo<RetrievalController> {
+            WebMvcLinkBuilder.methodOn(RetrievalController::class.java)
+                .getThat(pageable, handle)
+        }.withSelfRel()
+        return attachPageDataAndLinks(content, pageable, 0, link)
+    }*/
 }
