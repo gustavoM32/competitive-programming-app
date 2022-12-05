@@ -25,6 +25,11 @@ type UpdateResponse = {
   didUpdate: boolean;
 };
 
+const commonQueryOptions = {
+  refetchInterval: (data: any) => (data?.isUpdating ?? false ? 3000 : 10000),
+  refetchIntervalInBackground: false,
+};
+
 export function useReadPage(
   path: string[],
   pageNumber: number,
@@ -33,7 +38,10 @@ export function useReadPage(
   const query = useQuery(
     [path, pageNumber.toString(), pageSize.toString()],
     () => resourcePageFetcher({ queryKey: path }, pageNumber, pageSize),
-    { enabled: path.length !== 0 }
+    {
+      ...commonQueryOptions,
+      enabled: path.length !== 0,
+    }
   );
 
   return {
@@ -52,6 +60,7 @@ export function useReadList(
   const key: ReadListRequestKey = [resourcePath, parameters];
   const isMutating = useIsMutating(key);
   const query = useQuery(key, resourceListFetcher, {
+    ...commonQueryOptions,
     enabled: resourcePath.length !== 0 && isMutating === 0,
   });
 
@@ -66,6 +75,7 @@ export function useRead(uri: UriString, parameters?: RequestParameters) {
   const key: ReadOneRequestKey = [uri, parameters];
   const isMutating = useIsMutating(key);
   const query = useQuery(key, resourceFetcher, {
+    ...commonQueryOptions,
     enabled: uri !== "" && isMutating === 0,
   });
 
@@ -127,9 +137,8 @@ export function useInformationList(
   const queryClient = useQueryClient();
   const key: ReadListRequestKey = [resourcePath, parameters];
   const query = useQuery(key, informationListFetcher, {
+    ...commonQueryOptions,
     enabled: resourcePath.length !== 0,
-    refetchInterval: (data) => (data?.isUpdating ?? false ? 3000 : 10000),
-    refetchIntervalInBackground: false,
     onSuccess: (data: any) => {
       if (!(data?.isUpdating ?? false)) {
         const updateUri = `${INFO_URL}/${resourcePath.join("/")}/update`;
