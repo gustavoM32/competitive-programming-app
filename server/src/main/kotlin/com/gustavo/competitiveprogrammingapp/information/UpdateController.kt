@@ -1,34 +1,25 @@
 package com.gustavo.competitiveprogrammingapp.information
 
-import com.gustavo.competitiveprogrammingapp.information.processors.CfContestProcessor
-import com.gustavo.competitiveprogrammingapp.information.processors.CfGymContestProcessor
-import com.gustavo.competitiveprogrammingapp.information.processors.CfProblemProcessor
-import com.gustavo.competitiveprogrammingapp.information.processors.UserStatusProcessor
-import com.gustavo.competitiveprogrammingapp.information.processors.CfSubmissionProcessor
-import com.gustavo.competitiveprogrammingapp.information.processors.ProblemMappingProcessor
+import com.gustavo.competitiveprogrammingapp.information.processors.*
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("info")
 class UpdateController(
-    val cfProblemProcessor: CfProblemProcessor,
     val cfContestProcessor: CfContestProcessor,
     val cfGymContestProcessor: CfGymContestProcessor,
+    val cfProblemProcessor: CfProblemProcessor,
     val cfSubmissionProcessor: CfSubmissionProcessor,
-    val userStatusProcessor: UserStatusProcessor,
-    val problemMappingProcessor: ProblemMappingProcessor
+    val contestProblemProcessor: ContestProblemProcessor,
+    val problemMappingProcessor: ProblemMappingProcessor,
+    val userStatusProcessor: UserStatusProcessor
 ) {
     private val logger: Logger = LoggerFactory.getLogger(javaClass)
-
-    @GetMapping("cfProblems")
-    fun getCfProblems(): String {
-        cfProblemProcessor.update()
-        return "OK"
-    }
 
     @GetMapping("cfContests")
     fun getCfContests(): String {
@@ -39,6 +30,12 @@ class UpdateController(
     @GetMapping("cfGymContests")
     fun getCfGymContests(): String {
         cfGymContestProcessor.update()
+        return "OK"
+    }
+
+    @GetMapping("cfProblems")
+    fun getCfProblems(): String {
+        cfProblemProcessor.update()
         return "OK"
     }
 
@@ -53,6 +50,16 @@ class UpdateController(
         userStatusProcessor.update(handle)
         return "OK"
     }
+
+    @GetMapping("dropCache")
+    fun dropCache(): String {
+        cfContestProcessor.reset()
+        cfGymContestProcessor.reset()
+        cfProblemProcessor.reset()
+        contestProblemProcessor.reset()
+        problemMappingProcessor.reset()
+        cfSubmissionProcessor.reset()
+        userStatusProcessor.reset()
         return "OK"
     }
 }
