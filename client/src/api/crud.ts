@@ -7,6 +7,10 @@ const ADD_REQUEST_DELAY = true && DEV_MODE;
 const REQUEST_DELAY = 100;
 const MAKE_REQUESTS_FAIL = false && DEV_MODE;
 
+type RequestResponse = {
+  data: any;
+};
+
 function sleep(ms: number) {
   return new Promise((resolve) => {
     setTimeout(resolve, ms);
@@ -16,15 +20,18 @@ function sleep(ms: number) {
 function parametersToString(parameters?: RequestParameters) {
   if (parameters === undefined) return "";
   return Object.keys(parameters)
-    .map((key: string, i: number) => `${i === 0 ? "?" : "&"}${key}=${parameters[key]}`)
-    .join('');
+    .map(
+      (key: string, i: number) =>
+        `${i === 0 ? "?" : "&"}${key}=${parameters[key]}`
+    )
+    .join("");
 }
 
 export async function readResource(
   uri: UriString,
   parameters?: RequestParameters
 ) {
-  const success = (res: any) => {
+  const success = (res: RequestResponse) => {
     console.log(`GET ${uri}${parametersToString(parameters)} success`);
     return res.data;
   };
@@ -48,7 +55,7 @@ export async function createResource(
   newResource: any,
   config?: AxiosRequestConfig<any>
 ) {
-  const success = (response: any) => {
+  const success = (response: RequestResponse) => {
     console.log(`POST ${uri} success`);
     return response.data;
   };

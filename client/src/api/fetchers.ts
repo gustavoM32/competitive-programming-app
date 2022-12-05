@@ -1,6 +1,11 @@
-import { API_URL, SERVER_URL } from "constants/constants";
+import { API_URL, INFO_URL, SERVER_URL } from "constants/constants";
 import { ReadListRequestKey, ReadOneRequestKey } from "utils/queryUtils";
 import { readResource } from "./crud";
+
+export type InformationListResponse = {
+  resources: any[];
+  isUpdating: boolean;
+};
 
 export async function resourcePageFetcher(
   { queryKey }: { queryKey: string[] },
@@ -48,7 +53,11 @@ export async function resourceListFetcher({
   });
 }
 
-export async function resourceFetcher({ queryKey }: { queryKey: ReadOneRequestKey }) {
+export async function resourceFetcher({
+  queryKey,
+}: {
+  queryKey: ReadOneRequestKey;
+}) {
   const [uri, parameters] = queryKey;
 
   return readResource(uri, parameters).then((data) => {
@@ -57,6 +66,21 @@ export async function resourceFetcher({ queryKey }: { queryKey: ReadOneRequestKe
       uri: data._links.self.href,
     };
   });
+}
+
+export async function informationListFetcher({
+  queryKey,
+}: {
+  queryKey: ReadListRequestKey;
+}): Promise<InformationListResponse> {
+  const [path, parameters] = queryKey;
+  const uri = `${INFO_URL}/${path.join("/")}`;
+
+  if (path.length === 0) {
+    throw Error("Empty query path");
+  }
+
+  return readResource(uri, parameters);
 }
 
 export async function readOnlyFetcher({ queryKey }: { queryKey: string[] }) {

@@ -1,13 +1,29 @@
 import { useIsMutating, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
+  informationListFetcher,
   resourceFetcher,
   resourceListFetcher,
   resourcePageFetcher,
 } from "../api/fetchers";
-import { createResource, updateResource, deleteResource } from "../api/crud";
-import { API_URL } from "constants/constants";
+import {
+  createResource,
+  updateResource,
+  deleteResource,
+  readResource,
+} from "../api/crud";
+import { API_URL, INFO_URL } from "constants/constants";
 import { Resource, ResourceData } from "../api/types";
-import {  ReadListRequestKey, ReadOneRequestKey, RequestParameters, ResourcePath, UriString } from "utils/queryUtils";
+import {
+  ReadListRequestKey,
+  ReadOneRequestKey,
+  RequestParameters,
+  ResourcePath,
+  UriString,
+} from "utils/queryUtils";
+
+type UpdateResponse = {
+  didUpdate: boolean;
+};
 
 export function useReadPage(
   path: string[],
@@ -29,7 +45,10 @@ export function useReadPage(
 }
 
 /* read */
-export function useReadList(resourcePath: ResourcePath, parameters?: RequestParameters) {
+export function useReadList(
+  resourcePath: ResourcePath,
+  parameters?: RequestParameters
+) {
   const key: ReadListRequestKey = [resourcePath, parameters];
   const isMutating = useIsMutating(key);
   const query = useQuery(key, resourceListFetcher, {
@@ -97,5 +116,35 @@ export function useUpdateOne(uri: string) {
     return updateResource(uri, updatedResource).then(() =>
       queryClient.invalidateQueries()
     );
+  };
+}
+
+/* information */
+export function useInformationList(
+  resourcePath: ResourcePath,
+  parameters?: RequestParameters
+) {
+  const queryClient = useQueryClient();
+  const key: ReadListRequestKey = [resourcePath, parameters];
+  const query = useQuery(key, informationListFetcher, {
+    enabled: resourcePath.length !== 0,
+    refetchInterval: (data) => (data?.isUpdating ?? false ? 3000 : 10000),
+    refetchIntervalInBackground: false,
+    onSuccess: (data: any) => {
+      if (!(data?.isUpdating ?? false)) {
+        const updateUri = `${INFO_URL}/${resourcePath.join("/")}/update`;
+        readResource(updateUri, parameters).then((data: UpdateResponse) => {
+          if (data.didUpdate) {
+            queryClient.invalidateQueries({ queryKey: key });
+          }
+        });
+      }
+    },
+  });
+
+  return {
+    ...query,
+    resources: query.data?.resources ?? [],
+    isUpdating: query.data?.isUpdating ?? false,
   };
 }
