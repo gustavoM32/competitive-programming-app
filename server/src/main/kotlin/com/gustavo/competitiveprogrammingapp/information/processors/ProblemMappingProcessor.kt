@@ -1,5 +1,6 @@
 package com.gustavo.competitiveprogrammingapp.information.processors
 
+import com.gustavo.competitiveprogrammingapp.information.InformationService
 import com.gustavo.competitiveprogrammingapp.information.domain.CfProblem
 import com.gustavo.competitiveprogrammingapp.information.ProblemId
 import com.gustavo.competitiveprogrammingapp.information.domain.ContestProblem
@@ -15,16 +16,34 @@ import org.springframework.stereotype.Component
 @Component
 class ProblemMappingProcessor(
     val repository: ProblemMappingRepository,
+    val informationService: InformationService,
     private val cfProblemProcessor: CfProblemProcessor,
     private val contestProblemProcessor: ContestProblemProcessor
 ) {
+    companion object {
+        const val INFORMATION_ID = "ProblemMapping"
+        var isUpdating = false
+    }
+
     private val logger: Logger = LoggerFactory.getLogger(javaClass)
 
     fun update(): Boolean {
-        val shouldUpdate = cfProblemProcessor.update()
-            .or(contestProblemProcessor.update());
+        if (isUpdating) return false
+        val shouldUpdate: Boolean
 
-        if (shouldUpdate) process()
+        try {
+            isUpdating = true
+            shouldUpdate = informationService.doesNotExist(INFORMATION_ID)
+                .or(cfProblemProcessor.update())
+                .or(contestProblemProcessor.update())
+
+            if (shouldUpdate) {
+                process()
+                informationService.update(INFORMATION_ID)
+            }
+        } finally {
+            isUpdating = false
+        }
 
         return shouldUpdate
     }
@@ -52,6 +71,7 @@ class ProblemMappingProcessor(
 
     fun reset() {
         repository.deleteAll()
+        informationService.delete(CfProblemProcessor.INFORMATION_ID)
     }
 
     private fun getProblemMapping(

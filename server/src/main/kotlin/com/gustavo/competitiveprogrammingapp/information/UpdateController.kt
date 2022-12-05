@@ -1,5 +1,6 @@
 package com.gustavo.competitiveprogrammingapp.information
 
+import com.gustavo.competitiveprogrammingapp.information.domain.CfContest
 import com.gustavo.competitiveprogrammingapp.information.processors.*
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 @RequestMapping("info")
 class UpdateController(
+    val informationService: InformationService,
     val cfContestProcessor: CfContestProcessor,
     val cfGymContestProcessor: CfGymContestProcessor,
     val cfProblemProcessor: CfProblemProcessor,
@@ -22,34 +24,77 @@ class UpdateController(
     private val logger: Logger = LoggerFactory.getLogger(javaClass)
 
     @GetMapping("cfContests")
-    fun updateCfContests(): String {
-        cfContestProcessor.update()
-        return "OK"
+    fun getCfContests(): Map<String, Any> {
+        return mapOf(Pair("resources", cfContestProcessor.get()), Pair("isUpdating", CfContestProcessor.isUpdating))
+    }
+
+    @GetMapping("cfContests/update")
+    fun updateCfContests(): Map<String, Any> {
+        return mapOf(Pair("didUpdate", cfContestProcessor.update()))
     }
 
     @GetMapping("cfGymContests")
-    fun updateCfGymContests(): String {
-        cfGymContestProcessor.update()
-        return "OK"
+    fun getCfGymContests(): Map<String, Any> {
+        return mapOf(
+            Pair("resources", cfGymContestProcessor.get()),
+            Pair("isUpdating", CfGymContestProcessor.isUpdating)
+        )
+    }
+
+    @GetMapping("cfGymContests/update")
+    fun updateCfGymContests(): Map<String, Any> {
+        return mapOf(Pair("didUpdate", cfGymContestProcessor.update()))
     }
 
     @GetMapping("cfProblems")
-    fun updateCfProblems(): String {
-        cfProblemProcessor.update()
-        return "OK"
+    fun getCfProblems(): Map<String, Any> {
+        return mapOf(Pair("resources", cfProblemProcessor.get()), Pair("isUpdating", CfProblemProcessor.isUpdating))
+    }
+
+    @GetMapping("cfProblems/update")
+    fun updateCfProblems(): Map<String, Any> {
+        return mapOf(Pair("didUpdate", cfProblemProcessor.update()))
     }
 
     @GetMapping("cfSubmissions")
-    fun updateCfSubmissions(@RequestParam handle: String): String {
-        cfSubmissionProcessor.update(handle)
-        return "OK"
+    fun getCfSubmissions(@RequestParam handle: String): Map<String, Any> {
+        return mapOf(
+            Pair("resources", cfSubmissionProcessor.get(handle)),
+            Pair("isUpdating", cfSubmissionProcessor.isUpdating(handle))
+        )
     }
 
-    @GetMapping("userStatus")
-    fun updateUserStatus(@RequestParam handle: String): String {
-        userStatusProcessor.update(handle)
-        return "OK"
+    @GetMapping("cfSubmissions/update")
+    fun updateCfSubmissions(@RequestParam handle: String): Map<String, Any> {
+        return mapOf(Pair("didUpdate", cfSubmissionProcessor.update(handle)))
     }
+
+    @GetMapping("userProblemStatus")
+    fun getUserProblemStatus(@RequestParam handle: String): Map<String, Any> {
+        return mapOf(
+            Pair("resources", userStatusProcessor.getProblemStatus(handle)),
+            Pair("isUpdating", userStatusProcessor.isUpdating(handle))
+        )
+    }
+
+    @GetMapping("userProblemStatus/update")
+    fun updateUserProblemStatus(@RequestParam handle: String): Map<String, Any> {
+        return mapOf(Pair("didUpdate", userStatusProcessor.update(handle)))
+    }
+
+    @GetMapping("userContestStatus")
+    fun getUserContestStatus(@RequestParam handle: String): Map<String, Any> {
+        return mapOf(
+            Pair("resources", userStatusProcessor.getContestStatus(handle)),
+            Pair("isUpdating", userStatusProcessor.isUpdating(handle))
+        )
+    }
+
+    @GetMapping("userContestStatus/update")
+    fun updateUserContestStatus(@RequestParam handle: String): Map<String, Any> {
+        return mapOf(Pair("didUpdate", userStatusProcessor.update(handle)))
+    }
+
 
     @GetMapping("dropCache")
     fun dropCache(): String {
@@ -60,6 +105,7 @@ class UpdateController(
         problemMappingProcessor.reset()
         cfSubmissionProcessor.reset()
         userStatusProcessor.reset()
+        informationService.deleteAll()
         return "OK"
     }
 }

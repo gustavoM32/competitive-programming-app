@@ -1,6 +1,7 @@
 package com.gustavo.competitiveprogrammingapp.information.processors
 
 import com.gustavo.competitiveprogrammingapp.cfApi.CfApiResourceFetcher
+import com.gustavo.competitiveprogrammingapp.information.InformationService
 import com.gustavo.competitiveprogrammingapp.information.ProblemId
 import com.gustavo.competitiveprogrammingapp.information.domain.ContestProblem
 import com.gustavo.competitiveprogrammingapp.information.repositories.ContestProblemRepository
@@ -14,15 +15,35 @@ import org.springframework.stereotype.Component
 @Component
 class ContestProblemProcessor(
     val repository: ContestProblemRepository,
+    val informationService: InformationService,
     private val cfApiResourceFetcher: CfApiResourceFetcher,
     private val cfContestProcessor: CfContestProcessor
 ) {
+    companion object {
+        const val INFORMATION_ID = "ContestProblem"
+        var isUpdating = false
+    }
+
     private val logger: Logger = LoggerFactory.getLogger(javaClass)
 
     fun update(): Boolean {
-        val shouldUpdate = cfContestProcessor.update();
+        if (isUpdating) return false
+        val shouldUpdate: Boolean
 
-        if (shouldUpdate) process()
+        try {
+            isUpdating = true
+            shouldUpdate = informationService.doesNotExist(INFORMATION_ID).or(
+                cfContestProcessor.update()
+            )
+            // FIXME: Missing getContestStandings dependency.
+
+            if (shouldUpdate) {
+                process()
+                informationService.update(INFORMATION_ID)
+            }
+        } finally {
+            isUpdating = false
+        }
 
         return shouldUpdate
     }
@@ -63,5 +84,6 @@ class ContestProblemProcessor(
 
     fun reset() {
         repository.deleteAll()
+        informationService.delete(CfProblemProcessor.INFORMATION_ID)
     }
 }

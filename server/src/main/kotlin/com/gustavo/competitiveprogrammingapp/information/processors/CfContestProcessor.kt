@@ -1,6 +1,7 @@
 package com.gustavo.competitiveprogrammingapp.information.processors
 
 import com.gustavo.competitiveprogrammingapp.cfApi.CfApiResourceFetcher
+import com.gustavo.competitiveprogrammingapp.information.InformationService
 import com.gustavo.competitiveprogrammingapp.information.domain.CfContest
 import com.gustavo.competitiveprogrammingapp.information.repositories.CfContestRepository
 import org.slf4j.Logger
@@ -14,18 +15,34 @@ import java.time.ZoneOffset
 @Component
 class CfContestProcessor(
     val repository: CfContestRepository,
+    val informationService: InformationService,
     private val cfApiResourceFetcher: CfApiResourceFetcher
 ) {
     companion object {
+        const val INFORMATION_ID = "CfContest"
+        var isUpdating = false
         val CONTEST_LIST_CACHE_TOLERANCE: Duration = Duration.ofHours(1)
     }
 
     private val logger: Logger = LoggerFactory.getLogger(javaClass)
 
     fun update(): Boolean {
-        val shouldUpdate = cfApiResourceFetcher.willContestListUpdate(false, CONTEST_LIST_CACHE_TOLERANCE)
+        if (isUpdating) return false
+        val shouldUpdate: Boolean
 
-        if (shouldUpdate) process()
+        try {
+            isUpdating = true
+            shouldUpdate = informationService.doesNotExist(INFORMATION_ID).or(
+                cfApiResourceFetcher.willContestListUpdate(false, CONTEST_LIST_CACHE_TOLERANCE)
+            )
+
+            if (shouldUpdate) {
+                process()
+                informationService.update(INFORMATION_ID)
+            }
+        } finally {
+            isUpdating = false
+        }
 
         return shouldUpdate
     }
@@ -60,5 +77,6 @@ class CfContestProcessor(
 
     fun reset() {
         repository.deleteAll()
+        informationService.delete(CfProblemProcessor.INFORMATION_ID)
     }
 }

@@ -1,6 +1,6 @@
 package com.gustavo.competitiveprogrammingapp.information.processors
 
-import com.gustavo.competitiveprogrammingapp.information.domain.CfProblem
+import com.gustavo.competitiveprogrammingapp.information.InformationService
 import com.gustavo.competitiveprogrammingapp.information.domain.CfSubmission
 import com.gustavo.competitiveprogrammingapp.information.ProblemId
 import com.gustavo.competitiveprogrammingapp.information.domain.ContestProblem
@@ -19,24 +19,45 @@ import org.springframework.stereotype.Component
 class UserStatusProcessor(
     private val userProblemStatusRepository: UserProblemStatusRepository,
     private val userContestStatusRepository: UserContestStatusRepository,
+    private val informationService: InformationService,
     private val problemMappingProcessor: ProblemMappingProcessor,
     private val cfProblemProcessor: CfProblemProcessor,
     private val cfContestProcessor: CfContestProcessor,
     private val contestProblemProcessor: ContestProblemProcessor,
     private val cfSubmissionProcessor: CfSubmissionProcessor
 ) {
+    companion object {
+        const val INFORMATION_ID = "UserStatus"
+        private val isUpdatingSet = mutableSetOf<String>()
+    }
+
     private val logger: Logger = LoggerFactory.getLogger(javaClass)
 
     fun update(user: String): Boolean {
-        val shouldUpdate = cfProblemProcessor.update()
-            .or(cfContestProcessor.update())
-            .or(contestProblemProcessor.update())
-            .or(problemMappingProcessor.update())
-            .or(cfSubmissionProcessor.update(user));
+        if (isUpdating(user)) return false
+        val shouldUpdate: Boolean
 
-        if (shouldUpdate) process(user)
+        try {
+            isUpdatingSet.add(user)
+            shouldUpdate = informationService.doesNotExist(getId(user)).or(cfProblemProcessor.update())
+                .or(cfContestProcessor.update())
+                .or(contestProblemProcessor.update())
+                .or(problemMappingProcessor.update())
+                .or(cfSubmissionProcessor.update(user));
+
+            if (shouldUpdate) {
+                process(user)
+                informationService.update(getId(user))
+            }
+        } finally {
+            isUpdatingSet.remove(user)
+        }
 
         return shouldUpdate
+    }
+
+    fun isUpdating(user: String): Boolean {
+        return isUpdatingSet.contains(user)
     }
 
     fun process(user: String) {
@@ -89,9 +110,22 @@ class UserStatusProcessor(
         logger.info("UserStatusProcessor update completed.")
     }
 
+    fun getProblemStatus(user: String): List<UserProblemStatus> {
+        return userProblemStatusRepository.findByUser(user)
+    }
+
+    fun getContestStatus(user: String): List<UserContestStatus> {
+        return userContestStatusRepository.findByUser(user)
+    }
+
     fun reset() {
         userProblemStatusRepository.deleteAll()
         userContestStatusRepository.deleteAll()
+        // TODO: Find a way to delete from the information repository.
+    }
+
+    private fun getId(user: String): String {
+        return "$INFORMATION_ID/$user"
     }
 
     private fun getProblemStatusMap(
