@@ -11,6 +11,7 @@ import java.net.HttpURLConnection
 import java.net.URL
 import java.time.Duration
 import java.time.LocalDateTime
+import java.util.*
 
 /**
  * The Fetcher provides an interface to Codeforces API requests. It handles the parsing and caching of the API JSON
@@ -34,22 +35,11 @@ class Fetcher(private val urlCacheRepository: UrlCacheRepository) {
     /** Returns a Codeforces API resource. It checks the cache and gets the cached response from it if it is within the
      * given time tolerance. It fetches the data from the API otherwise. */
     fun <T> getResource(apiResource: String, resourceClass: Class<T>, cacheTimeTolerance: Duration?): T {
-        val cacheOptional = urlCacheRepository.findById(apiResource)
         logger.info("Get resource $apiResource")
 
-        if (cacheOptional.isPresent) {
-            val cache = cacheOptional.get()
-            val lastResponseTime = cache.lastUpdate
-            logger.info(Duration.between(lastResponseTime, LocalDateTime.now()).toString())
-            if (cacheTimeTolerance == null || Duration.between(
-                    lastResponseTime,
-                    LocalDateTime.now()
-                ) <= cacheTimeTolerance
-            ) {
-                logger.info("Got from cache")
-                return Gson().fromJson(cache.json, resourceClass)
-            }
-        }
+        val cachedResource = getFromCache(apiResource, resourceClass, cacheTimeTolerance)
+
+        if (cachedResource.isPresent) return cachedResource.get()
 
         val response = makeCfApiRequest(apiResource)
         logger.info("Got response string")
@@ -81,6 +71,39 @@ class Fetcher(private val urlCacheRepository: UrlCacheRepository) {
         logger.info("Saved to cache")
 
         return resource
+    }
+
+    /** Returns a cached resource if its last update is within the given time tolerance.
+     * Returns an empty optional otherwise.
+     */
+    private fun <T> getFromCache(
+        apiResource: String,
+        resourceClass: Class<T>,
+        cacheTimeTolerance: Duration?
+    ): Optional<T> {
+        return urlCacheRepository
+            .findById(apiResource)
+            .flatMap a@{ cache ->
+                if (shouldGetFromCache(cache.lastUpdate, cacheTimeTolerance)) {
+                    val cachedResource = Gson().fromJson(cache.json, resourceClass)
+                    if (cachedResource != null) {
+                        logger.info("Got from cache (last update ${cache.lastUpdate} is within tolerance ${cacheTimeTolerance})")
+                        return@a Optional.of(cachedResource)
+                    } else {
+                        return@a Optional.empty()
+                    }
+                }
+
+                return@a Optional.empty()
+            }
+    }
+
+    /** Returns true if the cached resource is outside the given time tolerance. */
+    private fun shouldGetFromCache(lastUpdate: LocalDateTime, cacheTimeTolerance: Duration?): Boolean {
+        return cacheTimeTolerance == null || Duration.between(
+            lastUpdate,
+            LocalDateTime.now()
+        ) <= cacheTimeTolerance
     }
 
     /** Makes the actual call to the API and returns the response String. It tries to obey the API request rate limit.
