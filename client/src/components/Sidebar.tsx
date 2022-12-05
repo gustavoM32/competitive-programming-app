@@ -196,7 +196,7 @@ export default function Sidebar(props: any) {
       <Box
         component="main"
         sx={{ flexGrow: 1, p: 2 }}
-        style={{ marginTop: "64px", paddingTop: "0px" }}
+        style={{ marginTop: "64px", paddingTop: "20px" }}
       >
         {props.content}
       </Box>
