@@ -18,6 +18,7 @@ export function UpdateDataButton() {
   );
 }
 
+/** @deprecated */
 export function UpdateCfDataButton(props: {
   infoPath: string;
   parameters?: RequestParameters;

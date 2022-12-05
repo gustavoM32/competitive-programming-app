@@ -18,6 +18,8 @@ import { getRowClass, problemsColumns } from "utils/problemUtils";
 import DataGrid from "components/DataGrid";
 import { ProblemType } from "types";
 import { useMemo } from "react";
+import { DataLoadingInfo } from "components/DataLoadingInfo";
+import { SpacedRow } from "components/SpacedRow";
 
 export default function ProblemList() {
   const { problemListId } = useParams();
@@ -31,6 +33,8 @@ export default function ProblemList() {
       : [];
   const problemListData = useRead(resourceURI);
   const problemListProblems = useReadList(problemsKey);
+
+  const information = [problemListData, problemListProblems];
 
   const explicitSolved = useMemo(
     () =>
@@ -88,18 +92,21 @@ export default function ProblemList() {
       <p>{problemList.description}</p>
       <p>{problemList.notes}</p>
       <h3>Problems {Number.isFinite(total) ? `${solved}/${total}` : null}</h3>
+
+      <SpacedRow>
+        <AddProblemToListDialog problemList={problemList} />
+        <AddNewProblemToListDialog problemList={problemList} />
+        <UpdateProblemListDialog problemList={problemList} />
+        <DeleteProblemListButtonOne id={problemListData.uri} />
+        <UpdateDataButton />
+        <DataLoadingInfo information={information} />
+      </SpacedRow>
+
       <DataGrid
         rowData={problemListProblems.resources}
         columnDefs={columns}
         getRowClass={getRowClass}
       />
-      <>
-        <AddProblemToListDialog problemList={problemList} />{" "}
-        <AddNewProblemToListDialog problemList={problemList} />{" "}
-        <UpdateProblemListDialog problemList={problemList} />{" "}
-        <DeleteProblemListButtonOne id={problemListData.uri} />
-        <UpdateDataButton />
-      </>
     </>
   );
 }

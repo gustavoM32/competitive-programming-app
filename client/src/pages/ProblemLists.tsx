@@ -7,9 +7,13 @@ import { UpdateDataButton } from "components/general";
 import { useReadList } from "hooks/crudHooks";
 import DataGrid from "components/DataGrid";
 import { formatDateTime } from "utils/utils";
+import { SpacedRow } from "components/SpacedRow";
+import { DataLoadingInfo } from "components/DataLoadingInfo";
 
 export default function ProblemLists() {
   const problemLists = useReadList(["problemLists"]);
+
+  const information = [problemLists];
 
   const columns = [
     {
@@ -50,10 +54,14 @@ export default function ProblemLists() {
   ];
 
   return (
-    <div>
+    <>
+      <SpacedRow>
+        <CreateProblemListDialog />
+        <UpdateDataButton />
+        <DataLoadingInfo information={information} />
+      </SpacedRow>
+
       <DataGrid rowData={problemLists.resources} columnDefs={columns} />
-      <UpdateDataButton />
-      <CreateProblemListDialog />
-    </div>
+    </>
   );
 }

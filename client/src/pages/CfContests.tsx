@@ -1,4 +1,4 @@
-import { UpdateDataButton, UpdateCfDataButton } from "components/general";
+import { UpdateDataButton } from "components/general";
 import {
   Checkbox,
   FormControl,
@@ -15,7 +15,7 @@ import {
   Typography,
 } from "@mui/material";
 import DataGrid from "components/DataGrid";
-import { useReadList } from "hooks/crudHooks";
+import { useInformationList } from "hooks/crudHooks";
 import { useCallback, useMemo, useState } from "react";
 import { UserContestStatus } from "types";
 import {
@@ -24,12 +24,16 @@ import {
   getContestStatus,
 } from "utils/problemUtils";
 import { getCfHandleFromStorage } from "utils/userUtils";
+import { DataLoadingInfo } from "components/DataLoadingInfo";
+import { SpacedRow } from "components/SpacedRow";
 
 export default function CfContests() {
-  const cfContests = useReadList(["cfContests"]);
-  const userContestStatus = useReadList(["userContestStatuses"], {
+  const cfContests = useInformationList(["cfContests"]);
+  const userContestStatus = useInformationList(["userContestStatus"], {
     handle: getCfHandleFromStorage(),
   });
+
+  const information = [cfContests, userContestStatus];
 
   const userContestStatusMap = useMemo(
     () =>
@@ -203,6 +207,11 @@ export default function CfContests() {
         </Grid>
       </FormControl>
 
+      <SpacedRow>
+        <UpdateDataButton />
+        <DataLoadingInfo information={information} />
+      </SpacedRow>
+
       <DataGrid
         rowData={filteredContests}
         columnDefs={columns}
@@ -210,8 +219,6 @@ export default function CfContests() {
           getContestRowClass(row, userContestStatusMap)
         }
       />
-      <UpdateDataButton />
-      <UpdateCfDataButton infoPath="cfContests" />
     </>
   );
 }

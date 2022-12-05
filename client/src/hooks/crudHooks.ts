@@ -30,6 +30,7 @@ const commonQueryOptions = {
   refetchIntervalInBackground: false,
 };
 
+/** @deprecated */
 export function useReadPage(
   path: string[],
   pageNumber: number,

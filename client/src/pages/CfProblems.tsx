@@ -1,6 +1,6 @@
-import { UpdateDataButton, UpdateCfDataButton } from "components/general";
+import { UpdateDataButton } from "components/general";
 import DataGrid from "components/DataGrid";
-import { useReadList } from "hooks/crudHooks";
+import { useInformationList } from "hooks/crudHooks";
 import "styles/globals.css";
 import {
   Checkbox,
@@ -29,12 +29,16 @@ import {
 } from "utils/problemUtils";
 import { UserProblemStatus } from "types";
 import { getCfHandleFromStorage } from "utils/userUtils";
+import { DataLoadingInfo } from "components/DataLoadingInfo";
+import { SpacedRow } from "components/SpacedRow";
 
 export default function CfProblems() {
-  const cfProblems = useReadList(["cfProblems"]);
-  const userProblemStatus = useReadList(["userProblemStatuses"], {
+  const cfProblems = useInformationList(["cfProblems"]);
+  const userProblemStatus = useInformationList(["userProblemStatus"], {
     handle: getCfHandleFromStorage(),
   });
+
+  const information = [cfProblems, userProblemStatus];
 
   const userProblemStatusMap = useMemo(
     () =>
@@ -244,17 +248,18 @@ export default function CfProblems() {
           </Grid>
         </Grid>
       </FormControl>
+
+      <SpacedRow>
+        <UpdateDataButton />
+        <DataLoadingInfo information={information} />
+      </SpacedRow>
+
       <DataGrid
         rowData={filteredCfProblems}
         columnDefs={columns}
         getRowClass={(row: any) =>
           getProblemRowClass(row, userProblemStatusMap)
         }
-      />
-      <UpdateDataButton />
-      <UpdateCfDataButton
-        infoPath="userStatus"
-        parameters={{ handle: getCfHandleFromStorage() }}
       />
     </>
   );
