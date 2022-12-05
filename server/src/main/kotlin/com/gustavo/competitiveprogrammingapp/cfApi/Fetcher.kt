@@ -32,6 +32,13 @@ class Fetcher(private val urlCacheRepository: UrlCacheRepository) {
         val result: JsonElement? = null
     )
 
+    /** Returns true if a fetch would result in an API call given the time tolerance. */
+    fun willFetch(apiResource: String, cacheTimeTolerance: Duration?): Boolean {
+        val cacheOptional = urlCacheRepository.findById(apiResource)
+
+        return cacheOptional.isEmpty || !shouldGetFromCache(cacheOptional.get().lastUpdate, cacheTimeTolerance)
+    }
+
     /** Returns a Codeforces API resource. It checks the cache and gets the cached response from it if it is within the
      * given time tolerance. It fetches the data from the API otherwise. */
     fun <T> getResource(apiResource: String, resourceClass: Class<T>, cacheTimeTolerance: Duration?): T {

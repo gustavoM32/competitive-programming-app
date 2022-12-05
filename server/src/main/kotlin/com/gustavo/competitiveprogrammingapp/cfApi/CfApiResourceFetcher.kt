@@ -14,12 +14,27 @@ class CfApiResourceFetcher(val fetcher: Fetcher) {
         val DEFAULT_RECENCY: Duration = Duration.ofSeconds(1000L)
     }
 
+    fun willProblemsetProblemsUpdate(requiredRecency: Duration = DEFAULT_RECENCY): Boolean {
+        return fetcher.willFetch("/problemset.problems", requiredRecency)
+    }
+
     fun getProblemsetProblems(requiredRecency: Duration = DEFAULT_RECENCY): ApiProblemsetProblemsResult {
         return fetcher.getResource("/problemset.problems", ApiProblemsetProblemsResult::class.java, requiredRecency)
     }
 
+    fun willContestListUpdate(gym: Boolean = false, requiredRecency: Duration = DEFAULT_RECENCY): Boolean {
+        return fetcher.willFetch("/contest.list?gym=$gym", requiredRecency)
+    }
+
     fun getContestList(gym: Boolean = false, requiredRecency: Duration = DEFAULT_RECENCY): ApiContestListResult {
         return fetcher.getResource("/contest.list?gym=$gym", ApiContestListResult::class.java, requiredRecency)
+    }
+
+    fun willContestStandingsUpdate(contestId: Int, requiredRecency: Duration = DEFAULT_RECENCY): Boolean {
+        return fetcher.willFetch(
+            "/contest.standings?contestId=$contestId",
+            requiredRecency
+        )
     }
 
     fun getContestStandings(contestId: Int, requiredRecency: Duration = DEFAULT_RECENCY): ApiContestStandingsResult {
@@ -28,6 +43,10 @@ class CfApiResourceFetcher(val fetcher: Fetcher) {
             ApiContestStandingsResult::class.java,
             requiredRecency
         )
+    }
+
+    fun willUserStatusUpdate(user: String, requiredRecency: Duration = DEFAULT_RECENCY): Boolean {
+        return fetcher.willFetch("/user.status?handle=$user", requiredRecency)
     }
 
     fun getUserStatus(user: String, requiredRecency: Duration = DEFAULT_RECENCY): ApiUserStatusResult {

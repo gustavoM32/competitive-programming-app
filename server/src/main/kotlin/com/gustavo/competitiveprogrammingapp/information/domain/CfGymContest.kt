@@ -12,7 +12,7 @@ data class CfGymContest(
     val startTime: LocalDateTime?,
     val durationSeconds: Long?,
     val difficulty: Int?,
-    val type: String?, // not API's type, that reffers to the contest format (ICPC or IOI)
+    val type: String?, // not API's type, that refers to the contest format (ICPC or IOI)
     val region: String?,
     val country: String?,
     val season: String?,

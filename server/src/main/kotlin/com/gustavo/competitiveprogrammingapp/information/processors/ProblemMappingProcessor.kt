@@ -1,6 +1,5 @@
 package com.gustavo.competitiveprogrammingapp.information.processors
 
-import com.gustavo.competitiveprogrammingapp.information.SingleResourceProcessor
 import com.gustavo.competitiveprogrammingapp.information.domain.CfProblem
 import com.gustavo.competitiveprogrammingapp.information.ProblemId
 import com.gustavo.competitiveprogrammingapp.information.domain.ContestProblem
@@ -15,13 +14,50 @@ import org.springframework.stereotype.Component
  */
 @Component
 class ProblemMappingProcessor(
-    override val repository: ProblemMappingRepository,
+    val repository: ProblemMappingRepository,
     private val cfProblemProcessor: CfProblemProcessor,
     private val contestProblemProcessor: ContestProblemProcessor
-) : SingleResourceProcessor<ProblemMapping, ProblemId> {
+) {
     private val logger: Logger = LoggerFactory.getLogger(javaClass)
 
-    private fun getProblemMapping(cfProblems: List<CfProblem>, contestProblems: List<ContestProblem>): Map<ProblemId, ProblemId> {
+    fun update(): Boolean {
+        val shouldUpdate = cfProblemProcessor.update()
+            .or(contestProblemProcessor.update());
+
+        if (shouldUpdate) process()
+
+        return shouldUpdate
+    }
+
+    fun process() {
+        logger.info("ProblemMappingProcessor update start...")
+        // get dependent data
+        val cfProblems = cfProblemProcessor.get()
+        val contestProblems = contestProblemProcessor.get()
+
+        // process it
+        val result = getProblemMapping(cfProblems, contestProblems)
+
+        // save information
+        repository.saveAll(result.map {
+            ProblemMapping(it.key, it.value)
+        })
+
+        logger.info("ProblemMappingProcessor update completed.")
+    }
+
+    fun get(): List<ProblemMapping> {
+        return repository.findAll()
+    }
+
+    fun reset() {
+        repository.deleteAll()
+    }
+
+    private fun getProblemMapping(
+        cfProblems: List<CfProblem>,
+        contestProblems: List<ContestProblem>
+    ): Map<ProblemId, ProblemId> {
         val problemMapping = mutableMapOf<ProblemId, ProblemId>()
         val associatedProblems = mutableMapOf<String, MutableList<ContestProblem>>()
         val problemAssociationId = mutableMapOf<ProblemId, String>()
@@ -51,22 +87,5 @@ class ProblemMappingProcessor(
         }
 
         return problemMapping
-    }
-
-    override fun update() {
-        logger.info("ProblemMappingProcessor update start...")
-        // update and get dependent data
-        val cfProblems = cfProblemProcessor.updateAndFindAll()
-        val contestProblems = contestProblemProcessor.updateAndFindAll()
-
-        // process it
-        val result = getProblemMapping(cfProblems, contestProblems)
-
-        // save information
-        repository.saveAll(result.map {
-            ProblemMapping(it.key, it.value)
-        })
-
-        logger.info("ProblemMappingProcessor update completed.")
     }
 }

@@ -1,13 +1,21 @@
 package com.gustavo.competitiveprogrammingapp.information
 
-import org.springframework.data.mongodb.repository.MongoRepository
-
 /** Processors update the server database given API resources */
 interface Processor {
     /**
-     * Updates the information, ignores information that is not expected to change.
+     * Updates the information by checking if dependencies should update or are already updated.
      */
     fun update()
+
+    /**
+     * Processes the information using the dependent information.
+     */
+    fun process()
+
+    /**
+     * Returns the processed information.
+     */
+    fun get()
 
     /**
      * Drops existing information and regenerates it from scratch

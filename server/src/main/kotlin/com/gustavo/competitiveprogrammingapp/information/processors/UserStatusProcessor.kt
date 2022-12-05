@@ -1,6 +1,5 @@
 package com.gustavo.competitiveprogrammingapp.information.processors
 
-import com.gustavo.competitiveprogrammingapp.information.Processor
 import com.gustavo.competitiveprogrammingapp.information.domain.CfProblem
 import com.gustavo.competitiveprogrammingapp.information.domain.CfSubmission
 import com.gustavo.competitiveprogrammingapp.information.ProblemId
@@ -25,56 +24,31 @@ class UserStatusProcessor(
     private val cfContestProcessor: CfContestProcessor,
     private val contestProblemProcessor: ContestProblemProcessor,
     private val cfSubmissionProcessor: CfSubmissionProcessor
-) : Processor {
+) {
     private val logger: Logger = LoggerFactory.getLogger(javaClass)
 
-    fun getProblemStatusMap(problemMapping: Map<ProblemId, ProblemId>, userStatus: List<CfSubmission>): Map<ProblemId, ProblemStatus> {
-        val problemStatusMap = mutableMapOf<ProblemId, ProblemStatus>()
+    fun update(user: String): Boolean {
+        val shouldUpdate = cfProblemProcessor.update()
+            .or(cfContestProcessor.update())
+            .or(contestProblemProcessor.update())
+            .or(problemMappingProcessor.update())
+            .or(cfSubmissionProcessor.update(user));
 
-        userStatus.forEach a@{
-            val mappedTo = problemMapping.getOrDefault(it.problemId, it.problemId)
+        if (shouldUpdate) process(user)
 
-            if (it.verdict == "OK") problemStatusMap[mappedTo] = ProblemStatus.AC
-            else if (problemStatusMap.getOrDefault(mappedTo, ProblemStatus.NOTHING) != ProblemStatus.AC)
-                problemStatusMap[mappedTo] = ProblemStatus.WA
-        }
-        return problemStatusMap
+        return shouldUpdate
     }
 
-    fun getContestStatusMap(contestProblems: List<ContestProblem>, problemMapping: Map<ProblemId, ProblemId>, problemStatusMap: Map<ProblemId, ProblemStatus>): Map<Int, ContestStatus> {
-        val contestStatusMap = mutableMapOf<Int, ContestStatus>()
-
-        contestProblems.forEach a@{
-            val contestId = it.problemId.contestId
-
-            val mappedTo = problemMapping.getOrDefault(it.problemId, it.problemId)
-            val problemStatus = problemStatusMap.getOrDefault(mappedTo, ProblemStatus.NOTHING)
-
-            if (!contestStatusMap.containsKey(contestId)) {
-                contestStatusMap[contestId] = when (problemStatus) {
-                    ProblemStatus.NOTHING -> ContestStatus.CLEAN
-                    ProblemStatus.AC -> ContestStatus.COMPLETED
-                    else -> ContestStatus.DIRTY
-                }
-            } else if (!(contestStatusMap[contestId] == ContestStatus.CLEAN && problemStatus == ProblemStatus.NOTHING ||
-                    contestStatusMap[contestId] == ContestStatus.COMPLETED && problemStatus == ProblemStatus.AC)) {
-                contestStatusMap[contestId] = ContestStatus.DIRTY
-            }
-        }
-
-        return contestStatusMap
-    }
-
-    override fun update(user: String) {
+    fun process(user: String) {
         logger.info("UserStatusProcessor update start...")
         val timer = Timer("Problemset update")
 
-        // update and get dependent data
-        val cfProblems = cfProblemProcessor.updateAndFindAll()
-        val cfContests = cfContestProcessor.updateAndFindAll()
-        val contestProblems = contestProblemProcessor.updateAndFindAll()
-        val problemMappingList = problemMappingProcessor.updateAndFindAll()
-        val userSubmissions = cfSubmissionProcessor.updateAndFindAll(user)
+        // get dependent data
+        val cfProblems = cfProblemProcessor.get()
+        val cfContests = cfContestProcessor.get()
+        val contestProblems = contestProblemProcessor.get()
+        val problemMappingList = problemMappingProcessor.get()
+        val userSubmissions = cfSubmissionProcessor.get(user)
         timer.check("Got dependent data")
 
         // process it
@@ -115,9 +89,53 @@ class UserStatusProcessor(
         logger.info("UserStatusProcessor update completed.")
     }
 
-    override fun reset() {
+    fun reset() {
         userProblemStatusRepository.deleteAll()
         userContestStatusRepository.deleteAll()
-        update()
+    }
+
+    private fun getProblemStatusMap(
+        problemMapping: Map<ProblemId, ProblemId>,
+        userStatus: List<CfSubmission>
+    ): Map<ProblemId, ProblemStatus> {
+        val problemStatusMap = mutableMapOf<ProblemId, ProblemStatus>()
+
+        userStatus.forEach a@{
+            val mappedTo = problemMapping.getOrDefault(it.problemId, it.problemId)
+
+            if (it.verdict == "OK") problemStatusMap[mappedTo] = ProblemStatus.AC
+            else if (problemStatusMap.getOrDefault(mappedTo, ProblemStatus.NOTHING) != ProblemStatus.AC)
+                problemStatusMap[mappedTo] = ProblemStatus.WA
+        }
+        return problemStatusMap
+    }
+
+    private fun getContestStatusMap(
+        contestProblems: List<ContestProblem>,
+        problemMapping: Map<ProblemId, ProblemId>,
+        problemStatusMap: Map<ProblemId, ProblemStatus>
+    ): Map<Int, ContestStatus> {
+        val contestStatusMap = mutableMapOf<Int, ContestStatus>()
+
+        contestProblems.forEach a@{
+            val contestId = it.problemId.contestId
+
+            val mappedTo = problemMapping.getOrDefault(it.problemId, it.problemId)
+            val problemStatus = problemStatusMap.getOrDefault(mappedTo, ProblemStatus.NOTHING)
+
+            if (!contestStatusMap.containsKey(contestId)) {
+                contestStatusMap[contestId] = when (problemStatus) {
+                    ProblemStatus.NOTHING -> ContestStatus.CLEAN
+                    ProblemStatus.AC -> ContestStatus.COMPLETED
+                    else -> ContestStatus.DIRTY
+                }
+            } else if (!(contestStatusMap[contestId] == ContestStatus.CLEAN && problemStatus == ProblemStatus.NOTHING ||
+                        contestStatusMap[contestId] == ContestStatus.COMPLETED && problemStatus == ProblemStatus.AC)
+            ) {
+                contestStatusMap[contestId] = ContestStatus.DIRTY
+            }
+        }
+
+        return contestStatusMap
     }
 }
