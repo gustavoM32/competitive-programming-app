@@ -11,8 +11,10 @@ export const SpacedRow = ({ children }: any) => {
       alignItems="center"
       justifyContent="left"
     >
-      {children.map((el: any) => (
-        <Grid item>{el}</Grid>
+      {children.map((el: any, index: number) => (
+        <Grid item key={index}>
+          {el}
+        </Grid>
       ))}
     </Grid>
   );

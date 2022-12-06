@@ -196,7 +196,7 @@ export default function CfGym() {
 
     return reversedList.filter(
       (c: any) =>
-        c.name.toLowerCase().includes(contestName.toLowerCase()) &&
+        `${c.id} ${c.name}`.toLowerCase().includes(contestName.toLowerCase()) &&
         SECONDS_IN_A_HOUR * duration[0] <= c.durationSeconds &&
         c.durationSeconds <= SECONDS_IN_A_HOUR * duration[1] &&
         (!contestHasDifficulty || c.difficulty != null) &&

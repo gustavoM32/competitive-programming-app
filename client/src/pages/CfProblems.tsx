@@ -129,11 +129,11 @@ export default function CfProblems() {
   );
   const filteredCfProblems = useMemo(
     () =>
-      cfProblems.resources.filter((p: any) => {
-        const lowercasedName = p.name.toLowerCase();
-        if (!lowercasedName.includes(problemName)) return false;
-
-        return (
+      cfProblems.resources.filter(
+        (p: any) =>
+          `${getProblemCode(p.problemId)} ${p.name}`
+            .toLowerCase()
+            .includes(problemName.toLowerCase()) &&
           (problemStatus.length === 0 ||
             problemStatus.includes(
               getProblemStatus(p, userProblemStatusMap)
@@ -145,8 +145,7 @@ export default function CfProblems() {
           (!problemHasRating || p.rating != null) &&
           (p.rating == null ||
             (problemRating[0] <= p.rating && p.rating <= problemRating[1]))
-        );
-      }),
+      ),
     [
       cfProblems.resources,
       problemName,

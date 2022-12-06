@@ -138,7 +138,7 @@ export default function CfContests() {
 
     return cfContests.resources.filter(
       (c: any) =>
-        c.name.toLowerCase().includes(contestName.toLowerCase()) &&
+        `${c.id} ${c.name}`.toLowerCase().includes(contestName.toLowerCase()) &&
         (contestStatus.length === 0 ||
           contestStatus.includes(getContestStatus(c, userContestStatusMap))) &&
         SECONDS_IN_A_HOUR * duration[0] <= c.durationSeconds &&
