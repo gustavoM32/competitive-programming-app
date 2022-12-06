@@ -143,7 +143,14 @@ export function useInformationList(
     onSuccess: (data: any) => {
       if (!(data?.isUpdating ?? false)) {
         const updateUri = `${INFO_URL}/${resourcePath.join("/")}/update`;
+
+        // Trigger refetch if update is taking too long (probably because an update is hapenning).
+        let id = setTimeout(() => {
+          queryClient.invalidateQueries({ queryKey: key });
+        }, 1000);
+
         readResource(updateUri, parameters).then((data: UpdateResponse) => {
+          clearTimeout(id);
           if (data.didUpdate) {
             queryClient.invalidateQueries({ queryKey: key });
           }

@@ -1,6 +1,6 @@
 import { UpdateDataButton } from "components/general";
 import DataGrid from "components/DataGrid";
-import { useInformationList, useReadList } from "hooks/crudHooks";
+import { useInformationList } from "hooks/crudHooks";
 import StarIcon from "@mui/icons-material/Star";
 import {
   Checkbox,
