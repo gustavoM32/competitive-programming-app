@@ -1,8 +1,8 @@
 import { Button, Link, Tooltip } from "@mui/material";
 import {
-  CreateProblemListDialog,
+  CreateProblemListButtonAndDialog,
   DeleteProblemListButton,
-} from "components/problemListCRUD";
+} from "components/problemList/crud";
 import { UpdateDataButton } from "components/general";
 import { useReadList } from "hooks/crudHooks";
 import DataGrid from "components/DataGrid";
@@ -56,7 +56,7 @@ export default function ProblemLists() {
   return (
     <>
       <SpacedRow>
-        <CreateProblemListDialog />
+        <CreateProblemListButtonAndDialog />
         <UpdateDataButton />
         <DataLoadingInfo information={information} />
       </SpacedRow>

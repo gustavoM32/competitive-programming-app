@@ -1,18 +1,19 @@
 import { Grid, Link } from "@mui/material";
 import {
-  UpdateProblemListDialog,
   DeleteProblemListButtonOne,
   AddProblemToListDialog,
   RemoveProblemFromListButton,
   AddNewProblemToListDialog,
-} from "components/problemListCRUD";
+  UpdateProblemListButtonAndDialog,
+} from "components/problemList/crud";
 import { API_URL } from "constants/constants";
 import { useRead, useReadList } from "hooks/crudHooks";
 import { UpdateDataButton } from "components/general";
 import {
   DeleteProblemButton,
+  UpdateProblemButton,
   UpdateProblemDialog,
-} from "components/problemCRUD";
+} from "components/problem/crud";
 import { useParams } from "react-router-dom";
 import { getRowClass, problemsColumns } from "utils/problemUtils";
 import DataGrid from "components/DataGrid";
@@ -20,6 +21,7 @@ import { ProblemType } from "types";
 import { useMemo } from "react";
 import { DataLoadingInfo } from "components/DataLoadingInfo";
 import { SpacedRow } from "components/SpacedRow";
+import { useDialogState } from "hooks/useDialogState";
 
 export default function ProblemList() {
   const { problemListId } = useParams();
@@ -33,6 +35,7 @@ export default function ProblemList() {
       : [];
   const problemListData = useRead(resourceURI);
   const problemListProblems = useReadList(problemsKey);
+  const editProblemDialogState = useDialogState();
 
   const information = [problemListData, problemListProblems];
 
@@ -59,7 +62,10 @@ export default function ProblemList() {
       cellRenderer: (cell: any) => {
         return (
           <>
-            <UpdateProblemDialog problem={cell.data} />
+            <UpdateProblemButton
+              dialogState={editProblemDialogState}
+              problem={cell.data}
+            />
             <RemoveProblemFromListButton
               problemList={problemList}
               problemId={cell.data.id}
@@ -96,11 +102,13 @@ export default function ProblemList() {
       <SpacedRow>
         <AddProblemToListDialog problemList={problemList} />
         <AddNewProblemToListDialog problemList={problemList} />
-        <UpdateProblemListDialog problemList={problemList} />
+        <UpdateProblemListButtonAndDialog problemList={problemList} />
         <DeleteProblemListButtonOne id={problemListData.uri} />
         <UpdateDataButton />
         <DataLoadingInfo information={information} />
       </SpacedRow>
+
+      <UpdateProblemDialog dialogState={editProblemDialogState} />
 
       <DataGrid
         rowData={problemListProblems.resources}
