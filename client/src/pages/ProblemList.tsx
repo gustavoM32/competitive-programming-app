@@ -82,17 +82,20 @@ export default function ProblemList() {
 
   if (problemListData.isError) console.error(problemListData.error);
 
-  const link = "//" + problemList.link;
-
   return (
     <>
       {problemListData.isLoading ? <p>Loading...</p> : null}
       {problemListData.isError ? <p>Error: check console</p> : null}
       <Grid container>
         <h2>
-          <Link href={link} target="_blank" rel="noopener">
-            {problemList.name}
-          </Link>
+          {typeof problemList.link == "string" &&
+          problemList.link.length > 0 ? (
+            <Link href={"//" + problemList.link} target="_blank" rel="noopener">
+              {problemList.name}
+            </Link>
+          ) : (
+            problemList.name
+          )}
         </h2>
       </Grid>
       <p>{problemList.description}</p>

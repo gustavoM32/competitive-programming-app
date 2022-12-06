@@ -26,11 +26,14 @@ export default function ProblemLists() {
       headerName: "Link",
       field: "link",
       width: 80,
-      cellRenderer: (cell: any) => (
-        <Link href={cell.value} target="_blank" rel="noopener">
-          Link
-        </Link>
-      ),
+      cellRenderer: (cell: any) =>
+        typeof cell.value === "string" && cell.value.length > 0 ? (
+          <Link href={"//" + cell.value} target="_blank" rel="noopener">
+            Link
+          </Link>
+        ) : (
+          "None"
+        ),
     },
     { headerName: "Name", field: "name", width: 200 },
     {
