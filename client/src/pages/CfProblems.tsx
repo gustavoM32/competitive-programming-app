@@ -57,6 +57,14 @@ export default function CfProblems() {
         headerName: "Code",
         field: "code",
         width: 120,
+        comparator: (_va: any, _vb: any, na: any, nb: any) => {
+          let pidA = na.data.problemId;
+          let pidB = nb.data.problemId;
+          return (
+            pidA.contestId < pidB.contestId ||
+            (pidA.contestId === pidB.contestId && pidA.index < pidB.index)
+          );
+        },
         cellRenderer: (params: any) => {
           const { contestId, index } = params.data.problemId;
           const link = `http://codeforces.com/problemset/problem/${contestId}/${index}`;
