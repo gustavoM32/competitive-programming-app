@@ -179,11 +179,7 @@ export function AddProblemToListDialog(props: {
     createResource(problemListProblems, problemURI, {
       headers: { "Content-Type": "text/uri-list" },
     }).then(() => {
-      queryClient.invalidateQueries([
-        "problemLists",
-        `${problemList.id}`,
-        "problems",
-      ]);
+      queryClient.invalidateQueries();
       handleClose();
     });
   };
@@ -200,7 +196,7 @@ export function AddProblemToListDialog(props: {
           Add problem
         </Button>
       </Tooltip>
-      <Dialog open={open} onClose={handleClose}>
+      <Dialog open={open} onClose={handleClose} fullWidth>
         <DialogTitle id="form-dialog-title">Add problem</DialogTitle>
         <DialogContent>
           <InputLabel id="demo-simple-select-label">Problem</InputLabel>
@@ -209,6 +205,7 @@ export function AddProblemToListDialog(props: {
             id="demo-simple-select"
             value={problemURI}
             label="Problem"
+            fullWidth
             onChange={handleChange}
           >
             {filteredProblems.map((p: ProblemType) => {
@@ -249,11 +246,7 @@ export function AddNewProblemToListDialog(props: {
     await createResource(problemListProblems, newProblemURI, {
       headers: { "Content-Type": "text/uri-list" },
     });
-    queryClient.invalidateQueries([
-      "problemLists",
-      `${problemList.id}`,
-      "problems",
-    ]);
+    queryClient.invalidateQueries();
   };
 
   return (
