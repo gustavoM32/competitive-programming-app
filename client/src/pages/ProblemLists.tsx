@@ -20,6 +20,7 @@ export default function ProblemLists() {
       headerName: "Creation date",
       field: "dateAdded",
       width: 180,
+      sort: "desc",
       valueFormatter: (params: any) => formatDateTime(params.data.dateAdded),
     },
     {
