@@ -45,11 +45,11 @@ class CfApiResourceFetcher(val fetcher: Fetcher) {
         )
     }
 
-    fun willUserStatusUpdate(user: String, requiredRecency: Duration = DEFAULT_RECENCY): Boolean {
-        return fetcher.willFetch("/user.status?handle=$user", requiredRecency)
+    fun willUserStatusUpdate(handle: String, requiredRecency: Duration = DEFAULT_RECENCY): Boolean {
+        return fetcher.willFetch("/user.status?handle=$handle", requiredRecency)
     }
 
-    fun getUserStatus(user: String, requiredRecency: Duration = DEFAULT_RECENCY): ApiUserStatusResult {
-        return fetcher.getResource("/user.status?handle=$user", ApiUserStatusResult::class.java, requiredRecency)
+    fun getUserStatus(handle: String, requiredRecency: Duration = DEFAULT_RECENCY): ApiUserStatusResult {
+        return fetcher.getResource("/user.status?handle=$handle", ApiUserStatusResult::class.java, requiredRecency)
     }
 }
