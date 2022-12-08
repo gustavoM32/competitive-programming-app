@@ -29,8 +29,11 @@ import { SpacedRow } from "components/SpacedRow";
 
 export default function CfContests() {
   const cfContests = useInformationList(["cfContests"]);
-  const userContestStatus = useInformationList(["userContestStatus"], {
-    handle: getCfHandleFromStorage(),
+  const userHandle = getCfHandleFromStorage();
+  const userContestStatusKey =
+    userHandle.length > 0 ? ["userContestStatus"] : [];
+  const userContestStatus = useInformationList(userContestStatusKey, {
+    handle: userHandle,
   });
 
   const information = [cfContests, userContestStatus];

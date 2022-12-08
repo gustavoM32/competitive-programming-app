@@ -34,8 +34,11 @@ import { SpacedRow } from "components/SpacedRow";
 
 export default function CfProblems() {
   const cfProblems = useInformationList(["cfProblems"]);
-  const userProblemStatus = useInformationList(["userProblemStatus"], {
-    handle: getCfHandleFromStorage(),
+  const userHandle = getCfHandleFromStorage();
+  const userProblemStatusKey =
+    userHandle.length > 0 ? ["userProblemStatus"] : [];
+  const userProblemStatus = useInformationList(userProblemStatusKey, {
+    handle: userHandle,
   });
 
   const information = [cfProblems, userProblemStatus];

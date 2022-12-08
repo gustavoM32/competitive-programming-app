@@ -34,3 +34,11 @@ export type UserContestStatus = {
   user: string,
   contestStatus: string
 }
+
+export type CfUser = {
+  handle: string;
+  firstName?: string;
+  lastName?: string;
+  rating?: number;
+  maxRating?: number;
+};
