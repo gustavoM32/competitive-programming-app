@@ -1,6 +1,7 @@
 package com.gustavo.competitiveprogrammingapp.information
 
 import com.gustavo.competitiveprogrammingapp.information.domain.CfContest
+import com.gustavo.competitiveprogrammingapp.information.domain.CfUser
 import com.gustavo.competitiveprogrammingapp.information.processors.*
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -17,6 +18,7 @@ class UpdateController(
     val cfGymContestProcessor: CfGymContestProcessor,
     val cfProblemProcessor: CfProblemProcessor,
     val cfSubmissionProcessor: CfSubmissionProcessor,
+    val cfUserProcessor: CfUserProcessor,
     val contestProblemProcessor: ContestProblemProcessor,
     val problemMappingProcessor: ProblemMappingProcessor,
     val userStatusProcessor: UserStatusProcessor
@@ -67,6 +69,30 @@ class UpdateController(
     @GetMapping("cfSubmissions/update")
     fun updateCfSubmissions(@RequestParam handle: String): Map<String, Any> {
         return mapOf(Pair("didUpdate", cfSubmissionProcessor.update(handle)))
+    }
+
+    @GetMapping("cfUser")
+    fun getCfUser(@RequestParam handle: String): Map<String, Any> {
+        val cfUser: CfUser?
+
+        try {
+            cfUser = cfUserProcessor.get(handle)
+        } catch (e: Exception) {
+            return mapOf(
+                Pair("resources", emptyList<CfUser>()),
+                Pair("isUpdating", cfUserProcessor.isUpdating(handle))
+            )
+        }
+
+        return mapOf(
+            Pair("resources", listOf(cfUser)),
+            Pair("isUpdating", cfUserProcessor.isUpdating(handle))
+        )
+    }
+
+    @GetMapping("cfUser/update")
+    fun updateCfUser(@RequestParam handle: String): Map<String, Any> {
+        return mapOf(Pair("didUpdate", cfUserProcessor.update(handle)))
     }
 
     @GetMapping("userProblemStatus")

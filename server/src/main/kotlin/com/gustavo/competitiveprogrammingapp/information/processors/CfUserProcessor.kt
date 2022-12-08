@@ -2,25 +2,23 @@ package com.gustavo.competitiveprogrammingapp.information.processors
 
 import com.gustavo.competitiveprogrammingapp.cfApi.CfApiResourceFetcher
 import com.gustavo.competitiveprogrammingapp.information.InformationService
-import com.gustavo.competitiveprogrammingapp.information.ProblemId
-import com.gustavo.competitiveprogrammingapp.information.domain.CfProblem
-import com.gustavo.competitiveprogrammingapp.information.domain.CfSubmission
-import com.gustavo.competitiveprogrammingapp.information.repositories.CfSubmissionRepository
+import com.gustavo.competitiveprogrammingapp.information.domain.CfUser
+import com.gustavo.competitiveprogrammingapp.information.repositories.CfUserRepository
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 import java.time.Duration
 
 @Component
-class CfSubmissionProcessor(
-    private val repository: CfSubmissionRepository,
+class CfUserProcessor(
+    private val repository: CfUserRepository,
     private val informationService: InformationService,
     private val cfApiResourceFetcher: CfApiResourceFetcher
 ) {
     companion object {
-        const val INFORMATION_ID = "CfSubmission"
+        const val INFORMATION_ID = "CfUser"
         private val isUpdatingSet = mutableSetOf<String>()
-        val USER_STATUS_CACHE_TOLERANCE: Duration = Duration.ofMinutes(1)
+        val USER_STATUS_CACHE_TOLERANCE: Duration = Duration.ofDays(30)
     }
 
     private val logger: Logger = LoggerFactory.getLogger(javaClass)
@@ -32,7 +30,7 @@ class CfSubmissionProcessor(
         try {
             isUpdatingSet.add(user)
             shouldUpdate = informationService.doesNotExist(getId(user)).or(
-                cfApiResourceFetcher.willUserStatusUpdate(user, USER_STATUS_CACHE_TOLERANCE)
+                cfApiResourceFetcher.willUserInfoUpdate(listOf(user), USER_STATUS_CACHE_TOLERANCE)
             );
 
             if (shouldUpdate) {
@@ -51,27 +49,28 @@ class CfSubmissionProcessor(
     }
 
     fun process(user: String) {
-        logger.info("CfSubmissionProcessor update start...")
-        val userStatus = cfApiResourceFetcher.getUserStatus(user, USER_STATUS_CACHE_TOLERANCE)
+        logger.info("CfUserProcessor update start...")
+        val userInfo = cfApiResourceFetcher.getUserInfo(listOf(user), USER_STATUS_CACHE_TOLERANCE)[0]
 
-        val cfSubmissions = userStatus.mapNotNull {
-            if (it.id == null || it.problem?.contestId == null || it.problem.index == null || it.verdict == null) null
-            else {
-                CfSubmission(
-                    id = it.id,
-                    user = user,
-                    problemId = ProblemId(it.problem.contestId, it.problem.index),
-                    verdict = it.verdict
-                )
-            }
+        if (userInfo.handle == null) {
+            logger.error("UserInfo with null handle. Expected to have thrown when parsing the API result")
+            return
         }
 
-        repository.saveAll(cfSubmissions)
-        logger.info("CfSubmissionProcessor update completed.")
+        val cfUser = CfUser(
+            handle = userInfo.handle,
+            firstName = userInfo.firstName,
+            lastName = userInfo.lastName,
+            rating = userInfo.rating,
+            maxRating = userInfo.maxRating
+        )
+
+        repository.save(cfUser)
+        logger.info("CfUserProcessor update completed.")
     }
 
-    fun get(user: String): List<CfSubmission> {
-        return repository.findByUser(user)
+    fun get(user: String): CfUser {
+        return repository.findById(user).orElseThrow { Exception("User $user was not found") }
     }
 
     fun reset() {

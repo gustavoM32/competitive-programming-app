@@ -45,6 +45,24 @@ class CfApiResourceFetcher(val fetcher: Fetcher) {
         )
     }
 
+    fun willUserInfoUpdate(
+        handles: List<String>,
+        requiredRecency: Duration = DEFAULT_RECENCY
+    ): Boolean {
+        return fetcher.willFetch("/user.info?handles=${handles.joinToString(";")}", requiredRecency)
+    }
+
+    fun getUserInfo(
+        handles: List<String>,
+        requiredRecency: Duration = DEFAULT_RECENCY
+    ): ApiUserInfoResult {
+        return fetcher.getResource(
+            "/user.info?handles=${handles.joinToString(";")}",
+            ApiUserInfoResult::class.java,
+            requiredRecency
+        )
+    }
+
     fun willUserStatusUpdate(handle: String, requiredRecency: Duration = DEFAULT_RECENCY): Boolean {
         return fetcher.willFetch("/user.status?handle=$handle", requiredRecency)
     }

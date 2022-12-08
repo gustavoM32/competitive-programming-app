@@ -48,7 +48,7 @@ class CfProblemProcessor(
     }
 
     fun process() {
-        logger.info("CfProblemsProcessor update start...")
+        logger.info("CfProblemProcessor update start...")
         val problemsetProblems = cfApiResourceFetcher.getProblemsetProblems(PROBLEMSET_PROBLEMS_CACHE_TOLERANCE)
         val problems = problemsetProblems.problems
 
@@ -60,7 +60,7 @@ class CfProblemProcessor(
             repository.saveAll(cfp)
         }
 
-        logger.info("CfProblemsProcessor update completed.")
+        logger.info("CfProblemProcessor update completed.")
     }
 
     fun get(): List<CfProblem> {

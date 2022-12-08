@@ -48,7 +48,7 @@ class CfContestProcessor(
     }
 
     fun process() {
-        logger.info("CfContestsProcessor update start...")
+        logger.info("CfContestProcessor update start...")
         val contestList = cfApiResourceFetcher.getContestList(false, CONTEST_LIST_CACHE_TOLERANCE)
 
         val cfContests = contestList.filter { c -> c.phase == "FINISHED" }.mapNotNull { c ->
@@ -68,7 +68,7 @@ class CfContestProcessor(
         }
 
         repository.saveAll(cfContests)
-        logger.info("CfContestsProcessor update completed.")
+        logger.info("CfContestProcessor update completed.")
     }
 
     fun get(): List<CfContest> {

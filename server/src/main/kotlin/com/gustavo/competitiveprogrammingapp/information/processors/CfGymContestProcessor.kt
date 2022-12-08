@@ -51,7 +51,7 @@ class CfGymContestProcessor(
     }
 
     fun process() {
-        logger.info("CfGymContestsProcessor update start...")
+        logger.info("CfGymContestProcessor update start...")
         val contestList = cfApiResourceFetcher.getContestList(true, CONTEST_LIST_CACHE_TOLERANCE)
 
         repository.deleteAll() // FIXME: deleting to avoid multiple entries, find a way to not need that
@@ -76,7 +76,7 @@ class CfGymContestProcessor(
         }
 
         repository.saveAll(cfGymContests)
-        logger.info("CfGymContestsProcessor update completed.")
+        logger.info("CfGymContestProcessor update completed.")
     }
 
     fun get(): List<CfGymContest> {
