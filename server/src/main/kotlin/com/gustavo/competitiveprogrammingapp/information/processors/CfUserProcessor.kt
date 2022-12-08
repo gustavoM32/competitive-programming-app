@@ -18,7 +18,7 @@ class CfUserProcessor(
     companion object {
         const val INFORMATION_ID = "CfUser"
         private val isUpdatingSet = mutableSetOf<String>()
-        val USER_STATUS_CACHE_TOLERANCE: Duration = Duration.ofDays(30)
+        val USER_STATUS_CACHE_TOLERANCE: Duration = Duration.ofHours(1)
     }
 
     private val logger: Logger = LoggerFactory.getLogger(javaClass)
