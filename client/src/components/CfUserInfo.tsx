@@ -35,6 +35,7 @@ export const CfUserInfo = (props: CfUserInfoProps) => {
         </Link>{" "}
       </p>
       {userName.length !== 0 ? <p>Name: {userName}</p> : null}
+      {/* eslint-disable-next-line eqeqeq */}
       {userInfo.rating != undefined ? (
         <p>
           Rating:{" "}

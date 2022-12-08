@@ -20,7 +20,6 @@ import {
   ResourcePath,
   UriString,
 } from "utils/queryUtils";
-import { useState } from "react";
 
 type UpdateResponse = {
   didUpdate: boolean;
