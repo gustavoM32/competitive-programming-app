@@ -18,11 +18,7 @@ import DataGrid from "components/DataGrid";
 import { useInformationList } from "hooks/crudHooks";
 import { useCallback, useMemo, useState } from "react";
 import { UserContestStatus } from "types";
-import {
-  contestStatusMap,
-  getContestRowClass,
-  getContestStatus,
-} from "utils/problemUtils";
+import { contestStatusMap, getContestStatus } from "utils/problemUtils";
 import { getCfHandleFromStorage } from "utils/userUtils";
 import { DataLoadingInfo } from "components/DataLoadingInfo";
 import { SpacedRow } from "components/SpacedRow";
@@ -164,6 +160,11 @@ export default function CfContests() {
     contestDuration,
   ]);
 
+  const rowClassRules = {
+    "ac-color": (params: any) => params.data.contestStatus === "COMPLETED",
+    "read-color": (params: any) => params.data.contestStatus === "DIRTY",
+  };
+
   return (
     <>
       <FormControl sx={{ mx: 2, my: 1, width: 400 }}>
@@ -226,9 +227,7 @@ export default function CfContests() {
       <DataGrid
         rowData={filteredContests}
         columnDefs={columns}
-        getRowClass={(row: any) =>
-          getContestRowClass(row, userContestStatusMap)
-        }
+        rowClassRules={rowClassRules}
       />
     </>
   );

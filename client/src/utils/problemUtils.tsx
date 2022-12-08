@@ -141,23 +141,3 @@ export const getRowClass = (row: Row<Problem>): string => {
   return "";
 };
 
-export const getProblemRowClass = (
-  row: Row<CfProblem>,
-  userProblemStatusMap: Map<string, UserProblemStatus>
-): string => {
-  const status = getProblemStatus(row.data, userProblemStatusMap);
-  if (status === "AC") return "ac-color";
-  if (status === "WA") return "wa-color";
-  if (status === "READ") return "read-color";
-  return "";
-};
-
-export const getContestRowClass = (
-  row: Row<CfContest>,
-  userContestStatusMap: Map<number, UserContestStatus>
-): string => {
-  const status = getContestStatus(row.data, userContestStatusMap);
-  if (status === "COMPLETED") return "ac-color";
-  if (status === "DIRTY") return "read-color";
-  return "";
-};

@@ -23,7 +23,6 @@ import {
   contestStatusMap,
   getProblemCode,
   getProblemContestStatus,
-  getProblemRowClass,
   getProblemStatus,
   problemStatusMap,
 } from "utils/problemUtils";
@@ -174,6 +173,12 @@ export default function CfProblems() {
     ]
   );
 
+  const rowClassRules = {
+    "ac-color": (params: any) => params.data.problemStatus === "AC",
+    "wa-color": (params: any) => params.data.problemStatus === "WA",
+    "read-color": (params: any) => params.data.problemStatus === "READ",
+  };
+
   return (
     <>
       <FormControl sx={{ mx: 2, my: 1, width: 400 }}>
@@ -273,9 +278,7 @@ export default function CfProblems() {
       <DataGrid
         rowData={filteredCfProblems}
         columnDefs={columns}
-        getRowClass={(row: any) =>
-          getProblemRowClass(row, userProblemStatusMap)
-        }
+        rowClassRules={rowClassRules}
       />
     </>
   );
