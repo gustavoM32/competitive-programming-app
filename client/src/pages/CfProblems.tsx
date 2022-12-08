@@ -54,6 +54,16 @@ export default function CfProblems() {
     [userProblemStatus.resources]
   );
 
+  const cfProblemsWithUserStatus = useMemo(
+    () =>
+      cfProblems.resources.map((p: any) => ({
+        ...p,
+        problemStatus: getProblemStatus(p, userProblemStatusMap),
+        problemContestStatus: getProblemContestStatus(p, userProblemStatusMap),
+      })),
+    [cfProblems.resources, userProblemStatusMap]
+  );
+
   const columns = useMemo(
     () => [
       {
@@ -138,33 +148,29 @@ export default function CfProblems() {
     },
     [setContestRating]
   );
+
   const filteredCfProblems = useMemo(
     () =>
-      cfProblems.resources.filter(
+      cfProblemsWithUserStatus.filter(
         (p: any) =>
           `${getProblemCode(p.problemId)} ${p.name}`
             .toLowerCase()
             .includes(problemName.toLowerCase()) &&
           (problemStatus.length === 0 ||
-            problemStatus.includes(
-              getProblemStatus(p, userProblemStatusMap)
-            )) &&
+            problemStatus.includes(p.problemStatus)) &&
           (contestStatus.length === 0 ||
-            contestStatus.includes(
-              getProblemContestStatus(p, userProblemStatusMap)
-            )) &&
+            contestStatus.includes(p.problemContestStatus)) &&
           (!problemHasRating || p.rating != null) &&
           (p.rating == null ||
             (problemRating[0] <= p.rating && p.rating <= problemRating[1]))
       ),
     [
-      cfProblems.resources,
+      cfProblemsWithUserStatus,
       problemName,
       problemStatus,
       contestStatus,
       problemHasRating,
       problemRating,
-      userProblemStatusMap,
     ]
   );
 

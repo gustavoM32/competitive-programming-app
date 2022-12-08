@@ -46,6 +46,15 @@ export default function CfContests() {
     [userContestStatus.resources]
   );
 
+  const cfContestsWithUserStatus = useMemo(
+    () =>
+      cfContests.resources.map((c: any) => ({
+        ...c,
+        contestStatus: getContestStatus(c, userContestStatusMap),
+      })),
+    [cfContests.resources, userContestStatusMap]
+  );
+
   const columns = useMemo(
     () => [
       {
@@ -139,21 +148,20 @@ export default function CfContests() {
     const duration = contestDuration.map(calcDurationValue);
     const SECONDS_IN_A_HOUR = 3600;
 
-    return cfContests.resources.filter(
+    return cfContestsWithUserStatus.filter(
       (c: any) =>
         `${c.id} ${c.name}`.toLowerCase().includes(contestName.toLowerCase()) &&
         (contestStatus.length === 0 ||
-          contestStatus.includes(getContestStatus(c, userContestStatusMap))) &&
+          contestStatus.includes(c.contestStatus)) &&
         SECONDS_IN_A_HOUR * duration[0] <= c.durationSeconds &&
         c.durationSeconds <= SECONDS_IN_A_HOUR * duration[1]
     );
   }, [
-    cfContests.resources,
+    cfContestsWithUserStatus,
     calcDurationValue,
     contestName,
     contestStatus,
     contestDuration,
-    userContestStatusMap,
   ]);
 
   return (
