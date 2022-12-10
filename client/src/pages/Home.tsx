@@ -2,7 +2,7 @@ import { Button, CircularProgress, Grid, TextField } from "@mui/material";
 import { useQueryClient } from "@tanstack/react-query";
 import { readUpdatedInformation } from "api/updateInfo";
 import { CfUserInfo } from "components/CfUserInfo";
-import { useInformationList } from "hooks/crudHooks";
+import { useInformationList, useCreate } from "hooks/crudHooks";
 import { useEffect, useState } from "react";
 import { getCfHandleFromStorage, setCfHandleToStorage } from "utils/userUtils";
 
@@ -16,6 +16,8 @@ export default function Home() {
   const cfUser = useInformationList(cfUserKey, {
     handle: cfHandle,
   });
+
+  const createUser = useCreate(["users"]);
 
   const [cfHandleInput, setCfHandleInput] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
@@ -46,6 +48,7 @@ export default function Home() {
     });
 
     if (userInfo.resources.length === 1) {
+      createUser({ username: cfHandleInput });
       setCfHandle(cfHandleInput);
       setCfHandleInput("");
       setErrorMessage("");

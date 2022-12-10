@@ -13,7 +13,7 @@ import {
 import { useState } from "react";
 import { ProblemListType, ProblemType } from "types";
 import {
-  useCreate,
+  useCreateUserResource,
   useDelete,
   useReadList,
   useUpdateOne,
@@ -24,10 +24,12 @@ import { API_URL } from "constants/constants";
 import { CreateProblemAndAddToListButtonAndDialog } from "../problem/crud";
 import { ProblemListDialog } from "./ProblemListDialog";
 import { useDialogState } from "hooks/useDialogState";
+import { getCfHandleFromStorage } from "utils/userUtils";
 
 type OpenProblemListDialogButtonProps = {
   tooltip: string;
   onClick: () => void;
+  disabled?: boolean;
   children?: any;
 };
 
@@ -36,22 +38,34 @@ export function OpenProblemListDialogButton(
 ) {
   return (
     <Tooltip title={props.tooltip ?? ""}>
-      <Button variant="outlined" color="primary" onClick={props.onClick}>
+      <Button
+        variant="outlined"
+        color="primary"
+        onClick={props.onClick}
+        disabled={props.disabled ?? false}
+      >
         {props.children}
       </Button>
     </Tooltip>
   );
 }
 
-export function CreateProblemListButtonAndDialog() {
+type CreateProblemListButtonAndDialogProps = {
+  disabled?: boolean;
+};
+
+export function CreateProblemListButtonAndDialog(
+  props: CreateProblemListButtonAndDialogProps
+) {
   const dialogState = useDialogState();
-  const createProblemList = useCreate("problemLists");
+  const createProblemList = useCreateUserResource(["problemLists"]);
 
   return (
     <>
       <OpenProblemListDialogButton
         tooltip="Create problem list"
         onClick={() => dialogState.handleOpen({})}
+        disabled={props.disabled}
       >
         Create
       </OpenProblemListDialogButton>
@@ -143,7 +157,14 @@ export function AddProblemToListDialog(props: {
 }) {
   const [open, setOpen] = useState(false);
   const [problemURI, setProblemURI] = useState("");
-  const { resources: allProblems } = useReadList(["problems"]);
+  const loggedInUser = getCfHandleFromStorage();
+
+  const allProblemsKey =
+    loggedInUser.length > 0 ? ["problems", "search", "findByCreatedBy"] : [];
+
+  const { resources: allProblems } = useReadList(allProblemsKey, {
+    user: loggedInUser,
+  });
   const { problemList } = props;
   const queryClient = useQueryClient();
 
@@ -234,11 +255,15 @@ export function AddNewProblemToListDialog(props: {
   problemList: ProblemListType;
 }) {
   const queryClient = useQueryClient();
+  const loggedInUser = getCfHandleFromStorage();
   const { problemList } = props;
 
   const addNewProblemToList = async (newProblem: ProblemType) => {
     const uri = `${API_URL}/problems`; // FIXME: API_URL should not be used here
-    const createdProblem = await createResource(uri, newProblem);
+    const createdProblem = await createResource(uri, {
+      ...newProblem,
+      createdBy: loggedInUser,
+    }); // FIXME: This should be refactored.
 
     const problemListProblems = problemList._links.problems.href;
     const newProblemURI = createdProblem._links.self.href;

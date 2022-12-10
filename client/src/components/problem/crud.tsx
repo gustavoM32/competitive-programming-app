@@ -1,7 +1,7 @@
 import { Button, Tooltip } from "@mui/material";
 import { ProblemType } from "types";
 
-import { useCreate, useUpdate, useDelete } from "hooks/crudHooks";
+import { useUpdate, useDelete, useCreateUserResource } from "hooks/crudHooks";
 import { focusManager } from "@tanstack/react-query";
 import { DialogState, useDialogState } from "hooks/useDialogState";
 import { ProblemDialog } from "./ProblemDialog";
@@ -10,13 +10,19 @@ import { Resource } from "api/types";
 type OpenProblemDialogButtonProps = {
   tooltip: string;
   onClick: () => void;
+  disabled?: boolean;
   children?: any;
 };
 
 export function OpenProblemDialogButton(props: OpenProblemDialogButtonProps) {
   return (
     <Tooltip title={props.tooltip ?? ""}>
-      <Button variant="outlined" color="primary" onClick={props.onClick}>
+      <Button
+        variant="outlined"
+        color="primary"
+        onClick={props.onClick}
+        disabled={props.disabled ?? false}
+      >
         {props.children}
       </Button>
     </Tooltip>
@@ -55,15 +61,22 @@ export function ProblemButtonAndDialog(props: ProblemButtonAndDialogProps) {
   );
 }
 
-export function CreateProblemButtonAndDialog() {
+type CreateProblemButtonAndDialogProps = {
+  disabled?: boolean;
+};
+
+export function CreateProblemButtonAndDialog(
+  props: CreateProblemButtonAndDialogProps
+) {
   const dialogState = useDialogState();
-  const addProblem = useCreate("problems");
+  const addProblem = useCreateUserResource(["problems"]);
 
   return (
     <>
       <OpenProblemDialogButton
         tooltip="Create problem"
         onClick={() => dialogState.handleOpen({})}
+        disabled={props.disabled}
       >
         Create
       </OpenProblemDialogButton>

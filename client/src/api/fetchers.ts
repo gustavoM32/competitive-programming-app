@@ -20,7 +20,7 @@ export async function resourcePageFetcher(
     throw Error("Empty queryKey");
   }
 
-  const lastElement = queryKey[queryKey.length - 1];
+  const lastElement = findResourceName(queryKey);
 
   return readResource(uri).then((data) => {
     return {
@@ -43,7 +43,7 @@ export async function resourceListFetcher({
     throw Error("Empty query path");
   }
 
-  const lastElement = path[path.length - 1];
+  const lastElement = findResourceName(path); // FIXME: Use query key to get the resource name
 
   return readResource(uri, parameters).then((data) => {
     return {
@@ -51,6 +51,12 @@ export async function resourceListFetcher({
       uri: data._links.self.href,
     };
   });
+}
+
+function findResourceName(path: string[]): string {
+  const searchIndex = path.findIndex((el) => el === "search");
+  if (searchIndex === -1) return path[path.length - 1];
+  return path[searchIndex - 1];
 }
 
 export async function resourceFetcher({

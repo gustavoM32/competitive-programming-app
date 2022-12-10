@@ -12,7 +12,7 @@ import {
   readResource,
 } from "../api/crud";
 import { API_URL, INFO_URL } from "constants/constants";
-import { Resource, ResourceData } from "../api/types";
+import { ResourceData } from "../api/types";
 import {
   ReadListRequestKey,
   ReadOneRequestKey,
@@ -20,6 +20,7 @@ import {
   ResourcePath,
   UriString,
 } from "utils/queryUtils";
+import { getCfHandleFromStorage } from "utils/userUtils";
 
 type UpdateResponse = {
   didUpdate: boolean;
@@ -87,15 +88,30 @@ export function useRead(uri: UriString, parameters?: RequestParameters) {
   };
 }
 
-export function useCreate(resourceName: string) {
+export function useCreate(resourcePath: string[]) {
   const queryClient = useQueryClient();
 
-  return (newResource: Resource) => {
+  return (newResource: ResourceData) => {
     // FIXME: this solution may not generalize well; will /api/parents/{pid}/childs ever be needed?; API_URL shouldn't be used in this file
-    const uri = `${API_URL}/${resourceName}`;
+    const uri = `${API_URL}/${resourcePath.join("/")}`;
+
     return createResource(uri, newResource).then(() =>
       queryClient.invalidateQueries()
     );
+  };
+}
+
+export function useCreateUserResource(resourcePath: string[]) {
+  const queryClient = useQueryClient();
+  const loggedInUser = getCfHandleFromStorage(); // FIXME: CF handle is used as logged in user.
+
+  return (newResource: ResourceData) => {
+    const uri = `${API_URL}/${resourcePath.join("/")}`;
+
+    return createResource(uri, {
+      ...newResource,
+      createdBy: loggedInUser,
+    }).then(() => queryClient.invalidateQueries());
   };
 }
 

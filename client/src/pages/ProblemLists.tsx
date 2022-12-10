@@ -9,9 +9,18 @@ import DataGrid from "components/DataGrid";
 import { formatDateTime } from "utils/utils";
 import { SpacedRow } from "components/SpacedRow";
 import { DataLoadingInfo } from "components/DataLoadingInfo";
+import { getCfHandleFromStorage } from "utils/userUtils";
 
 export default function ProblemLists() {
-  const problemLists = useReadList(["problemLists"]);
+  const loggedInUser = getCfHandleFromStorage();
+  const problemListsKey =
+    loggedInUser.length > 0
+      ? ["problemLists", "search", "findByCreatedBy"]
+      : [];
+
+  const problemLists = useReadList(problemListsKey, {
+    user: loggedInUser,
+  });
 
   const information = [problemLists];
 
@@ -60,7 +69,9 @@ export default function ProblemLists() {
   return (
     <>
       <SpacedRow>
-        <CreateProblemListButtonAndDialog />
+        <CreateProblemListButtonAndDialog
+          disabled={loggedInUser.length === 0}
+        />
         <UpdateDataButton />
         <DataLoadingInfo information={information} />
       </SpacedRow>

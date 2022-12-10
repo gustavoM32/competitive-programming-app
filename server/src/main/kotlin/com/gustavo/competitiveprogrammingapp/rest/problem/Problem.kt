@@ -9,16 +9,11 @@ import java.time.LocalDateTime
 data class Problem(
     @Id
     val id: String? = null,
-    @Field(name = "link")
     val link: String?,
-    @Field(name = "dateAdded")
     var dateAdded: LocalDateTime?,
-    @Field(name = "name")
     val name: String?,
-    @Field(name = "problemStatus")
     val problemStatus: ProblemStatusEnum = ProblemStatusEnum.NOTHING,
-    @Field(name = "editorialStatus")
     val editorialStatus: EditorialStatus = EditorialStatus.NOTHING,
-    @Field(name = "comments")
-    val comments: String = ""
+    val comments: String = "",
+    val createdBy: String?
 )

@@ -11,9 +11,17 @@ import { useReadList } from "hooks/crudHooks";
 import { SpacedRow } from "components/SpacedRow";
 import { DataLoadingInfo } from "components/DataLoadingInfo";
 import { useDialogState } from "hooks/useDialogState";
+import { getCfHandleFromStorage } from "utils/userUtils";
 
 export default function Problems() {
-  const problems = useReadList(["problems"]);
+  const loggedInUser = getCfHandleFromStorage();
+  const problemsKey =
+    loggedInUser.length > 0 ? ["problems", "search", "findByCreatedBy"] : [];
+
+  const problems = useReadList(problemsKey, {
+    user: loggedInUser,
+  });
+
   const editDialogState = useDialogState();
 
   const information = [problems];
@@ -41,7 +49,7 @@ export default function Problems() {
   return (
     <>
       <SpacedRow>
-        <CreateProblemButtonAndDialog />
+        <CreateProblemButtonAndDialog disabled={loggedInUser.length === 0} />
         <UpdateDataButton />
         <DataLoadingInfo information={information} />
       </SpacedRow>
