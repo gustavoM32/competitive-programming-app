@@ -20,7 +20,7 @@ import java.util.*
 @Component
 class Fetcher(private val urlCacheRepository: UrlCacheRepository) {
     companion object {
-        private const val CODEFORCES_API_URL = "http://codeforces.com/api"
+        private const val CODEFORCES_API_URL = "https://codeforces.com/api"
         private val TIME_BETWEEN_REQUESTS = Duration.ofSeconds(2)
         private var lastRequest: LocalDateTime? = null
     }
@@ -54,8 +54,12 @@ class Fetcher(private val urlCacheRepository: UrlCacheRepository) {
         val gsonResponse = Gson().fromJson(response, ApiResponse::class.java)
         logger.info("Got response gson")
 
-        if (gsonResponse.status == null || gsonResponse.status != "OK") {
-            throw Exception("Response status is not 'OK'")
+        if (gsonResponse.status == null) {
+            throw Exception("Response has no status")
+        }
+
+        if (gsonResponse.status != "OK") {
+            throw Exception("Response status is ${gsonResponse.status}")
         }
 
         if (gsonResponse.result == null) {
@@ -133,8 +137,8 @@ class Fetcher(private val urlCacheRepository: UrlCacheRepository) {
         val responseCode = connection.responseCode
         logger.info("Response $responseCode")
 
-        if (responseCode != 200) {
-            throw Exception("Response code was not 200")
+        if (responseCode / 100 != 2) {
+            throw Exception("Response was not successful")
         }
 
         return getConnectionResponse(connection)
