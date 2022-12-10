@@ -1,16 +1,12 @@
 package com.gustavo.competitiveprogrammingapp.information.processors
 
 import com.gustavo.competitiveprogrammingapp.information.InformationService
-import com.gustavo.competitiveprogrammingapp.information.domain.CfSubmission
 import com.gustavo.competitiveprogrammingapp.information.ProblemId
 import com.gustavo.competitiveprogrammingapp.information.UpdateResponse
-import com.gustavo.competitiveprogrammingapp.information.domain.ContestProblem
-import com.gustavo.competitiveprogrammingapp.information.domain.ContestStatus
-import com.gustavo.competitiveprogrammingapp.information.domain.UserContestStatus
-import com.gustavo.competitiveprogrammingapp.information.domain.UserProblemStatus
+import com.gustavo.competitiveprogrammingapp.information.domain.*
 import com.gustavo.competitiveprogrammingapp.information.repositories.UserContestStatusRepository
 import com.gustavo.competitiveprogrammingapp.information.repositories.UserProblemStatusRepository
-import com.gustavo.competitiveprogrammingapp.rest.problem.ProblemStatus
+import com.gustavo.competitiveprogrammingapp.rest.problem.ProblemStatusEnum
 import com.gustavo.competitiveprogrammingapp.util.Timer
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -25,7 +21,7 @@ class UserStatusProcessor(
     private val cfProblemProcessor: CfProblemProcessor,
     private val cfContestProcessor: CfContestProcessor,
     private val contestProblemProcessor: ContestProblemProcessor,
-    private val cfSubmissionProcessor: CfSubmissionProcessor
+    private val userSubmissionsProcessor: UserSubmissionsProcessor
 ) {
     companion object {
         const val INFORMATION_ID = "UserStatus"
@@ -46,7 +42,7 @@ class UserStatusProcessor(
                 .or(lastUpdate < cfContestProcessor.update().lastUpdate)
                 .or(lastUpdate < contestProblemProcessor.update().lastUpdate)
                 .or(lastUpdate < cfContestProcessor.update().lastUpdate)
-                .or(lastUpdate < cfSubmissionProcessor.update(user).lastUpdate)
+                .or(lastUpdate < userSubmissionsProcessor.update(user).lastUpdate)
 
             if (shouldUpdate) {
                 process(user)
@@ -70,9 +66,9 @@ class UserStatusProcessor(
         // get dependent data
         val cfProblems = cfProblemProcessor.get()
         val cfContests = cfContestProcessor.get()
-        val contestProblems = contestProblemProcessor.get()
-        val problemMappingList = problemMappingProcessor.get()
-        val userSubmissions = cfSubmissionProcessor.get(user)
+        val contestProblems = contestProblemProcessor.get() // FIXME: STOP USING THIS
+        val problemMappingList = problemMappingProcessor.get() // FIXME: STOP USING THIS
+        val userSubmissions = userSubmissionsProcessor.get(user)
         timer.check("Got dependent data")
 
         // process it
@@ -88,38 +84,36 @@ class UserStatusProcessor(
         timer.check("contestStatusMap calculated")
 
         val userProblemStatus = cfProblems.map { p ->
-            UserProblemStatus(
+            com.gustavo.competitiveprogrammingapp.information.domain.ProblemStatus(
                 problemId = p.problemId,
-                user = user,
-                problemStatus = problemStatusMap.getOrDefault(p.problemId, ProblemStatus.NOTHING),
-                contestStatus = contestStatusMap.getOrDefault(p.problemId.contestId, ContestStatus.CLEAN)
+                problemStatus = problemStatusMap.getOrDefault(p.problemId, ProblemStatusEnum.NOTHING),
+                contestStatus = contestStatusMap.getOrDefault(p.problemId.contestId, ContestStatusEnum.CLEAN)
             )
         }
         timer.check("userProblemStatus calculated")
 
         val userContestStatus = cfContests.map { c ->
-            UserContestStatus(
+            ContestStatus(
                 id = c.id,
-                user = user,
-                contestStatus = contestStatusMap.getOrDefault(c.id, ContestStatus.CLEAN)
+                contestStatus = contestStatusMap.getOrDefault(c.id, ContestStatusEnum.CLEAN)
             )
         }
         timer.check("userContestStatus calculated")
 
         // save information
-        userProblemStatusRepository.saveAll(userProblemStatus)
-        userContestStatusRepository.saveAll(userContestStatus)
+        userProblemStatusRepository.save(UserProblemStatus(user, userProblemStatus))
+        userContestStatusRepository.save(UserContestStatus(user, userContestStatus))
 
         timer.check("problem and contest status saved")
         logger.info("UserStatusProcessor update completed.")
     }
 
-    fun getProblemStatus(user: String): List<UserProblemStatus> {
-        return userProblemStatusRepository.findByUser(user)
+    fun getProblemStatus(user: String): List<ProblemStatus> {
+        return userProblemStatusRepository.findById(user).map { it.problemsStatus }.orElse(emptyList())
     }
 
-    fun getContestStatus(user: String): List<UserContestStatus> {
-        return userContestStatusRepository.findByUser(user)
+    fun getContestStatus(user: String): List<ContestStatus> {
+        return userContestStatusRepository.findById(user).map { it.contestsStatus }.orElse(emptyList())
     }
 
     fun reset() {
@@ -135,15 +129,15 @@ class UserStatusProcessor(
     private fun getProblemStatusMap(
         problemMapping: Map<ProblemId, ProblemId>,
         userStatus: List<CfSubmission>
-    ): Map<ProblemId, ProblemStatus> {
-        val problemStatusMap = mutableMapOf<ProblemId, ProblemStatus>()
+    ): Map<ProblemId, ProblemStatusEnum> {
+        val problemStatusMap = mutableMapOf<ProblemId, ProblemStatusEnum>()
 
         userStatus.forEach a@{
             val mappedTo = problemMapping.getOrDefault(it.problemId, it.problemId)
 
-            if (it.verdict == "OK") problemStatusMap[mappedTo] = ProblemStatus.AC
-            else if (problemStatusMap.getOrDefault(mappedTo, ProblemStatus.NOTHING) != ProblemStatus.AC)
-                problemStatusMap[mappedTo] = ProblemStatus.WA
+            if (it.verdict == "OK") problemStatusMap[mappedTo] = ProblemStatusEnum.AC
+            else if (problemStatusMap.getOrDefault(mappedTo, ProblemStatusEnum.NOTHING) != ProblemStatusEnum.AC)
+                problemStatusMap[mappedTo] = ProblemStatusEnum.WA
         }
         return problemStatusMap
     }
@@ -151,26 +145,26 @@ class UserStatusProcessor(
     private fun getContestStatusMap(
         contestProblems: List<ContestProblem>,
         problemMapping: Map<ProblemId, ProblemId>,
-        problemStatusMap: Map<ProblemId, ProblemStatus>
-    ): Map<Int, ContestStatus> {
-        val contestStatusMap = mutableMapOf<Int, ContestStatus>()
+        problemStatusMap: Map<ProblemId, ProblemStatusEnum>
+    ): Map<Int, ContestStatusEnum> {
+        val contestStatusMap = mutableMapOf<Int, ContestStatusEnum>()
 
         contestProblems.forEach a@{
             val contestId = it.problemId.contestId
 
             val mappedTo = problemMapping.getOrDefault(it.problemId, it.problemId)
-            val problemStatus = problemStatusMap.getOrDefault(mappedTo, ProblemStatus.NOTHING)
+            val problemStatus = problemStatusMap.getOrDefault(mappedTo, ProblemStatusEnum.NOTHING)
 
             if (!contestStatusMap.containsKey(contestId)) {
                 contestStatusMap[contestId] = when (problemStatus) {
-                    ProblemStatus.NOTHING -> ContestStatus.CLEAN
-                    ProblemStatus.AC -> ContestStatus.COMPLETED
-                    else -> ContestStatus.DIRTY
+                    ProblemStatusEnum.NOTHING -> ContestStatusEnum.CLEAN
+                    ProblemStatusEnum.AC -> ContestStatusEnum.COMPLETED
+                    else -> ContestStatusEnum.DIRTY
                 }
-            } else if (!(contestStatusMap[contestId] == ContestStatus.CLEAN && problemStatus == ProblemStatus.NOTHING ||
-                        contestStatusMap[contestId] == ContestStatus.COMPLETED && problemStatus == ProblemStatus.AC)
+            } else if (!(contestStatusMap[contestId] == ContestStatusEnum.CLEAN && problemStatus == ProblemStatusEnum.NOTHING ||
+                        contestStatusMap[contestId] == ContestStatusEnum.COMPLETED && problemStatus == ProblemStatusEnum.AC)
             ) {
-                contestStatusMap[contestId] = ContestStatus.DIRTY
+                contestStatusMap[contestId] = ContestStatusEnum.DIRTY
             }
         }
 

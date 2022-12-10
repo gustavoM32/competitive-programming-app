@@ -5,22 +5,22 @@ import com.gustavo.competitiveprogrammingapp.information.InformationService
 import com.gustavo.competitiveprogrammingapp.information.InformationUtil
 import com.gustavo.competitiveprogrammingapp.information.ProblemId
 import com.gustavo.competitiveprogrammingapp.information.UpdateResponse
-import com.gustavo.competitiveprogrammingapp.information.domain.CfProblem
 import com.gustavo.competitiveprogrammingapp.information.domain.CfSubmission
-import com.gustavo.competitiveprogrammingapp.information.repositories.CfSubmissionRepository
+import com.gustavo.competitiveprogrammingapp.information.domain.UserSubmissions
+import com.gustavo.competitiveprogrammingapp.information.repositories.UserSubmissionsRepository
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 import java.time.Duration
 
 @Component
-class CfSubmissionProcessor(
-    private val repository: CfSubmissionRepository,
+class UserSubmissionsProcessor(
+    private val repository: UserSubmissionsRepository,
     private val informationService: InformationService,
     private val cfApiResourceFetcher: CfApiResourceFetcher
 ) {
     companion object {
-        const val INFORMATION_ID = "CfSubmission"
+        const val INFORMATION_ID = "UserSubmissions"
         private val isUpdatingSet = mutableSetOf<String>()
         val USER_STATUS_CACHE_TOLERANCE: Duration = Duration.ofMinutes(1)
     }
@@ -65,19 +65,18 @@ class CfSubmissionProcessor(
             else {
                 CfSubmission(
                     id = it.id,
-                    user = user,
                     problemId = ProblemId(it.problem.contestId, it.problem.index),
                     verdict = it.verdict
                 )
             }
         }
 
-        repository.saveAll(cfSubmissions)
+        repository.save(UserSubmissions(user, cfSubmissions))
         logger.info("CfSubmissionProcessor update completed.")
     }
 
     fun get(user: String): List<CfSubmission> {
-        return repository.findByUser(user)
+        return repository.findById(user).map { it.submissions }.orElse(emptyList())
     }
 
     fun reset() {

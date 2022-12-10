@@ -4,11 +4,15 @@ import com.gustavo.competitiveprogrammingapp.information.ProblemId
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document
 
-@Document("cfSubmissions")
-data class CfSubmission(
+@Document("userSubmissions")
+data class UserSubmissions(
     @Id
-    val id: Int,
     val user: String,
+    val submissions: List<CfSubmission>
+)
+
+data class CfSubmission(
+    val id: Int,
     val problemId: ProblemId,
     val verdict: String,
 )

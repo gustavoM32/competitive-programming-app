@@ -1,6 +1,5 @@
 package com.gustavo.competitiveprogrammingapp.information
 
-import com.gustavo.competitiveprogrammingapp.information.domain.CfContest
 import com.gustavo.competitiveprogrammingapp.information.domain.CfUser
 import com.gustavo.competitiveprogrammingapp.information.processors.*
 import org.slf4j.Logger
@@ -17,7 +16,7 @@ class UpdateController(
     val cfContestProcessor: CfContestProcessor,
     val cfGymContestProcessor: CfGymContestProcessor,
     val cfProblemProcessor: CfProblemProcessor,
-    val cfSubmissionProcessor: CfSubmissionProcessor,
+    val userSubmissionsProcessor: UserSubmissionsProcessor,
     val cfUserProcessor: CfUserProcessor,
     val contestProblemProcessor: ContestProblemProcessor,
     val problemMappingProcessor: ProblemMappingProcessor,
@@ -61,14 +60,14 @@ class UpdateController(
     @GetMapping("cfSubmissions")
     fun getCfSubmissions(@RequestParam handle: String): Map<String, Any> {
         return mapOf(
-            Pair("resources", cfSubmissionProcessor.get(handle)),
-            Pair("isUpdating", cfSubmissionProcessor.isUpdating(handle))
+            Pair("resources", userSubmissionsProcessor.get(handle)),
+            Pair("isUpdating", userSubmissionsProcessor.isUpdating(handle))
         )
     }
 
     @GetMapping("cfSubmissions/update")
     fun updateCfSubmissions(@RequestParam handle: String): Map<String, Any> {
-        return mapOf(Pair("didUpdate", cfSubmissionProcessor.update(handle).didUpdate))
+        return mapOf(Pair("didUpdate", userSubmissionsProcessor.update(handle).didUpdate))
     }
 
     @GetMapping("cfUser")
@@ -130,7 +129,7 @@ class UpdateController(
         cfUserProcessor.reset()
         contestProblemProcessor.reset()
         problemMappingProcessor.reset()
-        cfSubmissionProcessor.reset()
+        userSubmissionsProcessor.reset()
         userStatusProcessor.reset()
         informationService.deleteAll()
         return "OK"

@@ -16,7 +16,7 @@ data class Problem(
     @Field(name = "name")
     val name: String?,
     @Field(name = "problemStatus")
-    val problemStatus: ProblemStatus = ProblemStatus.NOTHING,
+    val problemStatus: ProblemStatusEnum = ProblemStatusEnum.NOTHING,
     @Field(name = "editorialStatus")
     val editorialStatus: EditorialStatus = EditorialStatus.NOTHING,
     @Field(name = "comments")
