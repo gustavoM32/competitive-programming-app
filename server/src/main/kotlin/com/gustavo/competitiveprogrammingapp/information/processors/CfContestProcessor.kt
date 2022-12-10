@@ -2,10 +2,13 @@ package com.gustavo.competitiveprogrammingapp.information.processors
 
 import com.gustavo.competitiveprogrammingapp.cfApi.CfApiResourceFetcher
 import com.gustavo.competitiveprogrammingapp.information.InformationService
+import com.gustavo.competitiveprogrammingapp.information.InformationUtil
+import com.gustavo.competitiveprogrammingapp.information.UpdateResponse
 import com.gustavo.competitiveprogrammingapp.information.domain.CfContest
 import com.gustavo.competitiveprogrammingapp.information.repositories.CfContestRepository
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import org.springframework.cglib.core.Local
 import org.springframework.stereotype.Component
 import java.time.Duration
 import java.time.Instant
@@ -26,14 +29,18 @@ class CfContestProcessor(
 
     private val logger: Logger = LoggerFactory.getLogger(javaClass)
 
-    fun update(): Boolean {
-        if (isUpdating) return false
+    fun update(): UpdateResponse {
+        if (isUpdating) return UpdateResponse(false, informationService.getLastUpdate(INFORMATION_ID))
         val shouldUpdate: Boolean
 
         try {
             isUpdating = true
-            shouldUpdate = informationService.doesNotExist(INFORMATION_ID).or(
-                cfApiResourceFetcher.willContestListUpdate(false, CONTEST_LIST_CACHE_TOLERANCE)
+            val lastUpdate = informationService.getLastUpdate(INFORMATION_ID)
+
+            shouldUpdate = InformationUtil.shouldInformationReprocess(
+                lastUpdate,
+                cfApiResourceFetcher.getContestListLastUpdate(false),
+                CONTEST_LIST_CACHE_TOLERANCE
             )
 
             if (shouldUpdate) {
@@ -44,7 +51,7 @@ class CfContestProcessor(
             isUpdating = false
         }
 
-        return shouldUpdate
+        return UpdateResponse(shouldUpdate, informationService.getLastUpdate(INFORMATION_ID))
     }
 
     fun process() {

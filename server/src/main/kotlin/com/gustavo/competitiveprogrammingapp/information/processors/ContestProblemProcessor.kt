@@ -3,6 +3,7 @@ package com.gustavo.competitiveprogrammingapp.information.processors
 import com.gustavo.competitiveprogrammingapp.cfApi.CfApiResourceFetcher
 import com.gustavo.competitiveprogrammingapp.information.InformationService
 import com.gustavo.competitiveprogrammingapp.information.ProblemId
+import com.gustavo.competitiveprogrammingapp.information.UpdateResponse
 import com.gustavo.competitiveprogrammingapp.information.domain.ContestProblem
 import com.gustavo.competitiveprogrammingapp.information.repositories.ContestProblemRepository
 import org.slf4j.Logger
@@ -26,15 +27,15 @@ class ContestProblemProcessor(
 
     private val logger: Logger = LoggerFactory.getLogger(javaClass)
 
-    fun update(): Boolean {
-        if (isUpdating) return false
+    fun update(): UpdateResponse {
+        if (isUpdating) return UpdateResponse(false, informationService.getLastUpdate(INFORMATION_ID))
         val shouldUpdate: Boolean
 
         try {
             isUpdating = true
-            shouldUpdate = informationService.doesNotExist(INFORMATION_ID).or(
-                cfContestProcessor.update()
-            )
+            val lastUpdate = informationService.getLastUpdate(INFORMATION_ID)
+
+            shouldUpdate = (lastUpdate < cfContestProcessor.update().lastUpdate)
             // FIXME: Missing getContestStandings dependency.
 
             if (shouldUpdate) {
@@ -45,7 +46,7 @@ class ContestProblemProcessor(
             isUpdating = false
         }
 
-        return shouldUpdate
+        return UpdateResponse(shouldUpdate, informationService.getLastUpdate(INFORMATION_ID))
     }
 
     fun process() {

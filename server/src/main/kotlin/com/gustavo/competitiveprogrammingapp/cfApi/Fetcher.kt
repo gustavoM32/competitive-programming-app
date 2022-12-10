@@ -32,6 +32,10 @@ class Fetcher(private val urlCacheRepository: UrlCacheRepository) {
         val result: JsonElement? = null
     )
 
+    fun getLastUpdate(apiResource: String): LocalDateTime {
+        return urlCacheRepository.findById(apiResource).map { it.lastUpdate }.orElse(LocalDateTime.MIN)
+    }
+
     /** Returns true if a fetch would result in an API call given the time tolerance. */
     fun willFetch(apiResource: String, cacheTimeTolerance: Duration?): Boolean {
         val cacheOptional = urlCacheRepository.findById(apiResource)

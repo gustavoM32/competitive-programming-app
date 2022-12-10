@@ -2,6 +2,7 @@ package com.gustavo.competitiveprogrammingapp.cfApi
 
 import org.springframework.stereotype.Component
 import java.time.Duration
+import java.time.LocalDateTime
 
 /**
  * ResourceFetcher is the Kotlin interface with the Codeforces API. Any requests to the Codeforces API should be made
@@ -14,26 +15,25 @@ class CfApiResourceFetcher(val fetcher: Fetcher) {
         val DEFAULT_RECENCY: Duration = Duration.ofSeconds(1000L)
     }
 
-    fun willProblemsetProblemsUpdate(requiredRecency: Duration = DEFAULT_RECENCY): Boolean {
-        return fetcher.willFetch("/problemset.problems", requiredRecency)
+    fun getProblemsetProblemsLastUpdate(): LocalDateTime {
+        return fetcher.getLastUpdate("/problemset.problems")
     }
 
     fun getProblemsetProblems(requiredRecency: Duration = DEFAULT_RECENCY): ApiProblemsetProblemsResult {
         return fetcher.getResource("/problemset.problems", ApiProblemsetProblemsResult::class.java, requiredRecency)
     }
 
-    fun willContestListUpdate(gym: Boolean = false, requiredRecency: Duration = DEFAULT_RECENCY): Boolean {
-        return fetcher.willFetch("/contest.list?gym=$gym", requiredRecency)
+    fun getContestListLastUpdate(gym: Boolean = false): LocalDateTime {
+        return fetcher.getLastUpdate("/contest.list?gym=$gym")
     }
 
     fun getContestList(gym: Boolean = false, requiredRecency: Duration = DEFAULT_RECENCY): ApiContestListResult {
         return fetcher.getResource("/contest.list?gym=$gym", ApiContestListResult::class.java, requiredRecency)
     }
 
-    fun willContestStandingsUpdate(contestId: Int, requiredRecency: Duration = DEFAULT_RECENCY): Boolean {
-        return fetcher.willFetch(
-            "/contest.standings?contestId=$contestId",
-            requiredRecency
+    fun getContestStandingsLastUpdate(contestId: Int): LocalDateTime {
+        return fetcher.getLastUpdate(
+            "/contest.standings?contestId=$contestId"
         )
     }
 
@@ -45,11 +45,8 @@ class CfApiResourceFetcher(val fetcher: Fetcher) {
         )
     }
 
-    fun willUserInfoUpdate(
-        handles: List<String>,
-        requiredRecency: Duration = DEFAULT_RECENCY
-    ): Boolean {
-        return fetcher.willFetch("/user.info?handles=${handles.joinToString(";")}", requiredRecency)
+    fun getUserInfoLastUpdate(handles: List<String>): LocalDateTime {
+        return fetcher.getLastUpdate("/user.info?handles=${handles.joinToString(";")}")
     }
 
     fun getUserInfo(
@@ -63,8 +60,8 @@ class CfApiResourceFetcher(val fetcher: Fetcher) {
         )
     }
 
-    fun willUserStatusUpdate(handle: String, requiredRecency: Duration = DEFAULT_RECENCY): Boolean {
-        return fetcher.willFetch("/user.status?handle=$handle", requiredRecency)
+    fun getUserStatusLastUpdate(handle: String): LocalDateTime {
+        return fetcher.getLastUpdate("/user.status?handle=$handle")
     }
 
     fun getUserStatus(handle: String, requiredRecency: Duration = DEFAULT_RECENCY): ApiUserStatusResult {

@@ -5,6 +5,8 @@ import com.gustavo.competitiveprogrammingapp.information.ProblemId
 import com.gustavo.competitiveprogrammingapp.information.domain.CfProblem
 import com.gustavo.competitiveprogrammingapp.information.repositories.CfProblemRepository
 import com.gustavo.competitiveprogrammingapp.information.InformationService
+import com.gustavo.competitiveprogrammingapp.information.InformationUtil
+import com.gustavo.competitiveprogrammingapp.information.UpdateResponse
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
@@ -24,16 +26,18 @@ class CfProblemProcessor(
         val PROBLEMSET_PROBLEMS_CACHE_TOLERANCE: Duration = Duration.ofHours(1)
     }
 
-    fun update(): Boolean {
-        if (isUpdating) return false
+    fun update(): UpdateResponse {
+        if (isUpdating) return UpdateResponse(false, informationService.getLastUpdate(INFORMATION_ID))
         val shouldUpdate: Boolean
 
         try {
             isUpdating = true
-            shouldUpdate = informationService.doesNotExist(INFORMATION_ID).or(
-                cfApiResourceFetcher.willProblemsetProblemsUpdate(
-                    PROBLEMSET_PROBLEMS_CACHE_TOLERANCE
-                )
+            val lastUpdate = informationService.getLastUpdate(INFORMATION_ID)
+
+            shouldUpdate = InformationUtil.shouldInformationReprocess(
+                lastUpdate,
+                cfApiResourceFetcher.getProblemsetProblemsLastUpdate(),
+                PROBLEMSET_PROBLEMS_CACHE_TOLERANCE
             )
 
             if (shouldUpdate) {
@@ -44,7 +48,7 @@ class CfProblemProcessor(
             isUpdating = false
         }
 
-        return shouldUpdate
+        return UpdateResponse(shouldUpdate, informationService.getLastUpdate(INFORMATION_ID))
     }
 
     fun process() {

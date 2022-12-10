@@ -2,7 +2,9 @@ package com.gustavo.competitiveprogrammingapp.information.processors
 
 import com.gustavo.competitiveprogrammingapp.cfApi.CfApiResourceFetcher
 import com.gustavo.competitiveprogrammingapp.information.InformationService
+import com.gustavo.competitiveprogrammingapp.information.InformationUtil
 import com.gustavo.competitiveprogrammingapp.information.ProblemId
+import com.gustavo.competitiveprogrammingapp.information.UpdateResponse
 import com.gustavo.competitiveprogrammingapp.information.domain.CfProblem
 import com.gustavo.competitiveprogrammingapp.information.domain.CfSubmission
 import com.gustavo.competitiveprogrammingapp.information.repositories.CfSubmissionRepository
@@ -25,15 +27,19 @@ class CfSubmissionProcessor(
 
     private val logger: Logger = LoggerFactory.getLogger(javaClass)
 
-    fun update(user: String): Boolean {
-        if (isUpdating(user)) return false
+    fun update(user: String): UpdateResponse {
+        if (isUpdating(user)) return UpdateResponse(false, informationService.getLastUpdate(getId(user)))
         val shouldUpdate: Boolean
 
         try {
             isUpdatingSet.add(user)
-            shouldUpdate = informationService.doesNotExist(getId(user)).or(
-                cfApiResourceFetcher.willUserStatusUpdate(user, USER_STATUS_CACHE_TOLERANCE)
-            );
+            val lastUpdate = informationService.getLastUpdate(getId(user))
+
+            shouldUpdate = InformationUtil.shouldInformationReprocess(
+                lastUpdate,
+                cfApiResourceFetcher.getUserStatusLastUpdate(user),
+                USER_STATUS_CACHE_TOLERANCE
+            )
 
             if (shouldUpdate) {
                 process(user)
@@ -43,7 +49,7 @@ class CfSubmissionProcessor(
             isUpdatingSet.remove(user)
         }
 
-        return shouldUpdate
+        return UpdateResponse(shouldUpdate, informationService.getLastUpdate(getId(user)))
     }
 
     fun isUpdating(user: String): Boolean {

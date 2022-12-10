@@ -3,6 +3,7 @@ package com.gustavo.competitiveprogrammingapp.information.processors
 import com.gustavo.competitiveprogrammingapp.information.InformationService
 import com.gustavo.competitiveprogrammingapp.information.domain.CfSubmission
 import com.gustavo.competitiveprogrammingapp.information.ProblemId
+import com.gustavo.competitiveprogrammingapp.information.UpdateResponse
 import com.gustavo.competitiveprogrammingapp.information.domain.ContestProblem
 import com.gustavo.competitiveprogrammingapp.information.domain.ContestStatus
 import com.gustavo.competitiveprogrammingapp.information.domain.UserContestStatus
@@ -33,17 +34,19 @@ class UserStatusProcessor(
 
     private val logger: Logger = LoggerFactory.getLogger(javaClass)
 
-    fun update(user: String): Boolean {
-        if (isUpdating(user)) return false
+    fun update(user: String): UpdateResponse {
+        if (isUpdating(user)) return UpdateResponse(false, informationService.getLastUpdate(getId(user)))
         val shouldUpdate: Boolean
 
         try {
             isUpdatingSet.add(user)
-            shouldUpdate = informationService.doesNotExist(getId(user)).or(cfProblemProcessor.update())
-                .or(cfContestProcessor.update())
-                .or(contestProblemProcessor.update())
-                .or(problemMappingProcessor.update())
-                .or(cfSubmissionProcessor.update(user));
+            val lastUpdate = informationService.getLastUpdate(getId(user))
+
+            shouldUpdate = (lastUpdate < cfProblemProcessor.update().lastUpdate)
+                .or(lastUpdate < cfContestProcessor.update().lastUpdate)
+                .or(lastUpdate < contestProblemProcessor.update().lastUpdate)
+                .or(lastUpdate < cfContestProcessor.update().lastUpdate)
+                .or(lastUpdate < cfSubmissionProcessor.update(user).lastUpdate)
 
             if (shouldUpdate) {
                 process(user)
@@ -53,7 +56,7 @@ class UserStatusProcessor(
             isUpdatingSet.remove(user)
         }
 
-        return shouldUpdate
+        return UpdateResponse(shouldUpdate, informationService.getLastUpdate(getId(user)))
     }
 
     fun isUpdating(user: String): Boolean {
@@ -107,6 +110,7 @@ class UserStatusProcessor(
         userProblemStatusRepository.saveAll(userProblemStatus)
         userContestStatusRepository.saveAll(userContestStatus)
 
+        timer.check("problem and contest status saved")
         logger.info("UserStatusProcessor update completed.")
     }
 

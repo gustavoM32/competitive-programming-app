@@ -32,7 +32,7 @@ class UpdateController(
 
     @GetMapping("cfContests/update")
     fun updateCfContests(): Map<String, Any> {
-        return mapOf(Pair("didUpdate", cfContestProcessor.update()))
+        return mapOf(Pair("didUpdate", cfContestProcessor.update().didUpdate))
     }
 
     @GetMapping("cfGymContests")
@@ -45,7 +45,7 @@ class UpdateController(
 
     @GetMapping("cfGymContests/update")
     fun updateCfGymContests(): Map<String, Any> {
-        return mapOf(Pair("didUpdate", cfGymContestProcessor.update()))
+        return mapOf(Pair("didUpdate", cfGymContestProcessor.update().didUpdate))
     }
 
     @GetMapping("cfProblems")
@@ -55,7 +55,7 @@ class UpdateController(
 
     @GetMapping("cfProblems/update")
     fun updateCfProblems(): Map<String, Any> {
-        return mapOf(Pair("didUpdate", cfProblemProcessor.update()))
+        return mapOf(Pair("didUpdate", cfProblemProcessor.update().didUpdate))
     }
 
     @GetMapping("cfSubmissions")
@@ -68,7 +68,7 @@ class UpdateController(
 
     @GetMapping("cfSubmissions/update")
     fun updateCfSubmissions(@RequestParam handle: String): Map<String, Any> {
-        return mapOf(Pair("didUpdate", cfSubmissionProcessor.update(handle)))
+        return mapOf(Pair("didUpdate", cfSubmissionProcessor.update(handle).didUpdate))
     }
 
     @GetMapping("cfUser")
@@ -92,7 +92,7 @@ class UpdateController(
 
     @GetMapping("cfUser/update")
     fun updateCfUser(@RequestParam handle: String): Map<String, Any> {
-        return mapOf(Pair("didUpdate", cfUserProcessor.update(handle)))
+        return mapOf(Pair("didUpdate", cfUserProcessor.update(handle).didUpdate))
     }
 
     @GetMapping("userProblemStatus")
@@ -105,7 +105,7 @@ class UpdateController(
 
     @GetMapping("userProblemStatus/update")
     fun updateUserProblemStatus(@RequestParam handle: String): Map<String, Any> {
-        return mapOf(Pair("didUpdate", userStatusProcessor.update(handle)))
+        return mapOf(Pair("didUpdate", userStatusProcessor.update(handle).didUpdate))
     }
 
     @GetMapping("userContestStatus")
@@ -118,7 +118,7 @@ class UpdateController(
 
     @GetMapping("userContestStatus/update")
     fun updateUserContestStatus(@RequestParam handle: String): Map<String, Any> {
-        return mapOf(Pair("didUpdate", userStatusProcessor.update(handle)))
+        return mapOf(Pair("didUpdate", userStatusProcessor.update(handle).didUpdate))
     }
 
 
@@ -127,6 +127,7 @@ class UpdateController(
         cfContestProcessor.reset()
         cfGymContestProcessor.reset()
         cfProblemProcessor.reset()
+        cfUserProcessor.reset()
         contestProblemProcessor.reset()
         problemMappingProcessor.reset()
         cfSubmissionProcessor.reset()
