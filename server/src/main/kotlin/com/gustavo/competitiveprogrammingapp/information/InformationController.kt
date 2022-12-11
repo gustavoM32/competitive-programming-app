@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("info")
-class UpdateController(
+class InformationController(
     val informationService: InformationService,
     val cfContestProcessor: CfContestProcessor,
     val cfGymContestProcessor: CfGymContestProcessor,
