@@ -8,7 +8,7 @@ import {
   UserContestStatus,
   UserProblemStatus,
 } from "types";
-import { formatDateTime } from "./utils";
+import { formatDateTime, getLink } from "./utils";
 
 type CellParams = {
   value: string;
@@ -68,7 +68,7 @@ export const problemsColumns = [
     width: 80,
     cellRenderer: (cell: any) =>
       typeof cell.value === "string" && cell.value.length > 0 ? (
-        <Link href={"//" + cell.value} target="_blank" rel="noopener">
+        <Link href={getLink(cell.value)} target="_blank" rel="noopener">
           Link
         </Link>
       ) : (

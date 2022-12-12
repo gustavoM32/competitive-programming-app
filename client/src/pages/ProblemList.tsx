@@ -22,6 +22,7 @@ import { useMemo } from "react";
 import { DataLoadingInfo } from "components/DataLoadingInfo";
 import { SpacedRow } from "components/SpacedRow";
 import { useDialogState } from "hooks/useDialogState";
+import { getLink } from "utils/utils";
 
 export default function ProblemList() {
   const { problemListId } = useParams();
@@ -90,7 +91,11 @@ export default function ProblemList() {
         <h2>
           {typeof problemList.link == "string" &&
           problemList.link.length > 0 ? (
-            <Link href={"//" + problemList.link} target="_blank" rel="noopener">
+            <Link
+              href={getLink(problemList.link)}
+              target="_blank"
+              rel="noopener"
+            >
               {problemList.name}
             </Link>
           ) : (

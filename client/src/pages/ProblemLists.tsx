@@ -6,7 +6,7 @@ import {
 import { UpdateDataButton } from "components/general";
 import { useReadList } from "hooks/crudHooks";
 import DataGrid from "components/DataGrid";
-import { formatDateTime } from "utils/utils";
+import { formatDateTime, getLink } from "utils/utils";
 import { SpacedRow } from "components/SpacedRow";
 import { DataLoadingInfo } from "components/DataLoadingInfo";
 import { getCfHandleFromStorage } from "utils/userUtils";
@@ -38,14 +38,14 @@ export default function ProblemLists() {
       width: 80,
       cellRenderer: (cell: any) =>
         typeof cell.value === "string" && cell.value.length > 0 ? (
-          <Link href={"//" + cell.value} target="_blank" rel="noopener">
+          <Link href={getLink(cell.value)} target="_blank" rel="noopener">
             Link
           </Link>
         ) : (
           "None"
         ),
     },
-    { headerName: "Name", field: "name", width: 200 },
+    { headerName: "Name", field: "name", width: 400 },
     {
       headerName: "Action",
       field: "action",
