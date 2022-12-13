@@ -46,13 +46,13 @@ export const appThemeOptions: ThemeOptions = {
       paper: "#c5cae9",
     },
     warning: {
-      main: "#F6BA03",
+      main: "#A87F00",
     },
     info: {
       main: "#2196f3",
     },
     success: {
-      main: "#00c853",
+      main: "#008E3B",
     },
   },
 };
