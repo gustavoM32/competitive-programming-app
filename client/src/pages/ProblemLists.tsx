@@ -1,34 +1,51 @@
 import { Button, Link, Tooltip } from "@mui/material";
 import {
-  CreateProblemListDialog,
+  CreateProblemListButtonAndDialog,
   DeleteProblemListButton,
-} from "components/problemListCRUD";
+} from "components/problemList/crud";
 import { UpdateDataButton } from "components/general";
 import { useReadList } from "hooks/crudHooks";
 import DataGrid from "components/DataGrid";
-import { formatDateTime } from "utils/utils";
+import { formatDateTime, getLink } from "utils/utils";
+import { SpacedRow } from "components/SpacedRow";
+import { DataLoadingInfo } from "components/DataLoadingInfo";
+import { getCfHandleFromStorage } from "utils/userUtils";
 
 export default function ProblemLists() {
-  const problemLists = useReadList(["problemLists"]);
+  const loggedInUser = getCfHandleFromStorage();
+  const problemListsKey =
+    loggedInUser.length > 0
+      ? ["problemLists", "search", "findByCreatedBy"]
+      : [];
+
+  const problemLists = useReadList(problemListsKey, {
+    user: loggedInUser,
+  });
+
+  const information = [problemLists];
 
   const columns = [
     {
       headerName: "Creation date",
       field: "dateAdded",
       width: 180,
+      sort: "desc",
       valueFormatter: (params: any) => formatDateTime(params.data.dateAdded),
     },
     {
       headerName: "Link",
       field: "link",
       width: 80,
-      cellRenderer: (cell: any) => (
-        <Link href={cell.value} target="_blank" rel="noopener">
-          Link
-        </Link>
-      ),
+      cellRenderer: (cell: any) =>
+        typeof cell.value === "string" && cell.value.length > 0 ? (
+          <Link href={getLink(cell.value)} target="_blank" rel="noopener">
+            Link
+          </Link>
+        ) : (
+          "None"
+        ),
     },
-    { headerName: "Name", field: "name", width: 200 },
+    { headerName: "Name", field: "name", width: 400 },
     {
       headerName: "Action",
       field: "action",
@@ -50,10 +67,16 @@ export default function ProblemLists() {
   ];
 
   return (
-    <div>
+    <>
+      <SpacedRow>
+        <CreateProblemListButtonAndDialog
+          disabled={loggedInUser.length === 0}
+        />
+        <UpdateDataButton />
+        <DataLoadingInfo information={information} />
+      </SpacedRow>
+
       <DataGrid rowData={problemLists.resources} columnDefs={columns} />
-      <UpdateDataButton />
-      <CreateProblemListDialog />
-    </div>
+    </>
   );
 }

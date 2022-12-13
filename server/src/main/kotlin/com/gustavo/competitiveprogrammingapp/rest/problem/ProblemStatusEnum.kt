@@ -1,5 +1,5 @@
 package com.gustavo.competitiveprogrammingapp.rest.problem
 
-enum class ProblemStatus {
+enum class ProblemStatusEnum {
     NOTHING, READ, WA, AC
 }

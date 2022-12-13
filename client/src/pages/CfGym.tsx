@@ -1,6 +1,6 @@
-import { UpdateDataButton, UpdateCfDataButton } from "components/general";
+import { UpdateDataButton } from "components/general";
 import DataGrid from "components/DataGrid";
-import { useReadList } from "hooks/crudHooks";
+import { useInformationList } from "hooks/crudHooks";
 import StarIcon from "@mui/icons-material/Star";
 import {
   Checkbox,
@@ -21,9 +21,13 @@ import {
 import { useCallback, useMemo, useState } from "react";
 import { getPossibleFieldValues, MenuProps } from "utils/filterUtils";
 import { formatDateTime } from "utils/utils";
+import { DataLoadingInfo } from "components/DataLoadingInfo";
+import { SpacedRow } from "components/SpacedRow";
 
 export default function CfGym() {
-  const cfGym = useReadList(["cfGymContests"]);
+  const cfGym = useInformationList(["cfGymContests"]);
+
+  const information = [cfGym];
 
   const columns = useMemo(
     () => [
@@ -192,7 +196,7 @@ export default function CfGym() {
 
     return reversedList.filter(
       (c: any) =>
-        c.name.toLowerCase().includes(contestName.toLowerCase()) &&
+        `${c.id} ${c.name}`.toLowerCase().includes(contestName.toLowerCase()) &&
         SECONDS_IN_A_HOUR * duration[0] <= c.durationSeconds &&
         c.durationSeconds <= SECONDS_IN_A_HOUR * duration[1] &&
         (!contestHasDifficulty || c.difficulty != null) &&
@@ -346,9 +350,13 @@ export default function CfGym() {
           ))}
         </Select>
       </FormControl>
+
+      <SpacedRow>
+        <UpdateDataButton />
+        <DataLoadingInfo information={information} />
+      </SpacedRow>
+
       <DataGrid rowData={filteredContests} columnDefs={columns} />
-      <UpdateDataButton />
-      <UpdateCfDataButton infoPath="cfGymContests" />
     </>
   );
 }

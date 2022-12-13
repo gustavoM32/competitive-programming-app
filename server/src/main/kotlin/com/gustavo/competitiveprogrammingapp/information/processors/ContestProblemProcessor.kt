@@ -1,9 +1,9 @@
 package com.gustavo.competitiveprogrammingapp.information.processors
 
 import com.gustavo.competitiveprogrammingapp.cfApi.CfApiResourceFetcher
-import com.gustavo.competitiveprogrammingapp.information.SingleResourceProcessor
-import com.gustavo.competitiveprogrammingapp.information.repositories.CfContestRepository
+import com.gustavo.competitiveprogrammingapp.information.InformationService
 import com.gustavo.competitiveprogrammingapp.information.ProblemId
+import com.gustavo.competitiveprogrammingapp.information.UpdateResponse
 import com.gustavo.competitiveprogrammingapp.information.domain.ContestProblem
 import com.gustavo.competitiveprogrammingapp.information.repositories.ContestProblemRepository
 import org.slf4j.Logger
@@ -15,43 +15,76 @@ import org.springframework.stereotype.Component
  */
 @Component
 class ContestProblemProcessor(
-    override val repository: ContestProblemRepository,
+    val repository: ContestProblemRepository,
+    val informationService: InformationService,
     private val cfApiResourceFetcher: CfApiResourceFetcher,
-    private val cfContestProcessor: CfContestProcessor,
-    private val cfContestsRepository: CfContestRepository
-) : SingleResourceProcessor<ContestProblem, ProblemId> {
+    private val cfContestProcessor: CfContestProcessor
+) {
+    companion object {
+        const val INFORMATION_ID = "ContestProblem"
+        var isUpdating = false
+    }
+
     private val logger: Logger = LoggerFactory.getLogger(javaClass)
 
-    override fun update() {
-        logger.info("Updating ContestProblem...")
-        // update dependent data
-        cfContestProcessor.update()
+    fun update(): UpdateResponse {
+        if (isUpdating) return UpdateResponse(false, informationService.getLastUpdate(INFORMATION_ID))
+        val shouldUpdate: Boolean
 
+        try {
+            isUpdating = true
+            val lastUpdate = informationService.getLastUpdate(INFORMATION_ID)
+
+            shouldUpdate = (lastUpdate < cfContestProcessor.update().lastUpdate)
+            // FIXME: Missing getContestStandings dependency.
+
+            if (shouldUpdate) {
+                process()
+                informationService.update(INFORMATION_ID)
+            }
+        } finally {
+            isUpdating = false
+        }
+
+        return UpdateResponse(shouldUpdate, informationService.getLastUpdate(INFORMATION_ID))
+    }
+
+    fun process() {
+        logger.info("Updating ContestProblem...")
         // get dependent data
-        val cfContests = cfContestsRepository.findAll()
+        val cfContests = cfContestProcessor.get()
         val existingProblems = repository.findAll()
 
         // process it
         val contestProblems = mutableListOf<ContestProblem>()
         val fetchedContests = existingProblems.map { it.problemId.contestId }.toSet()
 
-        cfContests.filter{ !fetchedContests.contains(it.id) }.forEach a@{
+        cfContests.filter { !fetchedContests.contains(it.id) }.forEach a@{
             if (it.id < 1735) return@a // FIXME: only for development
             val contestStandings = cfApiResourceFetcher.getContestStandings(it.id)
             contestStandings.problems.forEach { p ->
                 if (p.contestId != null && p.index != null && p.name != null && it.startTime != null)
-                contestProblems.add(
-                    ContestProblem(
-                        problemId = ProblemId(p.contestId, p.index),
-                        name = p.name,
-                        contestStartTime = it.startTime
+                    contestProblems.add(
+                        ContestProblem(
+                            problemId = ProblemId(p.contestId, p.index),
+                            name = p.name,
+                            contestStartTime = it.startTime
+                        )
                     )
-                )
             }
         }
 
         // save information
         repository.saveAll(contestProblems)
         logger.info("ContestProblem update completed.")
+    }
+
+    fun get(): List<ContestProblem> {
+        return repository.findAll()
+    }
+
+    fun reset() {
+        repository.deleteAll()
+        informationService.delete(CfProblemProcessor.INFORMATION_ID)
     }
 }

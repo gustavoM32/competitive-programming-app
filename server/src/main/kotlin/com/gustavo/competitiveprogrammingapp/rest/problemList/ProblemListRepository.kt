@@ -4,4 +4,6 @@ import org.springframework.data.mongodb.repository.MongoRepository
 import org.springframework.stereotype.Repository
 
 @Repository
-interface ProblemListRepository : MongoRepository<ProblemList, String>
+interface ProblemListRepository : MongoRepository<ProblemList, String> {
+    fun findByCreatedBy(user: String): List<ProblemList>
+}

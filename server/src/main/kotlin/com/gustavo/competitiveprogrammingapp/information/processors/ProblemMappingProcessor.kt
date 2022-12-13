@@ -1,8 +1,9 @@
 package com.gustavo.competitiveprogrammingapp.information.processors
 
-import com.gustavo.competitiveprogrammingapp.information.SingleResourceProcessor
+import com.gustavo.competitiveprogrammingapp.information.InformationService
 import com.gustavo.competitiveprogrammingapp.information.domain.CfProblem
 import com.gustavo.competitiveprogrammingapp.information.ProblemId
+import com.gustavo.competitiveprogrammingapp.information.UpdateResponse
 import com.gustavo.competitiveprogrammingapp.information.domain.ContestProblem
 import com.gustavo.competitiveprogrammingapp.information.domain.ProblemMapping
 import com.gustavo.competitiveprogrammingapp.information.repositories.ProblemMappingRepository
@@ -15,13 +16,70 @@ import org.springframework.stereotype.Component
  */
 @Component
 class ProblemMappingProcessor(
-    override val repository: ProblemMappingRepository,
+    val repository: ProblemMappingRepository,
+    val informationService: InformationService,
     private val cfProblemProcessor: CfProblemProcessor,
     private val contestProblemProcessor: ContestProblemProcessor
-) : SingleResourceProcessor<ProblemMapping, ProblemId> {
+) {
+    companion object {
+        const val INFORMATION_ID = "ProblemMapping"
+        var isUpdating = false
+    }
+
     private val logger: Logger = LoggerFactory.getLogger(javaClass)
 
-    private fun getProblemMapping(cfProblems: List<CfProblem>, contestProblems: List<ContestProblem>): Map<ProblemId, ProblemId> {
+    fun update(): UpdateResponse {
+        if (isUpdating) return UpdateResponse(false, informationService.getLastUpdate(INFORMATION_ID))
+        val shouldUpdate: Boolean
+
+        try {
+            isUpdating = true
+            val lastUpdate = informationService.getLastUpdate(INFORMATION_ID)
+
+            shouldUpdate = (lastUpdate < cfProblemProcessor.update().lastUpdate)
+                .or(lastUpdate < contestProblemProcessor.update().lastUpdate)
+
+            if (shouldUpdate) {
+                process()
+                informationService.update(INFORMATION_ID)
+            }
+        } finally {
+            isUpdating = false
+        }
+
+        return UpdateResponse(shouldUpdate, informationService.getLastUpdate(INFORMATION_ID))
+    }
+
+    fun process() {
+        logger.info("ProblemMappingProcessor update start...")
+        // get dependent data
+        val cfProblems = cfProblemProcessor.get()
+        val contestProblems = contestProblemProcessor.get()
+
+        // process it
+        val result = getProblemMapping(cfProblems, contestProblems)
+
+        // save information
+        repository.saveAll(result.map {
+            ProblemMapping(it.key, it.value)
+        })
+
+        logger.info("ProblemMappingProcessor update completed.")
+    }
+
+    fun get(): List<ProblemMapping> {
+        return repository.findAll()
+    }
+
+    fun reset() {
+        repository.deleteAll()
+        informationService.delete(CfProblemProcessor.INFORMATION_ID)
+    }
+
+    private fun getProblemMapping(
+        cfProblems: List<CfProblem>,
+        contestProblems: List<ContestProblem>
+    ): Map<ProblemId, ProblemId> {
         val problemMapping = mutableMapOf<ProblemId, ProblemId>()
         val associatedProblems = mutableMapOf<String, MutableList<ContestProblem>>()
         val problemAssociationId = mutableMapOf<ProblemId, String>()
@@ -51,22 +109,5 @@ class ProblemMappingProcessor(
         }
 
         return problemMapping
-    }
-
-    override fun update() {
-        logger.info("ProblemMappingProcessor update start...")
-        // update and get dependent data
-        val cfProblems = cfProblemProcessor.updateAndFindAll()
-        val contestProblems = contestProblemProcessor.updateAndFindAll()
-
-        // process it
-        val result = getProblemMapping(cfProblems, contestProblems)
-
-        // save information
-        repository.saveAll(result.map {
-            ProblemMapping(it.key, it.value)
-        })
-
-        logger.info("ProblemMappingProcessor update completed.")
     }
 }

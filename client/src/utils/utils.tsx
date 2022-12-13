@@ -11,3 +11,8 @@ export const formatDateTime = (timeString: string | undefined) => {
     minute: "2-digit",
   });
 };
+
+export const getLink = (linkString: string) => {
+  if (linkString.includes("://")) return linkString;
+  return "//" + linkString;
+};

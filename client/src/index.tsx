@@ -6,6 +6,7 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Page from "components/Page";
 import pages from "pages";
 import "bootstrap/dist/css/bootstrap.min.css";
+import { createTheme, ThemeOptions, ThemeProvider } from "@mui/material";
 
 const queryClient = new QueryClient();
 
@@ -32,10 +33,38 @@ const routes = pages.map((page: any) => {
 
 const router = createBrowserRouter(routes);
 
+export const appThemeOptions: ThemeOptions = {
+  palette: {
+    primary: {
+      main: "#0F4186",
+    },
+    secondary: {
+      main: "#e53935",
+    },
+    background: {
+      default: "#e8eaf6",
+      paper: "#c5cae9",
+    },
+    warning: {
+      main: "#F6BA03",
+    },
+    info: {
+      main: "#2196f3",
+    },
+    success: {
+      main: "#00c853",
+    },
+  },
+};
+
+const appTheme = createTheme(appThemeOptions);
+
 root.render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>
-      <RouterProvider router={router} />
+      <ThemeProvider theme={appTheme}>
+        <RouterProvider router={router} />
+      </ThemeProvider>
     </QueryClientProvider>
   </React.StrictMode>
 );

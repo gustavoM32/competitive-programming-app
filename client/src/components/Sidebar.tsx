@@ -19,6 +19,8 @@ import ListItemText from "@mui/material/ListItemText";
 import { NavLink } from "react-router-dom";
 import { Chip } from "@mui/material";
 
+// based on https://github.com/mui/material-ui/blob/master/docs/data/material/components/drawers/MiniDrawer.tsx
+
 const drawerWidth = 240;
 
 const openedMixin = (theme: Theme): CSSObject => ({
@@ -103,7 +105,7 @@ export default function Sidebar(props: any) {
   };
 
   const getItemStyle = (active: boolean) => {
-    if (active) return { background: "#D9D9D9" };
+    if (active) return { background: "rgba(100, 100, 100, 0.2)" };
     return {};
   };
 
@@ -131,6 +133,7 @@ export default function Sidebar(props: any) {
                 minWidth: 0,
                 mr: open ? 3 : "auto",
                 justifyContent: "center",
+                color: "primary.main",
               }}
             >
               {item.icon}
@@ -196,7 +199,7 @@ export default function Sidebar(props: any) {
       <Box
         component="main"
         sx={{ flexGrow: 1, p: 2 }}
-        style={{ marginTop: "64px", paddingTop: "0px" }}
+        style={{ marginTop: "64px", paddingTop: "20px" }}
       >
         {props.content}
       </Box>

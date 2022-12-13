@@ -2,11 +2,12 @@ FROM node AS BUILD
 
 WORKDIR /build
 
-COPY public/ ./public
-COPY src/ ./src
-COPY tsconfig.json .
 COPY package.json .
 COPY package-lock.json .
+COPY tsconfig.json .
+COPY public/ ./public
+
+COPY src/ ./src
 
 RUN npm install && npm run build && rm -rf node_modules/
 

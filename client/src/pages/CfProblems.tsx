@@ -1,6 +1,6 @@
-import { UpdateDataButton, UpdateCfDataButton } from "components/general";
+import { UpdateDataButton } from "components/general";
 import DataGrid from "components/DataGrid";
-import { useReadList } from "hooks/crudHooks";
+import { useInformationList } from "hooks/crudHooks";
 import "styles/globals.css";
 import {
   Checkbox,
@@ -23,15 +23,24 @@ import {
   contestStatusMap,
   getProblemCode,
   getProblemContestStatus,
-  getProblemRowClass,
   getProblemStatus,
   problemStatusMap,
 } from "utils/problemUtils";
 import { UserProblemStatus } from "types";
+import { getCfHandleFromStorage } from "utils/userUtils";
+import { DataLoadingInfo } from "components/DataLoadingInfo";
+import { SpacedRow } from "components/SpacedRow";
 
 export default function CfProblems() {
-  const cfProblems = useReadList(["cfProblems"]);
-  const userProblemStatus = useReadList(["userProblemStatuses"]);
+  const cfProblems = useInformationList(["cfProblems"]);
+  const userHandle = getCfHandleFromStorage();
+  const userProblemStatusKey =
+    userHandle.length > 0 ? ["userProblemStatus"] : [];
+  const userProblemStatus = useInformationList(userProblemStatusKey, {
+    handle: userHandle,
+  });
+
+  const information = [cfProblems, userProblemStatus];
 
   const userProblemStatusMap = useMemo(
     () =>
@@ -44,12 +53,30 @@ export default function CfProblems() {
     [userProblemStatus.resources]
   );
 
+  const cfProblemsWithUserStatus = useMemo(
+    () =>
+      cfProblems.resources.map((p: any) => ({
+        ...p,
+        problemStatus: getProblemStatus(p, userProblemStatusMap),
+        problemContestStatus: getProblemContestStatus(p, userProblemStatusMap),
+      })),
+    [cfProblems.resources, userProblemStatusMap]
+  );
+
   const columns = useMemo(
     () => [
       {
         headerName: "Code",
         field: "code",
         width: 120,
+        comparator: (_va: any, _vb: any, na: any, nb: any) => {
+          let pidA = na.data.problemId;
+          let pidB = nb.data.problemId;
+          return (
+            pidA.contestId < pidB.contestId ||
+            (pidA.contestId === pidB.contestId && pidA.index < pidB.index)
+          );
+        },
         cellRenderer: (params: any) => {
           const { contestId, index } = params.data.problemId;
           const link = `http://codeforces.com/problemset/problem/${contestId}/${index}`;
@@ -120,36 +147,37 @@ export default function CfProblems() {
     },
     [setContestRating]
   );
+
   const filteredCfProblems = useMemo(
     () =>
-      cfProblems.resources.filter((p: any) => {
-        const lowercasedName = p.name.toLowerCase();
-        if (!lowercasedName.includes(problemName)) return false;
-
-        return (
+      cfProblemsWithUserStatus.filter(
+        (p: any) =>
+          `${getProblemCode(p.problemId)} ${p.name}`
+            .toLowerCase()
+            .includes(problemName.toLowerCase()) &&
           (problemStatus.length === 0 ||
-            problemStatus.includes(
-              getProblemStatus(p, userProblemStatusMap)
-            )) &&
+            problemStatus.includes(p.problemStatus)) &&
           (contestStatus.length === 0 ||
-            contestStatus.includes(
-              getProblemContestStatus(p, userProblemStatusMap)
-            )) &&
+            contestStatus.includes(p.problemContestStatus)) &&
           (!problemHasRating || p.rating != null) &&
           (p.rating == null ||
             (problemRating[0] <= p.rating && p.rating <= problemRating[1]))
-        );
-      }),
+      ),
     [
-      cfProblems.resources,
+      cfProblemsWithUserStatus,
       problemName,
       problemStatus,
       contestStatus,
       problemHasRating,
       problemRating,
-      userProblemStatusMap,
     ]
   );
+
+  const rowClassRules = {
+    "ac-color": (params: any) => params.data.problemStatus === "AC",
+    "wa-color": (params: any) => params.data.problemStatus === "WA",
+    "read-color": (params: any) => params.data.problemStatus === "READ",
+  };
 
   return (
     <>
@@ -241,15 +269,17 @@ export default function CfProblems() {
           </Grid>
         </Grid>
       </FormControl>
+
+      <SpacedRow>
+        <UpdateDataButton />
+        <DataLoadingInfo information={information} />
+      </SpacedRow>
+
       <DataGrid
         rowData={filteredCfProblems}
         columnDefs={columns}
-        getRowClass={(row: any) =>
-          getProblemRowClass(row, userProblemStatusMap)
-        }
+        rowClassRules={rowClassRules}
       />
-      <UpdateDataButton />
-      <UpdateCfDataButton infoPath="userStatus" />
     </>
   );
 }

@@ -11,6 +11,7 @@ const DataGrid = (props: any) => {
     defaultColDef = { sortable: true, suppressMovable: true },
     cellClickedListener = () => {},
     getRowClass = () => "",
+    rowClassRules = {},
   } = props;
 
   const rowHeight = 55;
@@ -23,6 +24,7 @@ const DataGrid = (props: any) => {
         columnDefs={columnDefs} // Column Defs for Columns
         defaultColDef={defaultColDef} // Default Column Properties
         getRowClass={getRowClass}
+        rowClassRules={rowClassRules}
         animateRows={true} // Optional - set to 'true' to have rows animate when sorted
         // rowSelection='multiple' // Options - allows click selection of rows
 

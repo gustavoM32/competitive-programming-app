@@ -3,7 +3,6 @@ import {
   Dialog,
   DialogTitle,
   DialogContent,
-  TextField,
   DialogActions,
   InputLabel,
   Select,
@@ -14,169 +13,99 @@ import {
 import { useState } from "react";
 import { ProblemListType, ProblemType } from "types";
 import {
-  useCreate,
+  useCreateUserResource,
   useDelete,
   useReadList,
   useUpdateOne,
 } from "hooks/crudHooks";
 import { focusManager, useQueryClient } from "@tanstack/react-query";
 import { createResource, deleteResource } from "api/crud";
-import { ProblemDialog } from "./problemCRUD";
 import { API_URL } from "constants/constants";
+import { CreateProblemAndAddToListButtonAndDialog } from "../problem/crud";
+import { ProblemListDialog } from "./ProblemListDialog";
+import { useDialogState } from "hooks/useDialogState";
+import { getCfHandleFromStorage } from "utils/userUtils";
 
-type ProblemListDialogProps = {
-  title: string;
-  tooltip?: string;
-  problemList?: ProblemListType;
-  actionName: string;
-  actionFunc: (problemList: ProblemListType) => void;
+type OpenProblemListDialogButtonProps = {
+  tooltip: string;
+  onClick: () => void;
+  disabled?: boolean;
+  children?: any;
 };
 
-// TODO: refactor this and problemCRUD
+export function OpenProblemListDialogButton(
+  props: OpenProblemListDialogButtonProps
+) {
+  return (
+    <Tooltip title={props.tooltip ?? ""}>
+      <Button
+        variant="outlined"
+        color="primary"
+        onClick={props.onClick}
+        disabled={props.disabled ?? false}
+      >
+        {props.children}
+      </Button>
+    </Tooltip>
+  );
+}
 
-export function ProblemListDialog(props: ProblemListDialogProps) {
-  const [problemList, setProblemList] = useState(props.problemList ?? {});
-  const [open, setOpen] = useState(false);
+type CreateProblemListButtonAndDialogProps = {
+  disabled?: boolean;
+};
 
-  const handleOpen = () => {
-    setOpen(true);
-  };
-
-  const handleClose = () => {
-    setOpen(false);
-  };
-
-  const handleChange = (e: { target: { name: any; value: any } }) => {
-    setProblemList({ ...problemList, [e.target.name]: e.target.value });
-  };
-
-  const handleSolvedChange = (e: { target: { name: any; value: any } }) => {
-    let solved = Math.max(0, e.target.value);
-    let total = Math.max(solved, problemList.totalCount);
-    setProblemList({ ...problemList, solvedCount: solved, totalCount: total });
-  };
-
-  const handleTotalChange = (e: { target: { name: any; value: any } }) => {
-    let total = Math.max(0, e.target.value);
-    let solved = Math.min(total, problemList.solvedCount);
-    setProblemList({ ...problemList, solvedCount: solved, totalCount: total });
-  };
-
-  const actionProblemList = async () => {
-    await props.actionFunc(problemList);
-    handleClose();
-  };
+export function CreateProblemListButtonAndDialog(
+  props: CreateProblemListButtonAndDialogProps
+) {
+  const dialogState = useDialogState();
+  const createProblemList = useCreateUserResource(["problemLists"]);
 
   return (
     <>
-      <Tooltip title={props.tooltip ?? ""}>
-        <Button variant="outlined" color="primary" onClick={handleOpen}>
-          {props.title}{" "}
-        </Button>
-      </Tooltip>
-      <Dialog open={open} onClose={handleClose}>
-        <DialogTitle id="form-dialog-title">{props.title}</DialogTitle>
-        <DialogContent>
-          <TextField
-            margin="dense"
-            onChange={handleChange}
-            fullWidth
-            value={problemList.name ?? ""}
-            name="name"
-            label="Name"
-          />
-
-          <TextField
-            autoFocus
-            margin="dense"
-            onChange={handleChange}
-            fullWidth
-            value={problemList.link ?? ""}
-            name="link"
-            label="Link"
-          />
-
-          <TextField
-            margin="dense"
-            onChange={handleChange}
-            fullWidth
-            multiline
-            value={problemList.description ?? ""}
-            name="description"
-            label="Description"
-          />
-
-          <TextField
-            margin="dense"
-            onChange={handleChange}
-            fullWidth
-            multiline
-            value={problemList.notes ?? ""}
-            name="notes"
-            label="Notes"
-          />
-
-          <TextField
-            margin="dense"
-            onChange={handleSolvedChange}
-            fullWidth
-            value={problemList.solvedCount ?? ""}
-            type="number"
-            name="solvedCount"
-            label="Implicit solved"
-          />
-
-          <TextField
-            margin="dense"
-            onChange={handleTotalChange}
-            fullWidth
-            value={problemList.totalCount ?? ""}
-            type="number"
-            name="totalCount"
-            label="Implicit total"
-          />
-
-          {/* TODO: add problems */}
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose} color="warning">
-            Cancel
-          </Button>
-          <Button onClick={actionProblemList} color="primary">
-            {props.actionName}
-          </Button>
-        </DialogActions>
-      </Dialog>
+      <OpenProblemListDialogButton
+        tooltip="Create problem list"
+        onClick={() => dialogState.handleOpen({})}
+        disabled={props.disabled}
+      >
+        Create
+      </OpenProblemListDialogButton>
+      <ProblemListDialog
+        title="Create problem list"
+        problemList={dialogState.data}
+        setProblemList={dialogState.setData}
+        open={dialogState.open}
+        handleClose={dialogState.handleClose}
+        actionName="Create"
+        actionFunc={createProblemList}
+      />
     </>
   );
 }
 
-export function CreateProblemListDialog() {
-  const createProblemList = useCreate("problemLists");
-
-  return (
-    <ProblemListDialog
-      title="Create"
-      tooltip="Create problem list"
-      actionName="Create"
-      actionFunc={createProblemList}
-    />
-  );
-}
-
-export function UpdateProblemListDialog(props: {
+export function UpdateProblemListButtonAndDialog(props: {
   problemList: ProblemListType;
 }) {
+  const dialogState = useDialogState();
   const editProblemList = useUpdateOne(props.problemList._links?.self?.href);
 
   return (
-    <ProblemListDialog
-      title="Edit"
-      tooltip="Edit problem list"
-      problemList={props.problemList}
-      actionFunc={editProblemList}
-      actionName="Save"
-    />
+    <>
+      <OpenProblemListDialogButton
+        tooltip="Edit problem list"
+        onClick={() => dialogState.handleOpen(props.problemList)}
+      >
+        Edit
+      </OpenProblemListDialogButton>
+      <ProblemListDialog
+        title="Edit problem list"
+        problemList={dialogState.data}
+        setProblemList={dialogState.setData}
+        open={dialogState.open}
+        handleClose={dialogState.handleClose}
+        actionName="Save"
+        actionFunc={editProblemList}
+      />
+    </>
   );
 }
 
@@ -228,7 +157,14 @@ export function AddProblemToListDialog(props: {
 }) {
   const [open, setOpen] = useState(false);
   const [problemURI, setProblemURI] = useState("");
-  const { resources: allProblems } = useReadList(["problems"]);
+  const loggedInUser = getCfHandleFromStorage();
+
+  const allProblemsKey =
+    loggedInUser.length > 0 ? ["problems", "search", "findByCreatedBy"] : [];
+
+  const { resources: allProblems } = useReadList(allProblemsKey, {
+    user: loggedInUser,
+  });
   const { problemList } = props;
   const queryClient = useQueryClient();
 
@@ -264,11 +200,7 @@ export function AddProblemToListDialog(props: {
     createResource(problemListProblems, problemURI, {
       headers: { "Content-Type": "text/uri-list" },
     }).then(() => {
-      queryClient.invalidateQueries([
-        "problemLists",
-        `${problemList.id}`,
-        "problems",
-      ]);
+      queryClient.invalidateQueries();
       handleClose();
     });
   };
@@ -285,7 +217,7 @@ export function AddProblemToListDialog(props: {
           Add problem
         </Button>
       </Tooltip>
-      <Dialog open={open} onClose={handleClose}>
+      <Dialog open={open} onClose={handleClose} fullWidth>
         <DialogTitle id="form-dialog-title">Add problem</DialogTitle>
         <DialogContent>
           <InputLabel id="demo-simple-select-label">Problem</InputLabel>
@@ -294,6 +226,7 @@ export function AddProblemToListDialog(props: {
             id="demo-simple-select"
             value={problemURI}
             label="Problem"
+            fullWidth
             onChange={handleChange}
           >
             {filteredProblems.map((p: ProblemType) => {
@@ -322,11 +255,15 @@ export function AddNewProblemToListDialog(props: {
   problemList: ProblemListType;
 }) {
   const queryClient = useQueryClient();
+  const loggedInUser = getCfHandleFromStorage();
   const { problemList } = props;
 
   const addNewProblemToList = async (newProblem: ProblemType) => {
     const uri = `${API_URL}/problems`; // FIXME: API_URL should not be used here
-    const createdProblem = await createResource(uri, newProblem);
+    const createdProblem = await createResource(uri, {
+      ...newProblem,
+      createdBy: loggedInUser,
+    }); // FIXME: This should be refactored.
 
     const problemListProblems = problemList._links.problems.href;
     const newProblemURI = createdProblem._links.self.href;
@@ -334,18 +271,11 @@ export function AddNewProblemToListDialog(props: {
     await createResource(problemListProblems, newProblemURI, {
       headers: { "Content-Type": "text/uri-list" },
     });
-    queryClient.invalidateQueries([
-      "problemLists",
-      `${problemList.id}`,
-      "problems",
-    ]);
+    queryClient.invalidateQueries();
   };
 
   return (
-    <ProblemDialog
-      title="Create and add"
-      tooltip="Create problem and add it to list"
-      actionName="Add new problem to list"
+    <CreateProblemAndAddToListButtonAndDialog
       actionFunc={addNewProblemToList}
     />
   );

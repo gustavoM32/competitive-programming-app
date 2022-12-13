@@ -1,10 +1,9 @@
 package com.gustavo.competitiveprogrammingapp.information.repositories
 
 import com.gustavo.competitiveprogrammingapp.information.domain.CfSubmission
+import com.gustavo.competitiveprogrammingapp.information.domain.UserSubmissions
 import org.springframework.data.mongodb.repository.MongoRepository
 import org.springframework.stereotype.Repository
 
 @Repository
-interface CfSubmissionRepository : MongoRepository<CfSubmission, String> {
-    fun findByUser(user: String): List<CfSubmission>
-}
+interface UserSubmissionsRepository : MongoRepository<UserSubmissions, String>

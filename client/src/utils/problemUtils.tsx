@@ -8,7 +8,7 @@ import {
   UserContestStatus,
   UserProblemStatus,
 } from "types";
-import { formatDateTime } from "./utils";
+import { formatDateTime, getLink } from "./utils";
 
 type CellParams = {
   value: string;
@@ -16,7 +16,7 @@ type CellParams = {
 
 export const problemStatusMap: { [key: string]: string } = {
   NOTHING: "Not read",
-  READ: "Read",
+  // READ: "Read", // TODO: Add that when it is possible to set a problem status to read.
   WA: "Wrong answer",
   AC: "Accepted",
 };
@@ -59,17 +59,21 @@ export const problemsColumns = [
     headerName: "Addition date",
     field: "dateAdded",
     width: 180,
+    sort: "desc",
     valueFormatter: (params: any) => formatDateTime(params.data.dateAdded),
   },
   {
     headerName: "Link",
     field: "link",
     width: 80,
-    cellRenderer: (cell: any) => (
-      <Link href={"//" + cell.value} target="_blank" rel="noopener">
-        Link
-      </Link>
-    ),
+    cellRenderer: (cell: any) =>
+      typeof cell.value === "string" && cell.value.length > 0 ? (
+        <Link href={getLink(cell.value)} target="_blank" rel="noopener">
+          Link
+        </Link>
+      ) : (
+        "None"
+      ),
   },
   { headerName: "Name", field: "name", width: 200 },
   {
@@ -137,23 +141,3 @@ export const getRowClass = (row: Row<Problem>): string => {
   return "";
 };
 
-export const getProblemRowClass = (
-  row: Row<CfProblem>,
-  userProblemStatusMap: Map<string, UserProblemStatus>
-): string => {
-  const status = getProblemStatus(row.data, userProblemStatusMap);
-  if (status === "AC") return "ac-color";
-  if (status === "WA") return "wa-color";
-  if (status === "READ") return "read-color";
-  return "";
-};
-
-export const getContestRowClass = (
-  row: Row<CfContest>,
-  userContestStatusMap: Map<number, UserContestStatus>
-): string => {
-  const status = getContestStatus(row.data, userContestStatusMap);
-  if (status === "COMPLETED") return "ac-color";
-  if (status === "DIRTY") return "read-color";
-  return "";
-};

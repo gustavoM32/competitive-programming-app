@@ -1,6 +1,7 @@
 import { Button, Tooltip } from "@mui/material";
 import { useQueryClient } from "@tanstack/react-query";
 import { updateInfo } from "api/updateInfo";
+import { RequestParameters } from "utils/queryUtils";
 
 export function UpdateDataButton() {
   const queryClient = useQueryClient();
@@ -17,11 +18,17 @@ export function UpdateDataButton() {
   );
 }
 
-export function UpdateCfDataButton(props: { infoPath: string }) {
+/** @deprecated */
+export function UpdateCfDataButton(props: {
+  infoPath: string;
+  parameters?: RequestParameters;
+}) {
   const queryClient = useQueryClient();
 
   const updateCfData = () => {
-    updateInfo(props.infoPath).then(() => queryClient.invalidateQueries());
+    updateInfo(props.infoPath, props.parameters).then(() =>
+      queryClient.invalidateQueries()
+    );
   };
 
   return (

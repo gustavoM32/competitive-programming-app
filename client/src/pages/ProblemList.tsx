@@ -1,23 +1,28 @@
 import { Grid, Link } from "@mui/material";
 import {
-  UpdateProblemListDialog,
   DeleteProblemListButtonOne,
   AddProblemToListDialog,
   RemoveProblemFromListButton,
   AddNewProblemToListDialog,
-} from "components/problemListCRUD";
+  UpdateProblemListButtonAndDialog,
+} from "components/problemList/crud";
 import { API_URL } from "constants/constants";
 import { useRead, useReadList } from "hooks/crudHooks";
 import { UpdateDataButton } from "components/general";
 import {
   DeleteProblemButton,
+  UpdateProblemButton,
   UpdateProblemDialog,
-} from "components/problemCRUD";
+} from "components/problem/crud";
 import { useParams } from "react-router-dom";
 import { getRowClass, problemsColumns } from "utils/problemUtils";
 import DataGrid from "components/DataGrid";
 import { ProblemType } from "types";
 import { useMemo } from "react";
+import { DataLoadingInfo } from "components/DataLoadingInfo";
+import { SpacedRow } from "components/SpacedRow";
+import { useDialogState } from "hooks/useDialogState";
+import { getLink } from "utils/utils";
 
 export default function ProblemList() {
   const { problemListId } = useParams();
@@ -31,6 +36,9 @@ export default function ProblemList() {
       : [];
   const problemListData = useRead(resourceURI);
   const problemListProblems = useReadList(problemsKey);
+  const editProblemDialogState = useDialogState();
+
+  const information = [problemListData, problemListProblems];
 
   const explicitSolved = useMemo(
     () =>
@@ -55,7 +63,10 @@ export default function ProblemList() {
       cellRenderer: (cell: any) => {
         return (
           <>
-            <UpdateProblemDialog problem={cell.data} />
+            <UpdateProblemButton
+              dialogState={editProblemDialogState}
+              problem={cell.data}
+            />
             <RemoveProblemFromListButton
               problemList={problemList}
               problemId={cell.data.id}
@@ -72,34 +83,46 @@ export default function ProblemList() {
 
   if (problemListData.isError) console.error(problemListData.error);
 
-  const link = "//" + problemList.link;
-
   return (
     <>
       {problemListData.isLoading ? <p>Loading...</p> : null}
       {problemListData.isError ? <p>Error: check console</p> : null}
       <Grid container>
         <h2>
-          <Link href={link} target="_blank" rel="noopener">
-            {problemList.name}
-          </Link>
+          {typeof problemList.link == "string" &&
+          problemList.link.length > 0 ? (
+            <Link
+              href={getLink(problemList.link)}
+              target="_blank"
+              rel="noopener"
+            >
+              {problemList.name}
+            </Link>
+          ) : (
+            problemList.name
+          )}
         </h2>
       </Grid>
       <p>{problemList.description}</p>
       <p>{problemList.notes}</p>
       <h3>Problems {Number.isFinite(total) ? `${solved}/${total}` : null}</h3>
+
+      <SpacedRow>
+        <AddProblemToListDialog problemList={problemList} />
+        <AddNewProblemToListDialog problemList={problemList} />
+        <UpdateProblemListButtonAndDialog problemList={problemList} />
+        <DeleteProblemListButtonOne id={problemListData.uri} />
+        <UpdateDataButton />
+        <DataLoadingInfo information={information} />
+      </SpacedRow>
+
+      <UpdateProblemDialog dialogState={editProblemDialogState} />
+
       <DataGrid
         rowData={problemListProblems.resources}
         columnDefs={columns}
         getRowClass={getRowClass}
       />
-      <>
-        <AddProblemToListDialog problemList={problemList} />{" "}
-        <AddNewProblemToListDialog problemList={problemList} />{" "}
-        <UpdateProblemListDialog problemList={problemList} />{" "}
-        <DeleteProblemListButtonOne id={problemListData.uri} />
-        <UpdateDataButton />
-      </>
     </>
   );
 }

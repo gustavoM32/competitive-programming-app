@@ -1,13 +1,37 @@
 import { useIsMutating, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
+  informationListFetcher,
   resourceFetcher,
   resourceListFetcher,
   resourcePageFetcher,
 } from "../api/fetchers";
-import { createResource, updateResource, deleteResource } from "../api/crud";
-import { API_URL } from "constants/constants";
-import { Resource, ResourceData } from "../api/types";
+import {
+  createResource,
+  updateResource,
+  deleteResource,
+  readResource,
+} from "../api/crud";
+import { API_URL, INFO_URL } from "constants/constants";
+import { ResourceData } from "../api/types";
+import {
+  ReadListRequestKey,
+  ReadOneRequestKey,
+  RequestParameters,
+  ResourcePath,
+  UriString,
+} from "utils/queryUtils";
+import { getCfHandleFromStorage } from "utils/userUtils";
 
+type UpdateResponse = {
+  didUpdate: boolean;
+};
+
+const commonQueryOptions = {
+  refetchInterval: (data: any) => (data?.isUpdating ?? false ? 3000 : 10000),
+  refetchIntervalInBackground: false,
+};
+
+/** @deprecated */
 export function useReadPage(
   path: string[],
   pageNumber: number,
@@ -16,7 +40,10 @@ export function useReadPage(
   const query = useQuery(
     [path, pageNumber.toString(), pageSize.toString()],
     () => resourcePageFetcher({ queryKey: path }, pageNumber, pageSize),
-    { enabled: path.length !== 0 }
+    {
+      ...commonQueryOptions,
+      enabled: path.length !== 0,
+    }
   );
 
   return {
@@ -28,10 +55,15 @@ export function useReadPage(
 }
 
 /* read */
-export function useReadList(key: string[]) {
+export function useReadList(
+  resourcePath: ResourcePath,
+  parameters?: RequestParameters
+) {
+  const key: ReadListRequestKey = [resourcePath, parameters];
   const isMutating = useIsMutating(key);
   const query = useQuery(key, resourceListFetcher, {
-    enabled: key.length !== 0 && isMutating === 0,
+    ...commonQueryOptions,
+    enabled: resourcePath.length !== 0 && isMutating === 0,
   });
 
   return {
@@ -41,9 +73,11 @@ export function useReadList(key: string[]) {
   };
 }
 
-export function useRead(uri: string) {
-  const isMutating = useIsMutating([uri]);
-  const query = useQuery([uri], resourceFetcher, {
+export function useRead(uri: UriString, parameters?: RequestParameters) {
+  const key: ReadOneRequestKey = [uri, parameters];
+  const isMutating = useIsMutating(key);
+  const query = useQuery(key, resourceFetcher, {
+    ...commonQueryOptions,
     enabled: uri !== "" && isMutating === 0,
   });
 
@@ -54,15 +88,30 @@ export function useRead(uri: string) {
   };
 }
 
-export function useCreate(resourceName: string) {
+export function useCreate(resourcePath: string[]) {
   const queryClient = useQueryClient();
 
-  return (newResource: Resource) => {
+  return (newResource: ResourceData) => {
     // FIXME: this solution may not generalize well; will /api/parents/{pid}/childs ever be needed?; API_URL shouldn't be used in this file
-    const uri = `${API_URL}/${resourceName}`;
+    const uri = `${API_URL}/${resourcePath.join("/")}`;
+
     return createResource(uri, newResource).then(() =>
       queryClient.invalidateQueries()
     );
+  };
+}
+
+export function useCreateUserResource(resourcePath: string[]) {
+  const queryClient = useQueryClient();
+  const loggedInUser = getCfHandleFromStorage(); // FIXME: CF handle is used as logged in user.
+
+  return (newResource: ResourceData) => {
+    const uri = `${API_URL}/${resourcePath.join("/")}`;
+
+    return createResource(uri, {
+      ...newResource,
+      createdBy: loggedInUser,
+    }).then(() => queryClient.invalidateQueries());
   };
 }
 
@@ -94,5 +143,41 @@ export function useUpdateOne(uri: string) {
     return updateResource(uri, updatedResource).then(() =>
       queryClient.invalidateQueries()
     );
+  };
+}
+
+/* information */
+export function useInformationList(
+  resourcePath: ResourcePath,
+  parameters?: RequestParameters
+) {
+  const queryClient = useQueryClient();
+  const key: ReadListRequestKey = [resourcePath, parameters];
+  const query = useQuery(key, informationListFetcher, {
+    ...commonQueryOptions,
+    enabled: resourcePath.length !== 0,
+    onSuccess: (data: any) => {
+      if (!(data?.isUpdating ?? false)) {
+        const updateUri = `${INFO_URL}/${resourcePath.join("/")}/update`;
+
+        // Trigger refetch if update is taking too long (probably because an update is hapenning).
+        let id = setTimeout(() => {
+          queryClient.invalidateQueries({ queryKey: key });
+        }, 1000);
+
+        readResource(updateUri, parameters).then((data: UpdateResponse) => {
+          clearTimeout(id);
+          if (data.didUpdate) {
+            queryClient.invalidateQueries({ queryKey: key });
+          }
+        });
+      }
+    },
+  });
+
+  return {
+    ...query,
+    resources: query.data?.resources ?? [],
+    isUpdating: query.data?.isUpdating ?? false,
   };
 }

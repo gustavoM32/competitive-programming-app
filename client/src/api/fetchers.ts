@@ -1,5 +1,11 @@
-import { API_URL, SERVER_URL } from "constants/constants";
+import { API_URL, INFO_URL, SERVER_URL } from "constants/constants";
+import { ReadListRequestKey, ReadOneRequestKey } from "utils/queryUtils";
 import { readResource } from "./crud";
+
+export type InformationListResponse = {
+  resources: any[];
+  isUpdating: boolean;
+};
 
 export async function resourcePageFetcher(
   { queryKey }: { queryKey: string[] },
@@ -14,7 +20,7 @@ export async function resourcePageFetcher(
     throw Error("Empty queryKey");
   }
 
-  const lastElement = queryKey[queryKey.length - 1];
+  const lastElement = findResourceName(queryKey);
 
   return readResource(uri).then((data) => {
     return {
@@ -28,17 +34,18 @@ export async function resourcePageFetcher(
 export async function resourceListFetcher({
   queryKey,
 }: {
-  queryKey: string[];
+  queryKey: ReadListRequestKey;
 }) {
-  const uri = `${API_URL}/${queryKey.join("/")}`;
+  const [path, parameters] = queryKey;
+  const uri = `${API_URL}/${path.join("/")}`;
 
-  if (queryKey.length === 0) {
-    throw Error("Empty queryKey");
+  if (path.length === 0) {
+    throw Error("Empty query path");
   }
 
-  const lastElement = queryKey[queryKey.length - 1];
+  const lastElement = findResourceName(path); // FIXME: Use query key to get the resource name
 
-  return readResource(uri).then((data) => {
+  return readResource(uri, parameters).then((data) => {
     return {
       resources: data._embedded[lastElement],
       uri: data._links.self.href,
@@ -46,15 +53,40 @@ export async function resourceListFetcher({
   });
 }
 
-export async function resourceFetcher({ queryKey }: { queryKey: [string] }) {
-  const [uri] = queryKey;
+function findResourceName(path: string[]): string {
+  const searchIndex = path.findIndex((el) => el === "search");
+  if (searchIndex === -1) return path[path.length - 1];
+  return path[searchIndex - 1];
+}
 
-  return readResource(uri).then((data) => {
+export async function resourceFetcher({
+  queryKey,
+}: {
+  queryKey: ReadOneRequestKey;
+}) {
+  const [uri, parameters] = queryKey;
+
+  return readResource(uri, parameters).then((data) => {
     return {
       resource: data,
       uri: data._links.self.href,
     };
   });
+}
+
+export async function informationListFetcher({
+  queryKey,
+}: {
+  queryKey: ReadListRequestKey;
+}): Promise<InformationListResponse> {
+  const [path, parameters] = queryKey;
+  const uri = `${INFO_URL}/${path.join("/")}`;
+
+  if (path.length === 0) {
+    throw Error("Empty query path");
+  }
+
+  return readResource(uri, parameters);
 }
 
 export async function readOnlyFetcher({ queryKey }: { queryKey: string[] }) {

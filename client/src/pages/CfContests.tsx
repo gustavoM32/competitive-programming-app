@@ -1,4 +1,4 @@
-import { UpdateDataButton, UpdateCfDataButton } from "components/general";
+import { UpdateDataButton } from "components/general";
 import {
   Checkbox,
   FormControl,
@@ -15,18 +15,24 @@ import {
   Typography,
 } from "@mui/material";
 import DataGrid from "components/DataGrid";
-import { useReadList } from "hooks/crudHooks";
+import { useInformationList } from "hooks/crudHooks";
 import { useCallback, useMemo, useState } from "react";
 import { UserContestStatus } from "types";
-import {
-  contestStatusMap,
-  getContestRowClass,
-  getContestStatus,
-} from "utils/problemUtils";
+import { contestStatusMap, getContestStatus } from "utils/problemUtils";
+import { getCfHandleFromStorage } from "utils/userUtils";
+import { DataLoadingInfo } from "components/DataLoadingInfo";
+import { SpacedRow } from "components/SpacedRow";
 
 export default function CfContests() {
-  const cfContests = useReadList(["cfContests"]);
-  const userContestStatus = useReadList(["userContestStatuses"]);
+  const cfContests = useInformationList(["cfContests"]);
+  const userHandle = getCfHandleFromStorage();
+  const userContestStatusKey =
+    userHandle.length > 0 ? ["userContestStatus"] : [];
+  const userContestStatus = useInformationList(userContestStatusKey, {
+    handle: userHandle,
+  });
+
+  const information = [cfContests, userContestStatus];
 
   const userContestStatusMap = useMemo(
     () =>
@@ -34,6 +40,15 @@ export default function CfContests() {
         userContestStatus.resources.map((el: UserContestStatus) => [el.id, el])
       ),
     [userContestStatus.resources]
+  );
+
+  const cfContestsWithUserStatus = useMemo(
+    () =>
+      cfContests.resources.map((c: any) => ({
+        ...c,
+        contestStatus: getContestStatus(c, userContestStatusMap),
+      })),
+    [cfContests.resources, userContestStatusMap]
   );
 
   const columns = useMemo(
@@ -129,22 +144,26 @@ export default function CfContests() {
     const duration = contestDuration.map(calcDurationValue);
     const SECONDS_IN_A_HOUR = 3600;
 
-    return cfContests.resources.filter(
+    return cfContestsWithUserStatus.filter(
       (c: any) =>
-        c.name.toLowerCase().includes(contestName.toLowerCase()) &&
+        `${c.id} ${c.name}`.toLowerCase().includes(contestName.toLowerCase()) &&
         (contestStatus.length === 0 ||
-          contestStatus.includes(getContestStatus(c, userContestStatusMap))) &&
+          contestStatus.includes(c.contestStatus)) &&
         SECONDS_IN_A_HOUR * duration[0] <= c.durationSeconds &&
         c.durationSeconds <= SECONDS_IN_A_HOUR * duration[1]
     );
   }, [
-    cfContests.resources,
+    cfContestsWithUserStatus,
     calcDurationValue,
     contestName,
     contestStatus,
     contestDuration,
-    userContestStatusMap,
   ]);
+
+  const rowClassRules = {
+    "ac-color": (params: any) => params.data.contestStatus === "COMPLETED",
+    "read-color": (params: any) => params.data.contestStatus === "DIRTY",
+  };
 
   return (
     <>
@@ -200,15 +219,16 @@ export default function CfContests() {
         </Grid>
       </FormControl>
 
+      <SpacedRow>
+        <UpdateDataButton />
+        <DataLoadingInfo information={information} />
+      </SpacedRow>
+
       <DataGrid
         rowData={filteredContests}
         columnDefs={columns}
-        getRowClass={(row: any) =>
-          getContestRowClass(row, userContestStatusMap)
-        }
+        rowClassRules={rowClassRules}
       />
-      <UpdateDataButton />
-      <UpdateCfDataButton infoPath="cfContests" />
     </>
   );
 }
