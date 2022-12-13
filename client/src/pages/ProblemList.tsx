@@ -66,11 +66,11 @@ export default function ProblemList() {
             <UpdateProblemButton
               dialogState={editProblemDialogState}
               problem={cell.data}
-            />
+            />{" "}
             <RemoveProblemFromListButton
               problemList={problemList}
               problemId={cell.data.id}
-            />
+            />{" "}
             <DeleteProblemButton id={cell.data._links.self.href} />
           </>
         );

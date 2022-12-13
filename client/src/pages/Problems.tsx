@@ -38,7 +38,7 @@ export default function Problems() {
             <UpdateProblemButton
               dialogState={editDialogState}
               problem={cell.data}
-            />
+            />{" "}
             <DeleteProblemButton id={cell.data._links.self.href} />
           </>
         );
