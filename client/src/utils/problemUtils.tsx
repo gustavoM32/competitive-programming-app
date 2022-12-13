@@ -16,7 +16,7 @@ type CellParams = {
 
 export const problemStatusMap: { [key: string]: string } = {
   NOTHING: "Not read",
-  READ: "Read",
+  // READ: "Read", // TODO: Add that when it is possible to set a problem status to read.
   WA: "Wrong answer",
   AC: "Accepted",
 };
