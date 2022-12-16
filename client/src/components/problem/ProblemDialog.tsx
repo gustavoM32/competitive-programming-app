@@ -69,11 +69,7 @@ export function ProblemDialog(props: ProblemDialogProps) {
               control={<Radio />}
               label="Not read"
             />
-            <FormControlLabel
-              value="READ"
-              control={<Radio />}
-              label="Read before"
-            />
+            <FormControlLabel value="READ" control={<Radio />} label="Read" />
             <FormControlLabel value="WA" control={<Radio />} label="WA" />
             <FormControlLabel value="AC" control={<Radio />} label="AC" />
           </RadioGroup>
