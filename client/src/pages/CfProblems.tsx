@@ -107,7 +107,11 @@ export default function CfProblems() {
   const [problemHasRating, setContestHasRating] = useState<boolean>(false);
   const [problemRating, setContestRating] = useState<number[]>([0, 4000]);
 
-  const problemStatuses = useMemo(() => Object.keys(problemStatusMap), []);
+  // TODO: Stop filtering READ is possible to set a problem status to read.
+  const problemStatuses = useMemo(
+    () => Object.keys(problemStatusMap).filter((k) => k !== "READ"),
+    []
+  );
   const contestStatuses = useMemo(() => Object.keys(contestStatusMap), []);
 
   const handleNameChange = useCallback(
