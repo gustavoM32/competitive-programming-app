@@ -43,7 +43,7 @@ export const appThemeOptions: ThemeOptions = {
     },
     background: {
       default: "#e8eaf6",
-      paper: "#c5cae9",
+      paper: "#f4f6ff",
     },
     warning: {
       main: "#A87F00",
