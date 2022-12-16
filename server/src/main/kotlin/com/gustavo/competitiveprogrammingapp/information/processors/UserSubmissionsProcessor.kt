@@ -22,7 +22,7 @@ class UserSubmissionsProcessor(
     companion object {
         const val INFORMATION_ID = "UserSubmissions"
         private val isUpdatingSet = mutableSetOf<String>()
-        val USER_STATUS_CACHE_TOLERANCE: Duration = Duration.ofMinutes(1)
+        val USER_STATUS_CACHE_TOLERANCE: Duration = Duration.ofSeconds(30);
     }
 
     private val logger: Logger = LoggerFactory.getLogger(javaClass)
