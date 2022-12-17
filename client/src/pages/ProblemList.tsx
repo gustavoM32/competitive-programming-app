@@ -103,8 +103,13 @@ export default function ProblemList() {
           )}
         </h2>
       </Grid>
+
+      <h6>Description</h6>
       <p>{problemList.description}</p>
+
+      <h6>Notes</h6>
       <p>{problemList.notes}</p>
+
       <h3>Problems {Number.isFinite(total) ? `${solved}/${total}` : null}</h3>
 
       <SpacedRow>
