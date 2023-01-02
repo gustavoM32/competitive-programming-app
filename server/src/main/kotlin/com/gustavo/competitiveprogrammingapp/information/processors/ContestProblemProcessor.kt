@@ -1,5 +1,6 @@
 package com.gustavo.competitiveprogrammingapp.information.processors
 
+import com.gustavo.competitiveprogrammingapp.cfApi.ApiContestStandingsResult
 import com.gustavo.competitiveprogrammingapp.cfApi.CfApiResourceFetcher
 import com.gustavo.competitiveprogrammingapp.information.InformationService
 import com.gustavo.competitiveprogrammingapp.information.ProblemId
@@ -9,6 +10,7 @@ import com.gustavo.competitiveprogrammingapp.information.repositories.ContestPro
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
+import java.time.Duration
 
 /**
  * Extracts problems from CF contests
@@ -23,6 +25,7 @@ class ContestProblemProcessor(
     companion object {
         const val INFORMATION_ID = "ContestProblem"
         var isUpdating = false
+        val CONTEST_STANDINGS_CACHE_TOLERANCE: Duration = Duration.ofDays(365)
     }
 
     private val logger: Logger = LoggerFactory.getLogger(javaClass)
@@ -61,16 +64,21 @@ class ContestProblemProcessor(
 
         cfContests.filter { !fetchedContests.contains(it.id) }.forEach a@{
             // if (it.id < 1735) return@a // FIXME: only for development
-            val contestStandings = cfApiResourceFetcher.getContestStandings(it.id)
-            contestStandings.problems.forEach { p ->
-                if (p.contestId != null && p.index != null && p.name != null && it.startTime != null)
-                    contestProblems.add(
-                        ContestProblem(
-                            problemId = ProblemId(p.contestId, p.index),
-                            name = p.name,
-                            contestStartTime = it.startTime
+            try {
+                val contestStandings: ApiContestStandingsResult =
+                    cfApiResourceFetcher.getContestStandings(it.id, CONTEST_STANDINGS_CACHE_TOLERANCE)
+                contestStandings.problems.forEach { p ->
+                    if (p.contestId != null && p.index != null && p.name != null && it.startTime != null)
+                        contestProblems.add(
+                            ContestProblem(
+                                problemId = ProblemId(p.contestId, p.index),
+                                name = p.name,
+                                contestStartTime = it.startTime
+                            )
                         )
-                    )
+                }
+            } catch (e: Exception) {
+                logger.error(e.message)
             }
         }
 
