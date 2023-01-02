@@ -60,7 +60,7 @@ class ContestProblemProcessor(
         val fetchedContests = existingProblems.map { it.problemId.contestId }.toSet()
 
         cfContests.filter { !fetchedContests.contains(it.id) }.forEach a@{
-            if (it.id < 1735) return@a // FIXME: only for development
+            // if (it.id < 1735) return@a // FIXME: only for development
             val contestStandings = cfApiResourceFetcher.getContestStandings(it.id)
             contestStandings.problems.forEach { p ->
                 if (p.contestId != null && p.index != null && p.name != null && it.startTime != null)
