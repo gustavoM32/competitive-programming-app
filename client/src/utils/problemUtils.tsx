@@ -58,14 +58,14 @@ export const problemsColumns = [
   {
     headerName: "Addition date",
     field: "dateAdded",
-    width: 180,
+    width: 158,
     sort: "desc",
     valueFormatter: (params: any) => formatDateTime(params.data.dateAdded),
   },
   {
     headerName: "Link",
     field: "link",
-    width: 80,
+    width: 75,
     cellRenderer: (cell: any) =>
       typeof cell.value === "string" && cell.value.length > 0 ? (
         <Link href={getLink(cell.value)} target="_blank" rel="noopener">
@@ -75,24 +75,18 @@ export const problemsColumns = [
         "None"
       ),
   },
-  { headerName: "Name", field: "name", width: 200 },
+  { headerName: "Name", field: "name", width: 180 },
   {
     headerName: "Status",
     field: "problemStatus",
-    width: 150,
+    width: 133,
     cellRenderer: convertStatus(problemStatusMap),
   },
   {
     headerName: "Editorial",
     field: "editorialStatus",
-    width: 150,
+    width: 145,
     cellRenderer: convertStatus(editorialStatusMap),
-  },
-  {
-    headerName: "Comments",
-    field: "comments",
-    flex: 1,
-    cellRenderer: convertLinesToBr(),
   },
 ];
 

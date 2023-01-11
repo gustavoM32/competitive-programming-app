@@ -34,5 +34,6 @@ let pls = [
 ]
 
 addUserData(ps, pls, "gustavo_m32")
+addUserData(ps, pls, "tubarao")
 addUserData(ps, pls, "nathan_luiz")
 addUserData(ps, pls, "Carlos_Eduardo_Ferreira")

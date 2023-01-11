@@ -24,12 +24,19 @@ import {
   getProblemCode,
   getProblemContestStatus,
   getProblemStatus,
-  problemStatusMap,
 } from "utils/problemUtils";
 import { UserProblemStatus } from "types";
 import { getCfHandleFromStorage } from "utils/userUtils";
 import { DataLoadingInfo } from "components/DataLoadingInfo";
 import { SpacedRow } from "components/SpacedRow";
+
+// TODO: Use READ when it is possible to set a problem status to read.
+export const cfProblemStatusMap: { [key: string]: string } = {
+  NOTHING: "Not tried",
+  // READ: "Read",
+  WA: "Wrong answer",
+  AC: "Accepted",
+};
 
 export default function CfProblems() {
   const cfProblems = useInformationList(["cfProblems"]);
@@ -107,11 +114,7 @@ export default function CfProblems() {
   const [problemHasRating, setContestHasRating] = useState<boolean>(false);
   const [problemRating, setContestRating] = useState<number[]>([0, 4000]);
 
-  // TODO: Stop filtering READ is possible to set a problem status to read.
-  const problemStatuses = useMemo(
-    () => Object.keys(problemStatusMap).filter((k) => k !== "READ"),
-    []
-  );
+  const problemStatuses = useMemo(() => Object.keys(cfProblemStatusMap), []);
   const contestStatuses = useMemo(() => Object.keys(contestStatusMap), []);
 
   const handleNameChange = useCallback(
@@ -202,13 +205,13 @@ export default function CfProblems() {
           onChange={handleProblemStatusChange}
           input={<OutlinedInput label="Problem status" />}
           renderValue={(selected) =>
-            selected.map((s: string) => problemStatusMap[s]).join(", ")
+            selected.map((s: string) => cfProblemStatusMap[s]).join(", ")
           }
         >
           {problemStatuses.map((status) => (
             <MenuItem key={status} value={status}>
               <Checkbox checked={problemStatus.indexOf(status) > -1} />
-              <ListItemText primary={problemStatusMap[status]} />
+              <ListItemText primary={cfProblemStatusMap[status]} />
             </MenuItem>
           ))}
         </Select>
